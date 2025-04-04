@@ -50,7 +50,7 @@
           alt="Logo"
 
         />
-        <span v-if="isExpanded || isHovered || isMobileOpen" class="inline-flex text-2xl text-purple-500 font-bold">Enjoy</span>
+        <span v-if="isExpanded || isHovered || isMobileOpen" class="inline-flex text-2xl text-gray-900 font-bold">EnjoyAdmin</span>
       </router-link>
     </div>
     <div
@@ -160,7 +160,7 @@
                         <router-link
                           :to="subItem.path"
                           :class="[
-                            'menu-dropdown-item',
+                            'menu-dropdown-item text-md ',
                             {
                               'menu-dropdown-item-active': isActive(
                                 subItem.path
@@ -172,7 +172,7 @@
                           ]"
                         >
                           {{ subItem.name }}
-                          <span class="flex items-center gap-1 ml-auto">
+                          <!-- <span class="flex items-center gap-1 ml-auto">
                             <span
                               v-if="subItem.new"
                               :class="[
@@ -205,7 +205,7 @@
                             >
                               pro
                             </span>
-                          </span>
+                          </span> -->
                         </router-link>
                       </li>
                     </ul>
@@ -222,7 +222,7 @@
   </aside>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 
@@ -243,6 +243,7 @@ import {
   SettingsIcon,
   UserGroupIcon,
   RoomIcon,
+  PaymentIcon
 } from "../../icons";
 import BoxCubeIcon from "@/icons/BoxCubeIcon.vue";
 import { useSidebar } from "@/composables/useSidebar";
@@ -263,16 +264,16 @@ const menuGroups = [
       },
       {
         icon: CalenderIcon,
-        name: "Booking",
+        name: "Bookings",
         path: "/calendar1",
-        subItems: [{ name: "All Booking", path: "/rr"},{name:"Add Booking" ,path: "/fff"},{name:"Edit Booking", path: "/ww"}],
+        subItems: [{ name: "All Booking", path: "/all_booking"},{name:"Add Booking" ,path: "/add_booking"},{name:"Edit Booking", path: "/ww"}],
       },
       {
         icon: RoomIcon,
         name: "Room",
         path: "/profile",
-        subItems: [{ name: "All Rooms", path: "/ff"},
-        {name:"Room Types", path: "/ddd"}
+        subItems: [{ name: "All Rooms", path: "/videos"},
+        {name:"Room Types", path: "/images"}
       ],
       },
 
@@ -281,8 +282,8 @@ const menuGroups = [
         icon: ListIcon,
         subItems: [
           { name: "Stocks", path: "/form-elements" },
-          { name: "Expenses", path: "/nnn" },
-          { name: "Booking", path: "/element" },
+          { name: "Expenses", path: "/buttons" },
+          { name: "Booking", path: "/error-404" },
         ],
       },
       {
@@ -292,50 +293,50 @@ const menuGroups = [
       },
       {
         name: "Payements",
-        icon: PageIcon,
+        icon: PaymentIcon,
         subItems: [
           { name: "Payment Methods", path: "/blank"},
           // { name: "404 Page", path: "/error-404", pro: false },
           { name: "Invoice List", path:"/calendar"},
-          { name: "Invoice Details"},
+          { name: "Invoice Details",path:"/alerts"},
         ],
       },
       {
         name: "User",
         icon: UserCircleIcon,
-        path: "/c",
+        path: "/bar-chart",
       },
 
       {
         name: "Setting",
         icon: SettingsIcon,
-        path: "/cal",
+        path: "/line-chart",
       },
     ],
   },
   {
     title: "Others",
     items: [
-      {
-        icon: PieChartIcon,
-        name: "Charts",
-        subItems: [
-          { name: "Line Chart", path: "/line-chart", pro: false },
-          { name: "Bar Chart", path: "/bar-chart", pro: false },
-        ],
-      },
-      {
-        icon: BoxCubeIcon,
-        name: "Ui Elements",
-        subItems: [
-          { name: "Alerts", path: "/alerts", pro: false },
-          { name: "Avatars", path: "/avatars", pro: false },
-          { name: "Badge", path: "/badge", pro: false },
-          { name: "Buttons", path: "/buttons", pro: false },
-          { name: "Images", path: "/images", pro: false },
-          { name: "Videos", path: "/videos", pro: false },
-        ],
-      },
+      // {
+      //   icon: PieChartIcon,
+      //   name: "Charts",
+      //   subItems: [
+      //     { name: "Line Chart", path: "/line-chart", pro: false },
+      //     { name: "Bar Chart", path: "/bar-chart", pro: false },
+      //   ],
+      // },
+      // {
+      //   icon: BoxCubeIcon,
+      //   name: "Ui Elements",
+      //   subItems: [
+      //     { name: "Alerts", path: "/alerts", pro: false },
+      //     { name: "Avatars", path: "/avatars", pro: false },
+      //     { name: "Badge", path: "/badge", pro: false },
+      //     { name: "Buttons", path: "/buttons", pro: false },
+      //     { name: "Images", path: "/images", pro: false },
+      //     { name: "Videos", path: "/videos", pro: false },
+      //   ],
+      // },
       {
         icon: PlugInIcon,
         name: "Authentication",

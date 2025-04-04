@@ -8,10 +8,26 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'Ecommerce',
-      component: () => import('../views/Ecommerce.vue'),
+      name: 'dashboard',
+      component: () => import('../views/Edashboard.vue'),
       meta: {
-        title: 'eCommerce Dashboard',
+        title: 'Dashboard',
+      },
+    },
+    {
+      path: '/all_booking',
+      name: 'All Booking',
+      component: () => import('../views/Bookings/AllBooking.vue'),
+      meta: {
+        title: 'All Booking',
+      },
+    },
+    {
+      path: '/add_booking',
+      name: 'Add Booking',
+      component: () => import('../views/Bookings/AddBooking.vue'),
+      meta: {
+        title: 'Add Booking',
       },
     },
     {

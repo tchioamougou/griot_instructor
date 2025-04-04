@@ -46,6 +46,7 @@ import UserGroupIcon from "./UserGroupIcon.vue";
 import BellIcon from "./BellIcon.vue";
 import BarChartIcon from "./BarChartIcon.vue";
 import RoomIcon from "./RoomIcon.vue";
+import PaymentIcon from "./PaymentIcon.vue";
 
 export {
   BellIcon,
@@ -96,4 +97,5 @@ export {
   SendIcon,
   DraftIcon,
   RoomIcon,
+  PaymentIcon,
 };
