@@ -9,7 +9,8 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    
+
+
     disabled: {
         type: Boolean,
         default: false
@@ -21,7 +22,7 @@ const props = defineProps({
     forLabel: String,
     id: String,
     placeholder:String
-        
+
 });
 // Emit input event to update the v-model value
 const emit = defineEmits(['update:modelValue'])

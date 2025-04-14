@@ -70,7 +70,7 @@ onMounted(() => {
 const emit = defineEmits(['update:modelValue', 'select'])
 
 
-// Nettoyer l'écouteur d'événements lors du démontage 
+// Nettoyer l'écouteur d'événements lors du démontage
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
 });
@@ -90,7 +90,7 @@ onBeforeUnmount(() => {
 
         <span :class="[isDropdownOpen ? ' text-blue-500' : ' text-gray-500']">▼</span>
       </div>
-      
+
       <input type="hidden" :required="isRequired" :value="selectedOption ? selectedOption.value : ''" class="" />
       <ul v-if="isDropdownOpen"
         class="custom-scrollbar text-lg sm:text-base absolute top-full left-0 right-0 bg-white border-2 border-gray-300 border-t-0 rounded-b-lg max-h-40 overflow-y-auto z-50 mt-1">

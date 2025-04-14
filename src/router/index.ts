@@ -31,6 +31,50 @@ const router = createRouter({
       },
     },
     {
+      path: '/edit_booking',
+      name: 'Edit Booking',
+      component: () => import('../views/Bookings/EditBooking.vue'),
+      meta: {
+        title: 'Edit Booking',
+      },
+    },
+    {
+      path: '/all_room',
+      name: 'All Room',
+      component: () => import('../views/Room/AllRoom.vue'),
+      meta: {
+        title: 'All Room',
+      },
+    },
+    {
+      path: '/type_room',
+      name: 'Room Type',
+      component: () => import('../views/Room/RoomTypes.vue'),
+      meta: {
+        title: 'Room Type',
+      },
+    },
+    {
+      path: '/stock',
+      name: 'stock',
+      component: () => import('../views/Reports/StocksTable.vue'),
+    },
+    {
+      path: '/expense',
+      name: 'expense',
+      component: () => import('../views/Reports/ExpensesTable.vue'),
+    },
+    {
+      path: '/booking',
+      name: 'Booking',
+      component: () => import('../views/Reports/BookingTable.vue'),
+    },
+    {
+      path: '/customers',
+      name: 'Customers',
+      component: () => import('../views/Customers/CustomersTable.vue'),
+    },
+    {
       path: '/calendar',
       name: 'Calendar',
       component: () => import('../views/Others/Calendar.vue'),
