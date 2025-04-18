@@ -32,12 +32,36 @@ export interface RoomOptionData {
 }
 
 
-export interface serviceType{
-  name:string
-  description:string
-  paymentMethods: { label: string; value: string }[];
 
+interface serviceType {
+  id: number;
+  name: string;
+  description: string;
+  email: string;
+  phoneNumber: string;
+  website: string;
+  logo: string | null;
+  images: string[] | null;
+  address: {
+    text: string;
+    lat: number;
+    lng: number;
+  };
+  categoryId: number;
+  capacity: number | null;
+  facilities: string[];
+  policies: string;
+  priceRange: string | null;
+  paymentMethods: { label: string; value: string }[];
+  openings: Record<string, { opening: string; closing: string }>;
+  status: 'active' | 'inactive'; // Ajuste selon tes valeurs possibles
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string | null;
+  lastModifiedBy: string | null;
 }
+
+
 
 
 
