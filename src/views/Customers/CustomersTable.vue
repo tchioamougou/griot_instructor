@@ -268,6 +268,7 @@ const columnDefs = ref<ColDef[]>([
       return `<span class="bg-success-50 text-success-700 px-2 rounded-full dark:bg-success-500/15 dark:text-success-500">Active</span>`;
     }
    else {
+
       return `<span class="bg-red-50 text-red-700 px-2 rounded-full dark:bg-red-500/15 dark:text-red-500">Inactive</span>`;
     }
   }
