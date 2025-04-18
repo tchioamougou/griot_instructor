@@ -51,28 +51,42 @@ export interface RoomTypeData{
 
 export interface  ReservationType{
   id:number
-  userId: number
-  serviceId: number
-  reservationType: string
+  // user_id: number
+  first_name: string
+  last_name: string
+  email: string
+  phone_number: string
+  role_id: number | null
+  service_id: number
+  reservation_type: string
   status: string
-  totalPrice: number
-  arrivedDate:string
-  departDate:string
-  reservationTime:string
-  reservationProduct:number
+  total_price: number
+  arrived_date:string
+  depart_date:string
+  reservation_time:string
+  reservation_product:number
   comment:string
-  createdBy: number
-  lastModifiedBy: number
+  created_by: number
+  lastModified_by: number
   payment:string
 }
 
-export interface userDataType {
-  id:number
-  firstName: string
-  lastName : string
-  email:string
-  phoneNumber:number
-  roleId:number
+// export interface userDataType {
+//   id:number
+//   firstName: string
+//   lastName : string
+//   email:string
+//   phoneNumber:number
+//   roleId:number
+// }
+
+export interface userDataType  {
+  first_name: string
+  last_name: string
+  email: string
+  phone_number: string
+  role_id: number | null
 }
+
 
 

@@ -398,7 +398,7 @@ const fetchReservation = async () => {
       return {
         ...res,
         ...user,
-        userFullName: user ? `${user.firstName} ${user.lastName}` : 'Inconnu',
+        userFullName: user ? `${user.first_name} ${user.last_name}` : 'Inconnu',
         // productName: product ? product.productName : 'Inconnu'
       };
     });

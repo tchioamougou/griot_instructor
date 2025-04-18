@@ -13,7 +13,7 @@ import { ref,onMounted } from 'vue'
 import { AgGridVue } from 'ag-grid-vue3';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
-import type { ColDef, GridReadyEvent, CellClickedEvent, SelectionChangedEvent,ICellRendererParams} from 'ag-grid-community';
+import type { ColDef, GridReadyEvent, SelectionChangedEvent,ICellRendererParams} from 'ag-grid-community';
 import { getReservation,getUser,getServiceProduct} from "@/services/api";
 import { useServiceStore } from '@/stores/serviceStore';
 import type {ReservationType,userDataType,ServiceProductType} from '@/types/option'
@@ -61,7 +61,7 @@ const fetchReservation = async () => {
       return {
         ...res,
         ...user,
-        userFullName: user ? `${user.firstName} ${user.lastName}` : 'Inconnu',
+        userFullName: user ? `${user.first_name} ${user.last_name}` : 'Inconnu',
         // productName: product ? product.productName : 'Inconnu'
       };
     });
@@ -175,7 +175,7 @@ const onCellClick = (event: any) => {
   const reservationId = event.event?.target?.dataset?.id;
 
   if (action === 'open-payment') {
-    const reservation = reservations.value.find(r => r.id === Number(reservationId));
+    const reservation = reservations.value.find((r : any)=> r.id === Number(reservationId));
     selectedReservation.value = reservation;
     isPaymentModalOpen.value = true;
   }

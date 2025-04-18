@@ -367,7 +367,7 @@ import Select from "@/components/forms/FormElements/Select.vue";
 import flatPickr from 'vue-flatpickr-component'
 import ButtonComponent from "@/components/buttons/ButtonComponent.vue";
 import { getServiceProduct,createReservation,getService} from "@/services/api";
-import type { ProductType} from '@/types/option'
+import type { ProductType, ReservationType} from '@/types/option'
 import 'flatpickr/dist/flatpickr.css'
 import { useToast } from 'vue-toastification'
 import Spinner from '@/components/spinner/Spinner.vue'; // adapte le chemin
@@ -647,7 +647,7 @@ const confirmReservation = async () => {
     }
     console.log('✅ reservationPayload', reservationPayload)
 
-    const response = await createReservation([reservationPayload])
+    const response = await createReservation(reservationPayload)
 
     form.value = {
       firstName: '',

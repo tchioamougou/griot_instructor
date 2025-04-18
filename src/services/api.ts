@@ -123,16 +123,17 @@ export const createRoomOptions = (optionsData: { data: RoomOptionData[] }):Promi
      return axios.post(`${API_URL}/production_option`, optionsData);
    };
 
-   export const createUser = (userData: userDataType[]):Promise<AxiosResponse<any>> => {
+   export const createUser = (userData: userDataType):Promise<AxiosResponse<any>> => {
     return axios.post(`${API_URL}/users`, userData);
   };
+
 
    export const createRoomType = (roomTypeData: { data: RoomTypeData[] }):Promise<AxiosResponse<any>> => {
     return axios.post(`${API_URL}/product`, roomTypeData);
   };
 
 
-export const createReservation = (reservationData: ReservationType[] ):Promise<AxiosResponse<any>> => {
+export const createReservation = (reservationData: any ):Promise<AxiosResponse<any>> => {
     return axios.post(`${API_URL}/reservationswithuser`, reservationData);
 };
 

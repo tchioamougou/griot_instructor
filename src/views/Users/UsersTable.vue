@@ -177,7 +177,6 @@ import { AgGridVue } from 'ag-grid-vue3';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 import type { ColDef, GridReadyEvent, CellClickedEvent, SelectionChangedEvent} from 'ag-grid-community';
-import type { CellRendererParams } from 'ag-grid-community';
 import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
 import AdminLayout from "@/components/layout/AdminLayout.vue";
 import Modal from '@/components/profile/Modal.vue'
@@ -307,7 +306,7 @@ headerCheckboxSelection: true,
 {
   headerName: 'Role',
   field: 'roleId',
-  cellRenderer: (params: CellRendererParams) => {
+  cellRenderer: (params:any) => {
     const roleLabels: Record<string, string> = {
       '1': 'Super Admin',
       '2': 'Admin',
