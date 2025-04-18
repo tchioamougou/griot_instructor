@@ -126,7 +126,7 @@
   Cancel
 </button>
 <button
-@click="save"
+
 type="button"
 class="flex w-full justify-center rounded-lg bg-purple-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-purple-600 sm:w-auto"
 >
@@ -146,7 +146,7 @@ import AdminLayout from "@/components/layout/AdminLayout.vue";
 import Modal from '@/components/profile/Modal.vue'
 import Input from "@/components/forms/FormElements/Input.vue";
 import flatPickr from 'vue-flatpickr-component'
-
+import 'flatpickr/dist/flatpickr.css'
 import { ref } from 'vue'
 import { AgGridVue } from 'ag-grid-vue3';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -263,6 +263,14 @@ const isDropdownOpen = ref(false);
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value;
 };
+const date =ref('')
+const flatpickrConfig = {
+  dateFormat: 'Y-m-d',
+  altInput: true,
+  altFormat: 'F j, Y',
+  wrap: true,
+}
+
 </script>
 
 <style scoped>

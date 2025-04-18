@@ -74,9 +74,4 @@ export interface userDataType {
   roleId:number
 }
 
-export interface serviceType{
-  name:string
-  description:string
-  paymentMethods: []
 
-}

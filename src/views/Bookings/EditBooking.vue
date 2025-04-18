@@ -2,13 +2,13 @@
   <AdminLayout>
     <PageBreadcrumb :pageTitle="currentPageTitle" />
     <div class="space-y-5 sm:space-y-6">
-      <ComponentCard>
+      <ComponentCard  title="">
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
         <div>
-          <Input :inputType="text" :lb="'First Name'" :placeholder="'First Name'" :id="'first'" :forLabel="'first'" />
+          <Input :inputType="'text'" :lb="'First Name'" :placeholder="'First Name'" :id="'first'" :forLabel="'first'" />
         </div>
         <div>
-          <Input :inputType="text" :lb="'Last Name'" :placeholder="'Last Name'" :id="'last'" :forLabel="'last'" />
+          <Input :inputType="'text'" :lb="'Last Name'" :placeholder="'Last Name'" :id="'last'" :forLabel="'last'" />
         </div>
         <div>
           <Select :lb="'Gender'" :options="Gender"/>
@@ -83,7 +83,7 @@
               </svg>
             </span>
             <input
-              v-model="email"
+
               type="text"
               placeholder="info@gmail.com"
               class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pl-[62px] text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
@@ -91,7 +91,7 @@
           </div>
         </div>
         <div>
-          <Input :lb="'Address'" :inputType="text" :placeholder="'Address'" :id="'address'" :forLabel="'address'" />
+          <Input :lb="'Address'" :inputType="'text'" :placeholder="'Address'" :id="'address'" :forLabel="'address'" />
         </div>
         <div><FileInput/></div>
         <div>
@@ -139,7 +139,7 @@
     </label>
     <div class="relative">
       <flat-pickr
-        v-model="date1"
+        v-model="date"
         :config="flatpickrConfig"
         class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
         placeholder="Select date"
@@ -172,7 +172,7 @@
       Note
     </label>
     <textarea
-      v-model="normalDescription"
+
       placeholder="Large text area content"
       rows="6"
       class="dark:bg-dark-900 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"

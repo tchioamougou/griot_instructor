@@ -101,7 +101,6 @@
       Cancel
     </button>
     <button
-    @click.prevent="SaveRoomType"
     :disabled="isLoading"
     type="button"
     class="flex w-full justify-center rounded-lg bg-purple-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-purple-600 sm:w-auto"
@@ -246,34 +245,34 @@ const form = ref<RoomTypeData >({
   description: '',
 })
 
-const SaveRoomType = async () => {
-  isLoading.value = true;
-  try {
-    const Payload = {
-      name: form.value.name,
-      description: form.value.description,
-      status: form.value.status,
-    };
+// const SaveRoomType = async () => {
+//   isLoading.value = true;
+//   try {
+//     const Payload = {
+//       name: form.value.name,
+//       description: form.value.description,
+//       status: form.value.status,
+//     };
 
-    const roomResponse = await createRoomType(Payload);
-    console.log('roomtype', roomResponse);
+//     const roomResponse = await createRoomType(Payload);
+//     console.log('roomtype', roomResponse);
 
-    //renitialisation des champs
-    form.value = {
-      name: '',
-      status: '',
-      description: '',
+//     //renitialisation des champs
+//     form.value = {
+//       name: '',
+//       status: '',
+//       description: '',
 
-    }
-    toast.success('Chambre enregistrée avec succès !')
-    console.log('Payload', Payload)
+//     }
+//     toast.success('Chambre enregistrée avec succès !')
+//     console.log('Payload', Payload)
 
-  } catch (error) {
-    console.error('Erreur lors de la sauvegarde', error);
-  }finally {
-    isLoading.value = false;
-  }
-};
+//   } catch (error) {
+//     console.error('Erreur lors de la sauvegarde', error);
+//   }finally {
+//     isLoading.value = false;
+//   }
+// };
 
 const fetchRoomType = async () => {
   try {

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import type { AxiosResponse } from 'axios'
-import type { OptionType,ServiceProductType,ProductOptionType,RoomTypeData,ReservationType,userDataType,serviceType } from '@/types/option'
+import type { OptionType,ServiceProductType,ProductOptionType,RoomTypeData,ReservationType,userDataType} from '@/types/option'
 
 
 const API_URL = import.meta.env.VITE_API_URL as string
@@ -32,7 +32,12 @@ export interface RoomOptionData {
 }
 
 
+export interface serviceType{
+  name:string
+  description:string
+  paymentMethods: { label: string; value: string }[];
 
+}
 
 
 
@@ -103,7 +108,7 @@ export const createRoomOptions = (optionsData: { data: RoomOptionData[] }):Promi
   };
 
 
-export const createReservation = (reservationData: { data: ReservationType[] }):Promise<AxiosResponse<any>> => {
+export const createReservation = (reservationData: ReservationType[] ):Promise<AxiosResponse<any>> => {
     return axios.post(`${API_URL}/reservationswithuser`, reservationData);
 };
 

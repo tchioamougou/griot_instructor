@@ -312,10 +312,17 @@
           </div>
         </div>
 
-        <div class="mt-6 border rounded-md p-4">
+        <!-- <div class="mt-6 border rounded-md p-4">
           <Select :lb="'Payment Method'" :options="Payements[0].paymentMethods" v-model="selectedPaymentMethod"/>
 
-        </div>
+        </div> -->
+        <Select
+          v-if="Payements.length > 0"
+          :lb="'Payment Method'"
+          :options="Payements[0].paymentMethods"
+          v-model="selectedPaymentMethod"
+        />
+
       </div>
       </div>
       </form>
@@ -361,7 +368,7 @@ import Select from "@/components/forms/FormElements/Select.vue";
 import flatPickr from 'vue-flatpickr-component'
 import ButtonComponent from "@/components/buttons/ButtonComponent.vue";
 import { getServiceProduct,createReservation,getService} from "@/services/api";
-import type { ProductType,serviceType} from '@/types/option'
+import type { ProductType} from '@/types/option'
 import 'flatpickr/dist/flatpickr.css'
 import { useToast } from 'vue-toastification'
 import Spinner from '@/components/spinner/Spinner.vue'; // adapte le chemin
@@ -418,48 +425,118 @@ const updatePhoneNumber = () => {
 }
 
 
-
-type PaymentMethodOption = {
-  label: string;
-  value: string;
-};
-
-type FormattedServiceType = {
+interface serviceType {
   id: number;
   name: string;
-  paymentMethods: PaymentMethodOption[];
+  description: string;
+  email: string;
+  phoneNumber: string;
+  website: string;
+  logo: string | null;
+  images: string[] | null;
+  address: {
+    text: string;
+    lat: number;
+    lng: number;
+  };
+  categoryId: number;
+  capacity: number | null;
+  facilities: string[];
+  policies: string;
+  priceRange: string | null;
+  paymentMethods: { label: string; value: string }[];
+  openings: Record<string, { opening: string; closing: string }>;
+  status: 'active' | 'inactive'; // Ajuste selon tes valeurs possibles
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string | null;
+  lastModifiedBy: string | null;
+}
 
-};
 
-const Payements = ref<FormattedServiceType[]>([]);
+
+const Payements = ref<serviceType[]>([]);
+
+
+// const fetchServiceData = async () => {
+//   try {
+//     const serviceId = serviceStore.serviceId;
+//     const response = await getService(serviceId);
+
+//     const service = response.data;
+
+//     const parsedMethods: string[] = JSON.parse(service.paymentMethods || '[]');
+
+//     const paymentMethods = parsedMethods.map(method => ({
+//       label: method,
+//       value: method
+//     }));
+
+//     Payements.value = [{
+//       ...service,
+//       paymentMethods
+//     }];
+
+
+//     console.log('Service formaté:', Payements.value);
+//   } catch (error) {
+//     console.error('Erreur lors de la récupération du service:', error);
+//   }
+// };
+
 
 const fetchServiceData = async () => {
   try {
     const serviceId = serviceStore.serviceId;
     const response = await getService(serviceId);
-
     const service = response.data;
 
-    // Parse du champ JSON
+    // 🔧 Parse des champs JSON stringifiés
+    const parsedAddress = JSON.parse(service.address || '{}');
+    const parsedFacilities: string[] = JSON.parse(service.facilities || '[]');
+    const parsedOpenings = JSON.parse(service.openings || '{}');
     const parsedMethods: string[] = JSON.parse(service.paymentMethods || '[]');
 
+    // Format des méthodes de paiement
     const paymentMethods = parsedMethods.map(method => ({
       label: method,
       value: method
     }));
 
-    Payements.value = [{
-      ...service,
+    // ✅ Construction manuelle de l'objet conforme à serviceType
+    const formattedService: serviceType = {
+      id: service.id,
+      name: service.name,
+      description: service.description,
+      email: service.email,
+      phoneNumber: service.phoneNumber,
+      website: service.website,
+      logo: service.logo,
+      images: service.images,
+      address: parsedAddress,
+      categoryId: service.categoryId,
+      capacity: service.capacity,
+      facilities: parsedFacilities,
+      policies: service.policies,
+      priceRange: service.priceRange,
       paymentMethods,
+      openings: parsedOpenings,
+      status: service.status,
+      createdAt: service.createdAt,
+      updatedAt: service.updatedAt,
+      createdBy: service.createdBy,
+      lastModifiedBy: service.lastModifiedBy
+    };
 
+    Payements.value = [formattedService];
 
-    }];
-
-    console.log('Service formaté:', Payements.value);
+    console.log('Service formaté:', Payements.value[0].paymentMethods
+    );
   } catch (error) {
     console.error('Erreur lors de la récupération du service:', error);
   }
 };
+
 
 
 
@@ -566,7 +643,7 @@ const confirmReservation = async () => {
     }
     console.log('✅ reservationPayload', reservationPayload)
 
-    const response = await createReservation(reservationPayload)
+    const response = await createReservation([reservationPayload])
 
     form.value = {
       firstName: '',
