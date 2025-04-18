@@ -99,7 +99,7 @@ export const createRoomOptions = (optionsData: { data: RoomOptionData[] }):Promi
      return axios.post(`${API_URL}/production_option`, optionsData);
    };
 
-   export const createUser = (userData: { data: userDataType[] }):Promise<AxiosResponse<any>> => {
+   export const createUser = (userData: userDataType[]):Promise<AxiosResponse<any>> => {
     return axios.post(`${API_URL}/users`, userData);
   };
 

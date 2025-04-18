@@ -41,6 +41,7 @@ export interface ProductOptionType {
   optionPrice:number
   optionType:string
   value: string
+  [key: string]: string | number;
 }
 export interface RoomTypeData{
   name:string

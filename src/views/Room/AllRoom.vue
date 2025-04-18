@@ -381,16 +381,32 @@ const fetchServiceProduct = async () => {
     // ServiceProduct.value = serviceProducts.map((option: any) => ({ ...option }));
     // console.log('ServiceProduct.value',ServiceProduct.value)
 
-    const serviceProductWithOptions = serviceProducts.map((product:any) => {
-      const associatedOptions = product.options.filter((option:any) => option.serviceProductId == product.id);
-      console.log("Service Product avec Options1:", associatedOptions)
-      return {
-        ...product,
-        options: associatedOptions
-      };
-    });
+    // const serviceProductWithOptions = serviceProducts.map((product:any) => {
+    //   const associatedOptions = product.options.filter((option:any) => option.serviceProductId == product.id);
+    //   console.log("Service Product avec Options1:", associatedOptions)
+    //   return {
+    //     ...product,
+    //     options: associatedOptions
+    //   };
+    // });
 
-    ServiceProduct.value = serviceProductWithOptions;
+          if (Array.isArray(serviceProducts)) {
+        console.log('response.data est un tableau');
+        // Tu peux maintenant utiliser map() sur serviceProducts
+        const serviceProductWithOptions = serviceProducts.map((product: any) => {
+          const associatedOptions = product.options.filter((option: any) => option.serviceProductId == product.id);
+          return {
+            ...product,
+            options: associatedOptions
+          };
+        });
+        ServiceProduct.value = serviceProductWithOptions;
+      } else {
+        console.error("response.data n'est pas un tableau.");
+        // Ici, tu peux afficher la structure complète de response.data pour l'analyser
+        console.log(response.data);
+      }
+          // ServiceProduct.value = serviceProductWithOptions;
 
 
     console.log("Service Products avec options (depuis backend):", ServiceProduct.value);
