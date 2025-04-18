@@ -76,12 +76,16 @@
           <h2 class="text-xl font-semibold text-gray-800 mb-4">Room Information</h2>
           <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             <Input
-              :lb="'Name'"
-              :placeholder="'Ex: Room A101'"
+              :lb="'No.'"
               :id="'name'"
               :forLabel="'name'"
               v-model="formData.name"
             />
+            <!-- <Select
+              :lb="'Room Type'"
+              :options="roomTypeData"
+              v-model="formData.roomType"
+            /> -->
             <Input
               :lb="'Rent'"
               :placeholder="'Ex: 1000 FCFA'"
@@ -94,6 +98,7 @@
               :options="status"
               v-model="formData.status"
             />
+
           </div>
         </div>
 
@@ -177,15 +182,17 @@ import Modal from '@/components/profile/Modal.vue'
 import Input from "@/components/forms/FormElements/Input.vue";
 import Select from "@/components/forms/FormElements/Select.vue";
 import { ref,onMounted,computed, } from 'vue'
-import type {Ref} from 'vue'
 import { AgGridVue } from 'ag-grid-vue3';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 import type { ColDef, GridReadyEvent, CellClickedEvent, SelectionChangedEvent,ICellRendererParams} from 'ag-grid-community';
-import { getOptions,createRoom,createRoomOptions,getServiceProductWithOptions} from "@/services/api";
-import type { OptionType,ServiceProductType,ProductOptionType } from '@/types/option'
+import { getOptions,createRoom,createRoomOptions,getServiceProductWithOptions,getTypeProduct} from "@/services/api";
+import type { OptionType,ServiceProductType,ProductOptionType,RoomTypeData } from '@/types/option'
 import { useToast } from 'vue-toastification'
-import Spinner from '@/components/spinner/Spinner.vue'; // adapte le chemin
+import Spinner from '@/components/spinner/Spinner.vue';
+import { useServiceStore } from '@/stores/serviceStore';
+const serviceStore = useServiceStore();
+
 
 const isLoading = ref(false);
 
@@ -195,8 +202,9 @@ const toast = useToast()
 
 const modalOpen = ref(false)
 const options = ref<OptionType[]>([])
+const roomTypeData = ref<RoomTypeData[]>([])
 
-const productOptions = ref<ProductOptionType[]>([])
+// const productOptions = ref<ProductOptionType[]>([])
 const show = ref(false)
 
 // interface ServiceProductResponse {
@@ -222,6 +230,25 @@ const fetchOptions = async () => {
   }
 }
 
+const fetchRoomType = async () => {
+  try {
+    const response = await getTypeProduct()
+
+    roomTypeData.value = response.data.data
+  .filter((type: any) => type.status === 'Active')
+  .map((item: any) => ({
+    ...item,
+    value: item.id,
+    label: item.name,
+  }));
+
+
+  } catch (error) {
+    console.error('Erreur lors de la récupération des options:', error)
+  }
+}
+
+
 
 
 
@@ -245,6 +272,7 @@ const formData = ref({
 
 onMounted(() => {
   fetchOptions()
+  fetchRoomType()
 })
 
 const defaultOptionsMap = computed(() => {
@@ -260,14 +288,15 @@ const saveFormData = async () => {
   isLoading.value = true;
   try {
     const roomPayload = {
-      service_id: 4,
+      service_id: serviceStore.serviceId,
       product_name: formData.value.name,
-      product_type: formData.value.name,
+      product_type: 'HotelSuite',
       description: formData.value.description,
       status: formData.value.status,
       price: formData.value.rent
       // created_by et last_modified
     };
+    console.log('roomId',  roomPayload);
 
     const roomResponse = await createRoom(roomPayload);
     const roomId = roomResponse.data.id;
@@ -299,13 +328,13 @@ const saveFormData = async () => {
       options: {}
     }
 
-    toast.success('Chambre enregistrée avec succès !')
+    toast.success('Room registered successfully!')
     console.log('roomPayload', roomPayload);
     console.log('optionsResponse', optionsResponse);
     console.log('optionsPayload', optionsPayload);
 
   } catch (error) {
-    console.error('Erreur lors de la sauvegarde', error);
+    console.error('Error while saving', error);
   }finally {
     isLoading.value = false;
   }
@@ -345,7 +374,8 @@ const saveFormData = async () => {
 
 const fetchServiceProduct = async () => {
   try {
-    const response = await getServiceProductWithOptions();
+    const serviceId = serviceStore.serviceId
+    const response = await getServiceProductWithOptions(serviceId);
     const serviceProducts = response.data;
 
     // ServiceProduct.value = serviceProducts.map((option: any) => ({ ...option }));
@@ -410,11 +440,21 @@ const autoSizeStrategy = {
   defaultMinWidth: 140,
 }
 const columnDefs = ref<ColDef[]>([
-{ headerName: 'Room No.', field: 'productName' ,
+{ headerName: 'No.', field: 'productName' ,
 checkboxSelection: true,
 headerCheckboxSelection: true,
 
 },
+// {
+//   headerName: 'Room Type',
+//   field: 'productTypeId',
+//   valueFormatter: params => {
+//       const type = roomTypeData.value.find((t:any) => t.id === params.value);
+//       return type ? type.name : 'Unknown';
+//     },
+
+// },
+
 { headerName: 'Rent', field: 'price' },
 {
   headerName: 'Status',
@@ -469,12 +509,15 @@ headerCheckboxSelection: true,
 {
   headerName: 'Actions',
   cellRenderer: () => `
-                <div>
-                    <button class="bg-purple-500 text-white px-2 rounded mt-1 mx-1 action-btn" data-action="download">
-                        Edit
+                <div class="mt-2 space-x-4">
+                    <button class=" action-btn" data-action="download">
+                        <svg class="h-6 w-6 text-gray-500"  viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M9 7 h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3" />  <path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3" />  <line x1="16" y1="5" x2="19" y2="8" /></svg>
                     </button>
-                    <button class="bg-orange-500 text-white px-2 rounded mt-1 mx-1 action-btn" data-action="delete">
-                        Delete
+                    <button class=" action-btn" data-action="delete">
+                        <svg class="h-6 w-6 text-gray-500"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+
                     </button>
                 </div>
             `,

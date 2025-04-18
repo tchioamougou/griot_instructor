@@ -318,7 +318,7 @@ const menuGroups: MenuGroup[] = [
   {
     name: 'User',
     icon: UserCircleIcon,
-    path: '/profile',
+    path: '/user',
   },
   {
     name: 'Setting',

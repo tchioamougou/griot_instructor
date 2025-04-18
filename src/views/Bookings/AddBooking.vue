@@ -3,7 +3,7 @@
       <PageBreadcrumb :pageTitle="currentPageTitle" />
       <div class="space-y-5 sm:space-y-6">
         <ComponentCard title="">
-          <form class="space-y-4" @submit.prevent="SaveReservation">
+          <form class="space-y-4" >
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
               <div>
                 <Input :inputType="'text'" :lb="'First Name'" :placeholder="'First Name'" :id="'first'" :forLabel="'first'" v-model="form.firstName" />
@@ -11,11 +11,10 @@
               <div>
                 <Input :inputType="'text'" :lb="'Last Name'" :placeholder="'Last Name'" :id="'last'" :forLabel="'last'" v-model="form.lastName" />
               </div>
-              <div>
+              <!-- <div>
                 <Select :lb="'Gender'" :options="Gender" v-model="form.gender"/>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
+              </div> -->
+
               <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                   Phone
@@ -60,6 +59,9 @@
                   />
               </div>
               </div>
+            </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
               <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                   Email
@@ -85,29 +87,29 @@
                   </span>
                   <input
                     v-model="form.email"
-                    type="text"
+                    type="email"
                     placeholder="info@gmail.com"
                     class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pl-[62px] text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
                   />
                 </div>
               </div>
-              <div>
+              <!-- <div>
                 <Input :lb="'Address'"  :placeholder="'Address'" :id="'address'" :forLabel="'address'" v-model="form.address" />
-              </div>
-              <div>
-                <Select :lb="'Customer type'" :options="Gender" v-model="form.customType"/>
-              </div>
+              </div> -->
+              <!-- <div>
+                <Select :lb="'Customer type'" :options="CustomerTypes" v-model="form.customType"/>
+              </div> -->
               <div><FileInput/></div>
               <div>
-                <Select :lb="'Select an package'" :options="Package" v-model="form.package"/>
+                <Select :lb="'Select reservation Type'" :options="Package" v-model="form.package"/>
               </div>
 
               <div>
-                <Select :lb="'Select Room Type'" :options="RoomType" v-model="form.roomType"/>
+                <Select :lb="'Select Room'" :options="ServiceProduct" v-model="form.roomType"/>
               </div>
-              <div>
+              <!-- <div>
                 <Select :lb="'Room Number'" :options="Package" v-model="form.roomNumber"/>
-              </div>
+              </div> -->
               <div>
               <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                 Arrived Date
@@ -211,9 +213,9 @@
                   <div class="flex items-center justify-between">
                     <span class="font-medium text-gray-700 dark:text-white">Adult(s)</span>
                     <div class="flex items-center gap-2">
-                      <button @click="adults > 0 && adults--" class="px-2  bg-gray-200 dark:bg-gray-700 rounded-full">-</button>
+                      <button @click.prevent="adults > 0 && adults--" class="px-2  bg-gray-200 dark:bg-gray-700 rounded-full">-</button>
                       <span class="w-6 text-center">{{ adults }}</span>
-                      <button @click="adults++" class="px-2  bg-gray-200 dark:bg-gray-700 rounded-full">+</button>
+                      <button @click.prevent="adults++" class="px-2  bg-gray-200 dark:bg-gray-700 rounded-full">+</button>
                     </div>
                   </div>
                 </div>
@@ -222,9 +224,9 @@
                   <div class="flex items-center justify-between">
                     <span class="font-medium text-gray-700 dark:text-white">Children</span>
                     <div class="flex items-center gap-2">
-                      <button @click="children > 0 && children--" class="px-2  bg-gray-200 dark:bg-gray-700 rounded-full">-</button>
+                      <button @click.prevent="children > 0 && children--" class="px-2  bg-gray-200 dark:bg-gray-700 rounded-full">-</button>
                       <span class="w-6 text-center">{{ children }}</span>
-                      <button @click="children++" class="px-2  bg-gray-200 dark:bg-gray-700 rounded-full">+</button>
+                      <button @click.prevent="children++" class="px-2  bg-gray-200 dark:bg-gray-700 rounded-full">+</button>
                     </div>
                   </div>
                 </div>
@@ -237,7 +239,9 @@
                 </button>
               </div>
             </div>
-
+              <div>
+                <Input :lb="'Total Price'"   :id="'total'" :forLabel="'total'" v-model="form.totalPrice" />
+              </div>
             </div>
             <div>
               <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
@@ -250,17 +254,104 @@
                 class="dark:bg-dark-900 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
               ></textarea>
             </div>
-
-
-            <ButtonComponent type="submit" :disabled="!!dateError">Add Booking</ButtonComponent>
           </form>
+
+            <ButtonComponent type="button" :disabled="!!dateError || isLoading" @click="Save ">
+               Add Booking
+             </ButtonComponent>
+
         </ComponentCard>
       </div>
     </AdminLayout>
+
+    <Modal v-if="isPaymentModalOpen" @close="isPaymentModalOpen = false">
+  <template #body>
+    <div
+      class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11"
+    >
+      <!-- Close button -->
+      <button
+        @click="isPaymentModalOpen = false"
+        class="transition-color absolute right-5 top-5 z-999 flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 dark:bg-gray-700 dark:bg-white/[0.05] dark:text-gray-400 dark:hover:bg-white/[0.07] dark:hover:text-gray-300"
+      >
+        <svg
+          class="fill-current"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M6.04 16.54a.9.9 0 0 0 1.41 1.42L12 13.41l4.54 4.55a.9.9 0 1 0 1.41-1.42L13.41 12l4.55-4.54a.9.9 0 0 0-1.42-1.41L12 10.59 7.46 6.05a.9.9 0 0 0-1.41 1.42L10.59 12l-4.55 4.54Z"
+            fill=""
+          />
+        </svg>
+      </button>
+
+      <!-- Title -->
+      <div class="mb-6 text-center">
+        <h4 class="text-2xl font-semibold text-gray-800 dark:text-white/90">
+          Confirm Booking & Payment
+        </h4>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          Review the reservation details before confirming.
+        </p>
+      </div>
+      <form  class="flex flex-col">
+      <div class="custom-scrollbar h-[300px] overflow-y-auto p-2">
+        <div class="space-y-8">
+
+        <div class="border rounded-md p-4 text-sm text-gray-700 dark:text-gray-300">
+          <div class="space-y-2">
+            <div><strong>Client:</strong> {{ selectedReservation?.userFullName }}</div>
+            <div><strong>Room:</strong> {{ selectedReservation?.roomName }}</div>
+            <div><strong>Type:</strong> {{ selectedReservation?.reservationType }}</div>
+            <div><strong>Total:</strong> {{ selectedReservation?.totalPrice }} FCFA</div>
+          </div>
+        </div>
+
+        <div class="mt-6 border rounded-md p-4">
+          <Select :lb="'Payment Method'" :options="Payements[0].paymentMethods" v-model="selectedPaymentMethod"/>
+
+        </div>
+      </div>
+      </div>
+      </form>
+
+      <!-- Buttons -->
+      <div class="mt-8 flex flex-col-reverse items-center justify-end gap-3 sm:flex-row">
+        <!-- Cancel -->
+        <button
+          type="button"
+          class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.05] sm:w-auto"
+          @click="isPaymentModalOpen = false"
+        >
+          Cancel
+        </button>
+
+        <!-- Confirm -->
+        <ButtonComponent
+          type="button"
+          :disabled="isLoading || !selectedPaymentMethod"
+          @click="confirmReservation"
+        >
+          <span v-if="!isLoading">Confirm & Pay</span>
+          <span v-else class="flex items-center gap-2">
+            <Spinner class="w-4 h-4" />
+            Processing...
+          </span>
+        </ButtonComponent>
+      </div>
+    </div>
+  </template>
+</Modal>
+
   </template>
 
 <script setup lang="ts">
-import { ref,computed, watch } from "vue";
+import { ref,computed, watch,onMounted } from "vue";
 import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
 import AdminLayout from '@/components/layout/AdminLayout.vue';
 import ComponentCard from "@/components/common/ComponentCard.vue";
@@ -269,7 +360,22 @@ import Input from "@/components/forms/FormElements/Input.vue";
 import Select from "@/components/forms/FormElements/Select.vue";
 import flatPickr from 'vue-flatpickr-component'
 import ButtonComponent from "@/components/buttons/ButtonComponent.vue";
+import { getServiceProduct,createReservation,getService} from "@/services/api";
+import type { ProductType,serviceType} from '@/types/option'
 import 'flatpickr/dist/flatpickr.css'
+import { useToast } from 'vue-toastification'
+import Spinner from '@/components/spinner/Spinner.vue'; // adapte le chemin
+import { useServiceStore } from '@/stores/serviceStore';
+const serviceStore = useServiceStore();
+import Modal from '@/components/profile/Modal.vue'
+
+
+const isLoading = ref(false);
+
+
+const isPaymentModalOpen = ref(false);
+const selectedReservation = ref<any>(null);
+  const toast = useToast()
 
 
 
@@ -282,25 +388,21 @@ const children = ref(0)
 
 const totalPersons = computed(() => adults.value + children.value)
 const currentPageTitle = ref("Add Booking");
-const selectedCountry = ref('CM')
+const selectedCountry = ref('GB')
 const Gender = ref([
   {value: 'male', label: "Male"},
   {value: 'female', label: "Female"},
   {value: 'other', label: "Other"},
 ])
 const Package = ref([
-  {value: 'Strater', label: "Strater Package"},
-  {value: 'Honeymoon', label: "Honeymoon Package"},
-  {value: 'Vacation', label: "Vacation Package"},
-  {value: 'Spring', label: "Spring Package"},
+  {value: 'Individual', label: 'Individual'},
+  {value: 'Group', label: "Group"},
+  {value: 'Corporate', label: "Corporate"},
+  {value: 'Wedding', label: "Wedding"},
+  {value: 'Honeymoon', label: "Honeymoon"},
+  {value: 'Standard', label: "Standard"},
 ])
 
-const RoomType = ref([
-  {value: 'Delux', label: "Delux"},
-  {value: 'Super Delux', label: "Super Delux"},
-  {value: 'Single', label: "Single"},
-  {value: 'Double', label: "Double"},
-])
 
 const countryCodes = {
   CM: '+237',
@@ -309,12 +411,84 @@ const countryCodes = {
   AU: '+61',
 }
 
-
+// const Payements = ref<any[]>([]);
 
 const updatePhoneNumber = () => {
   form.value.phoneNumber = countryCodes[selectedCountry.value as keyof typeof countryCodes]
 }
 
+
+
+type PaymentMethodOption = {
+  label: string;
+  value: string;
+};
+
+type FormattedServiceType = {
+  id: number;
+  name: string;
+  paymentMethods: PaymentMethodOption[];
+
+};
+
+const Payements = ref<FormattedServiceType[]>([]);
+
+const fetchServiceData = async () => {
+  try {
+    const serviceId = serviceStore.serviceId;
+    const response = await getService(serviceId);
+
+    const service = response.data;
+
+    // Parse du champ JSON
+    const parsedMethods: string[] = JSON.parse(service.paymentMethods || '[]');
+
+    const paymentMethods = parsedMethods.map(method => ({
+      label: method,
+      value: method
+    }));
+
+    Payements.value = [{
+      ...service,
+      paymentMethods,
+
+
+    }];
+
+    console.log('Service formaté:', Payements.value);
+  } catch (error) {
+    console.error('Erreur lors de la récupération du service:', error);
+  }
+};
+
+
+
+
+
+const ServiceProduct = ref<ProductType[]>([]);
+
+const fetchServiceProduct = async () => {
+  try {
+    const serviceId = serviceStore.serviceId
+    const response = await getServiceProduct(serviceId);
+    const serviceProducts = response.data;
+    console.log("hhh", response)
+    ServiceProduct.value = serviceProducts.filter((product:any)=>product.status == 'Open').map((products: any) => {
+      return {
+        ...products,
+        value: products.productName,
+        label: products.productName,
+      }
+    });
+
+    console.log("Service Products avec options (depuis backend):", ServiceProduct.value);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des produits:', error);
+  }
+};
+
+
+fetchServiceProduct()
 
 const flatpickrConfig = {
   dateFormat: 'Y-m-d',
@@ -323,49 +497,182 @@ const flatpickrConfig = {
   wrap: true,
 }
 
+watch(totalPersons, (newVal:any) => {
+  form.value.totalPerson = newVal
+})
+
+onMounted(()=>{
+  fetchServiceData()
+})
+
 interface ReservationForm {
   firstName: string
   lastName: string
-  gender: string
   phoneNumber: string
   email: string
-  address: string
-  customType: string
-  package:string
   roomType:string
-  roomNumber:string
+  package:string
   arrivalDate: string
   departureDate: string
   normalDescription:string
+  totalPerson:number | null
   numberOfNights: number | null
+  totalPrice : number | null
+  payment : string
 }
 
+const selectedPaymentMethod = ref('')
 
+const paymentStatus = selectedPaymentMethod.value === 'Carte bancaire' ? 'pending' : 'paid';
 const form = ref<ReservationForm>({
   firstName: '',
   lastName: '',
-  gender: '',
   phoneNumber: '',
   email: '',
-  address: '',
-  customType: '',
+  roomType: '',
   package:'',
-  roomType:'',
-  roomNumber:'',
   arrivalDate: '',
   departureDate: '',
   normalDescription:'',
+  totalPerson: totalPersons.value,
+  totalPrice:null,
   numberOfNights: totalPersons.value,
+  payment: paymentStatus
 })
 
-const SaveReservation = async () => {
+const confirmReservation = async () => {
+  isLoading.value = true;
   try {
 
-    console.log('✅ Réservation enregistrée avec succès !', form.value)
+    const reservationPayload = {
+
+      first_name: form.value.firstName,
+      last_name: form.value.lastName,
+      email: form.value.email,
+      phone_number: form.value.phoneNumber,
+      role_id: 1,
+      created_by: 2,
+      last_modified_by: 2,
+      service_id: serviceStore.serviceId,
+      reservation_type: form.value.package,
+      reservation_product:form.value.roomType,
+      status: 'pending',
+      total_price: form.value.totalPrice,
+      total_person: form.value.totalPerson,
+      arrived_date: form.value.arrivalDate,
+      depart_date: form.value.departureDate,
+      comment: form.value.normalDescription,
+      payment : form.value.payment
+    }
+    console.log('✅ reservationPayload', reservationPayload)
+
+    const response = await createReservation(reservationPayload)
+
+    form.value = {
+      firstName: '',
+      lastName: '',
+      phoneNumber: '',
+      email: '',
+      roomType: '',
+      package:'',
+      arrivalDate: '',
+      departureDate: '',
+      normalDescription:'',
+      totalPerson: totalPersons.value,
+      totalPrice:null,
+      numberOfNights: totalPersons.value,
+      payment:''
+    }
+    isPaymentModalOpen.value = false;
+    console.log('✅ Réservation créée avec succès !', response.data)
   } catch (error: any) {
-    console.error('❌ Erreur lors de l\'enregistrement :', error.response?.data || error.message)
+    console.error('❌ Error while saving:', error.response?.data || error.message)
+  }finally {
+    isLoading.value = false;
   }
 }
+
+// const selectedPaymentMethod = ref('');
+
+// const confirmReservation = async () => {
+//   if (!selectedPaymentMethod.value) {
+//     console.log("Veuillez sélectionner un mode de paiement.");
+//     return;
+//   }
+
+//   const status = selectedPaymentMethod.value === 'cash' ? 'paid' : 'pending';
+
+//   const reservationData = {
+//     first_name: form.value.firstName,
+//     last_name: form.value.lastName,
+//     email: form.value.email,
+//     phone_number: form.value.phoneNumber,
+//     role_id: 1,
+//     created_by: 2,
+//     last_modified_by: 2,
+//     service_id: serviceStore.serviceId,
+//     reservation_type: form.value.package,
+//     reservation_product: form.value.roomType,
+//     status: status,
+//     total_price: form.value.totalPrice,
+//     total_person: form.value.totalPerson,
+//     arrived_date: form.value.arrivalDate,
+//     depart_date: form.value.departureDate,
+//     comment: form.value.normalDescription,
+//     paymentMethod: status
+//   };
+
+//   if (selectedPaymentMethod.value === 'cash') {
+//     try {
+//       await createReservation(reservationData);
+//       toast.success("Réservation enregistrée avec succès !");
+
+//       form.value = {
+//         firstName: '',
+//         lastName: '',
+//         gender: '',
+//         phoneNumber: '',
+//         email: '',
+//         address: '',
+//         roomType: '',
+//         package: '',
+//         arrivalDate: '',
+//         departureDate: '',
+//         normalDescription: '',
+//         totalPerson: totalPersons.value,
+//         totalPrice: null,
+//         numberOfNights: totalPersons.value,
+//       };
+//       isPaymentModalOpen.value = false;
+//     } catch (err) {
+//       console.log("Erreur lors de la réservation.");
+//     }
+//   } else if (selectedPaymentMethod.value === 'card') {
+//     selectedReservation.value = reservationData;
+//     isPaymentModalOpen.value = true;
+//   }
+
+// };
+
+
+
+const Save = () => {
+  // // Exemples de vérifications simples
+  // if (dateError || !formData.userId || !formData.totalPrice || !formData.reservationType) {
+  //   // Tu peux aussi afficher une alerte ici si tu veux
+  //   return;
+  // }
+
+  // Préparer les données pour affichage dans la modal
+  selectedReservation.value = {
+    userFullName: form.value.firstName,
+    totalPrice: form.value.totalPrice,
+    reservationType: form.value.package
+  };
+
+  // Ouvre la modal de paiement
+  isPaymentModalOpen.value = true;
+};
 
 const dateError = ref<string | null>(null)
 

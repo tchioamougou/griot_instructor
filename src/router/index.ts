@@ -60,6 +60,11 @@ const router = createRouter({
       component: () => import('../views/Reports/StocksTable.vue'),
     },
     {
+      path: '/user',
+      name: 'user',
+      component: () => import('../views/Users/UsersTable.vue'),
+    },
+    {
       path: '/expense',
       name: 'expense',
       component: () => import('../views/Reports/ExpensesTable.vue'),

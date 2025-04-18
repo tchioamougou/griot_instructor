@@ -69,29 +69,26 @@
   <form class="flex flex-col">
     <div class="custom-scrollbar h-[300px] overflow-y-auto p-2">
       <div>
-        <div class="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+        <div class="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2 mb-6">
           <div>
-            <Input :lb="'Room Name'"  :placeholder="'Room Name'" :id="'room'" :forLabel="'room'" />
-          </div>
-
-          <div>
-            <Input :lb="'Rent'"  :placeholder="'1000 FCFA'" :id="'rent'" :forLabel="'rent'" />
-          </div>
-
-          <div>
-            <Input :lb="'Short Code'"  :placeholder="'Short Code'" :id="'code'" :forLabel="'code'" />
-          </div>
-
-          <div>
-            <Input :lb="'Number of Room'"  :placeholder="'Number of Room'" :id="'num'" :forLabel="'num'" />
+            <Input :lb="'Room Name'"  :placeholder="'Room Name'" :id="'room'" :forLabel="'room'" v-model="form.name" />
           </div>
           <div>
-            <Input :lb="'Type'"  :placeholder="'3 star'" :id="'type'" :forLabel="'type'" />
-          </div>
-          <div>
-            <Select :lb="'Status'" :options="status"/>
+            <Select :lb="'Status'" :options="status" v-model="form.status"/>
           </div>
         </div>
+          <div>
+              <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                Description
+              </label>
+              <textarea
+              v-model="form.description"
+                placeholder="Large text area content"
+                rows="6"
+                class="dark:bg-dark-900 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+              ></textarea>
+            </div>
+
       </div>
 
     </div>
@@ -104,11 +101,17 @@
       Cancel
     </button>
     <button
-    @click="save"
+    @click.prevent="SaveRoomType"
+    :disabled="isLoading"
     type="button"
     class="flex w-full justify-center rounded-lg bg-purple-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-purple-600 sm:w-auto"
     >
-    Add Room Type
+    <span v-if="!isLoading"> Add Room Type</span>
+      <span v-else class="flex items-center gap-2">
+        <Spinner class="w-4 h-4" />
+        Processing...
+      </span>
+
   </button>
 </div>
 </form>
@@ -124,12 +127,24 @@ import AdminLayout from "@/components/layout/AdminLayout.vue";
 import Modal from '@/components/profile/Modal.vue'
 import Input from "@/components/forms/FormElements/Input.vue";
 import Select from "@/components/forms/FormElements/Select.vue";
+import { createRoomType,getTypeProduct} from "@/services/api";
 
-import { ref } from 'vue'
+import { ref,onMounted } from 'vue'
 import { AgGridVue } from 'ag-grid-vue3';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 import type { ColDef, GridReadyEvent, CellClickedEvent, SelectionChangedEvent,ICellRendererParams} from 'ag-grid-community';
+import { useToast } from 'vue-toastification'
+import Spinner from '@/components/spinner/Spinner.vue'; // adapte le chemin
+import type { RoomTypeData } from '@/types/option'
+
+
+
+
+
+const isLoading = ref(false);
+
+const toast = useToast()
 
 
 
@@ -142,7 +157,7 @@ const status = ref([
 
 ])
 const columnDefs = ref<ColDef[]>([
-{ headerName: '#', field: '#' ,
+{ headerName: '#', field: 'id' ,
 checkboxSelection: true,
 headerCheckboxSelection: true,
 width: 120
@@ -150,28 +165,26 @@ width: 120
 {
   headerName: 'Name',
   field: 'name',
-  width: 150
 },
-{ headerName: 'Rent(Basic)', field: 'rent', width: 120 },
-{ headerName: 'Short Code', field: 'code', width: 120 },
-{ headerName: 'No Of Room', field: 'No',width: 150 },
-{ headerName: 'Type', field: 'type',
-cellRenderer: (params :ICellRendererParams) => {
-  const rating = Number(params.value) || 0;
-  const maxStars = 5;
+{ headerName: 'Description', field: 'description' },
+// { headerName: 'Short Code', field: 'code', width: 120 },
+// { headerName: 'No Of Room', field: 'No',width: 150 },
+// { headerName: 'Type', field: 'type',
+// cellRenderer: (params :ICellRendererParams) => {
+//   const rating = Number(params.value) || 0;
+//   const maxStars = 5;
 
-  const stars = Array.from({ length: maxStars }, (_, i) => {
-    return i < rating
-    ? '<svg class="h-4 w-4 text-yellow-400 inline" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.95a1 1 0 00.95.69h4.15c.969 0 1.371 1.24.588 1.81l-3.36 2.44a1 1 0 00-.364 1.118l1.286 3.95c.3.921-.755 1.688-1.54 1.118l-3.36-2.44a1 1 0 00-1.175 0l-3.36 2.44c-.784.57-1.838-.197-1.54-1.118l1.287-3.95a1 1 0 00-.364-1.118l-3.36-2.44c-.784-.57-.38-1.81.588-1.81h4.15a1 1 0 00.95-.69l1.286-3.95z"/></svg>'
-    : '<svg class="h-4 w-4 text-gray-300 inline" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.95a1 1 0 00.95.69h4.15c.969 0 1.371 1.24.588 1.81l-3.36 2.44a1 1 0 00-.364 1.118l1.286 3.95c.3.921-.755 1.688-1.54 1.118l-3.36-2.44a1 1 0 00-1.175 0l-3.36 2.44c-.784.57-1.838-.197-1.54-1.118l1.287-3.95a1 1 0 00-.364-1.118l-3.36-2.44c-.784-.57-.38-1.81.588-1.81h4.15a1 1 0 00.95-.69l1.286-3.95z"/></svg>';
-  }).join('');
-  return `<div class="flex gap-1 items-center mt-3">${stars}</div>`;
-}
-},
+//   const stars = Array.from({ length: maxStars }, (_, i) => {
+//     return i < rating
+//     ? '<svg class="h-4 w-4 text-yellow-400 inline" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.95a1 1 0 00.95.69h4.15c.969 0 1.371 1.24.588 1.81l-3.36 2.44a1 1 0 00-.364 1.118l1.286 3.95c.3.921-.755 1.688-1.54 1.118l-3.36-2.44a1 1 0 00-1.175 0l-3.36 2.44c-.784.57-1.838-.197-1.54-1.118l1.287-3.95a1 1 0 00-.364-1.118l-3.36-2.44c-.784-.57-.38-1.81.588-1.81h4.15a1 1 0 00.95-.69l1.286-3.95z"/></svg>'
+//     : '<svg class="h-4 w-4 text-gray-300 inline" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.95a1 1 0 00.95.69h4.15c.969 0 1.371 1.24.588 1.81l-3.36 2.44a1 1 0 00-.364 1.118l1.286 3.95c.3.921-.755 1.688-1.54 1.118l-3.36-2.44a1 1 0 00-1.175 0l-3.36 2.44c-.784.57-1.838-.197-1.54-1.118l1.287-3.95a1 1 0 00-.364-1.118l-3.36-2.44c-.784-.57-.38-1.81.588-1.81h4.15a1 1 0 00.95-.69l1.286-3.95z"/></svg>';
+//   }).join('');
+//   return `<div class="flex gap-1 items-center mt-3">${stars}</div>`;
+// }
+// },
 {
   headerName: 'Status',
   field: 'status',
-  width: 120,
   cellRenderer: (params:ICellRendererParams) => {
     if (params.value === 'Active') {
       return `<span class="bg-success-50 text-success-700 px-2 rounded-full dark:bg-success-500/15 dark:text-success-500">Active</span>`;
@@ -184,12 +197,15 @@ cellRenderer: (params :ICellRendererParams) => {
 {
   headerName: 'Actions',
   cellRenderer: () => `
-                <div>
-                    <button class="bg-purple-500 text-white px-2 rounded mt-1 mx-1 action-btn" data-action="download">
-                        Edit
+                <div class="mt-2 space-x-4">
+                    <button class=" action-btn" data-action="download">
+                        <svg class="h-6 w-6 text-gray-500"  viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M9 7 h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3" />  <path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3" />  <line x1="16" y1="5" x2="19" y2="8" /></svg>
                     </button>
-                    <button class="bg-orange-500 text-white px-2 rounded mt-1 mx-1 action-btn" data-action="delete">
-                        Delete
+                    <button class=" action-btn" data-action="delete">
+                        <svg class="h-6 w-6 text-gray-500"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+
                     </button>
                 </div>
             `,
@@ -214,62 +230,67 @@ const getSelectedRows = (event: SelectionChangedEvent) => {
   const selected = event.api.getSelectedRows();
   console.log('Selected row:', selected);
 };
-const roomTypeData = [
-{
-  "#": "01",
-  "name": "Single Room",
-  "rent": "10000 FCFA",
-  "code": "SR",
-  "No": "60",
-  "type": "3",
-  "status" : "Active",
-},
-{
-  "#": "02",
-  "name": "Double",
-  "rent": "15000 FCFA",
-  "code": "DD",
-  "No": "40",
-  "type": "4",
-  "status" : "Inactive"
-},
-{
-  "#": "03",
-  "name": "Suit",
-  "rent": "25000 FCFA",
-  "code": "SUIT",
-  "No": "60",
-  "type": "5",
-  "status" : "Active"
-},
-{
-  "#": "04",
-  "name": "Single",
-  "rent": "80000 FCFA",
-  "code": "SR",
-  "No": "10",
-  "type": "3",
-  "status" : "Active"
-},
-{
-  "#": "05",
-  "name": "Delux",
-  "rent": "20000 FCFA",
-  "code": "DLUX",
-  "No": "20",
-  "type": "4",
-  "status" : "Inactive"
-},
-{
-  "#": "06",
-  "name": "Double",
-  "rent": "12000 FCFA",
-  "code": "DD",
-  "No": "30",
-  "type": "2",
-  "status" : "Active"
-},
-];
+const roomTypeData = ref<RoomTypeData[]>([])
+
+
+// interface RoomTypeForm {
+//   name: string
+//   status: string
+//   description: string
+// }
+
+
+const form = ref<RoomTypeData >({
+  name: '',
+  status: '',
+  description: '',
+})
+
+const SaveRoomType = async () => {
+  isLoading.value = true;
+  try {
+    const Payload = {
+      name: form.value.name,
+      description: form.value.description,
+      status: form.value.status,
+    };
+
+    const roomResponse = await createRoomType(Payload);
+    console.log('roomtype', roomResponse);
+
+    //renitialisation des champs
+    form.value = {
+      name: '',
+      status: '',
+      description: '',
+
+    }
+    toast.success('Chambre enregistrée avec succès !')
+    console.log('Payload', Payload)
+
+  } catch (error) {
+    console.error('Erreur lors de la sauvegarde', error);
+  }finally {
+    isLoading.value = false;
+  }
+};
+
+const fetchRoomType = async () => {
+  try {
+    const response = await getTypeProduct()
+
+    roomTypeData.value = response.data.data
+
+    console.log(";;;;",roomTypeData.value)
+  } catch (error) {
+    console.error('Erreur lors de la récupération des options:', error)
+  }
+}
+
+fetchRoomType()
+
+
+
 
 const isDropdownOpen = ref(false);
 

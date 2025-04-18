@@ -192,15 +192,22 @@ import AdminLayout from "@/components/layout/AdminLayout.vue";
 import Modal from '@/components/profile/Modal.vue'
 import Input from "@/components/forms/FormElements/Input.vue";
 import Select from "@/components/forms/FormElements/Select.vue";
-import { ref } from 'vue'
+import { ref,onMounted } from 'vue'
 import { AgGridVue } from 'ag-grid-vue3';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 import type { ColDef, GridReadyEvent, CellClickedEvent, SelectionChangedEvent,ICellRendererParams} from 'ag-grid-community';
+import { getReservation,getUser} from "@/services/api";
+import { useServiceStore } from '@/stores/serviceStore';
+import type {userDataType,ReservationType} from '@/types/option'
+
+const serviceStore = useServiceStore();
+
 
 
 
 const modalOpen = ref(false)
+const users = ref<userDataType[]>([])
 const currentPageTitle = ref("Customer's Lists");
 const defaultColDef = {
   sortable: true,
@@ -222,25 +229,25 @@ const Group = ref([
 ])
 
 const columnDefs = ref<ColDef[]>([
-  { headerName: 'User', field: 'name' ,
+  { headerName: 'User', field: 'userFullName' ,
     checkboxSelection: true,
     headerCheckboxSelection: true,
-    cellRenderer: (params:ICellRendererParams) => {
-      const { avatar, name } = params.data;
-      return `
-        <div class="flex items-center space-x-2">
-          <img src="${avatar}" alt="${name}" class="w-8 h-8 rounded-full" /> <!-- Avatar -->
-          <span>${name}</span> <!-- Nom de l'utilisateur -->
-        </div>
-      `;
-    }
+    // cellRenderer: (params:ICellRendererParams) => {
+    //   const { avatar, name } = params.data;
+    //   return `
+    //     <div class="flex items-center space-x-2">
+    //       <img src="${avatar}" alt="${name}" class="w-8 h-8 rounded-full" /> <!-- Avatar -->
+    //       <span>${name}</span> <!-- Nom de l'utilisateur -->
+    //     </div>
+    //   `;
+    // }
   },
   { headerName: 'Email', field: 'email' },
   {
     headerName: 'Last Package',
-    field: 'package',
+    field: 'reservationType',
   },
-  { headerName: 'Phone', field: 'phone' },
+  { headerName: 'Phone', field: 'phoneNumber' },
   { headerName: 'Verified',
   cellRenderer: () => `
                 <div>
@@ -254,8 +261,17 @@ const columnDefs = ref<ColDef[]>([
                 </div>
             `,
    },
-  { headerName: 'Last Check Out', field: 'check' },
-  { headerName: 'Group', field: 'group' },
+  { headerName: 'Comment', field: 'comment' },
+  { headerName: 'Status', field: 'status' ,
+  cellRenderer: (params:ICellRendererParams) => {
+    if (params.value === 'active') {
+      return `<span class="bg-success-50 text-success-700 px-2 rounded-full dark:bg-success-500/15 dark:text-success-500">Active</span>`;
+    }
+   else {
+      return `<span class="bg-red-50 text-red-700 px-2 rounded-full dark:bg-red-500/15 dark:text-red-500">Inactive</span>`;
+    }
+  }
+  },
   {
             headerName: 'Actions',
             cellRenderer: () => `
@@ -291,58 +307,58 @@ const autoSizeStrategy = {
   type: "fitGridWidth",
   defaultMinWidth: 100,
 }
-const customers = ref([
-    {
-      id:"AB-355",
-      name: 'Lindsey Curtis',
-      email: 'lindsey@gmail.com',
-      avatar: '/images/user/user-17.jpg',
-      package: 'Continental',
-      phone: '+237 698745266',
-      check: '10 Feb 2020',
-      group : "Gold"
-    },
-    {
-        id:"AB-356",
-      name: 'Kaiya George',
-      email: 'kaiya@gmail.com',
-      avatar: '/images/user/user-18.jpg',
-      package: 'Strater',
-      phone: '+237 698745266',
-      check: '25 Feb 2025',
-      group : "Gold"
-    },
-    {
-        id:"AB-357",
-      name: 'Zain Geidt',
-      email: 'zain@gmail.com',
-      avatar: '/images/user/user-19.jpg',
-      package: 'All Suit',
-      phone: '+237 698745266',
-      check: '20 Jan 2025',
-      group : "Gold"
-    },
-    {
-      id:"AB-358",
-      name: 'Abram Schleifer',
-      email: 'abram@gmail.com',
-      avatar: '/images/user/user-20.jpg',
-      package: 'Vacation',
-      phone: '+237 698745266',
-      check: '20 Apr 2025',
-      group : "Gold"
-    },
-    {
-        id:"AB-359",
-      name: 'Carla George',
-      email: 'carla@gmail.com',
-      avatar: '/images/user/user-21.jpg',
-      package: 'Honeymoon',
-      phone: '+237 698745266',
-      check: '02 Feb 2025',
-      group : "Silver"
-    },
-  ])
+// const customers = ref([
+//     {
+//       id:"AB-355",
+//       name: 'Lindsey Curtis',
+//       email: 'lindsey@gmail.com',
+//       avatar: '/images/user/user-17.jpg',
+//       package: 'Continental',
+//       phone: '+237 698745266',
+//       check: '10 Feb 2020',
+//       group : "Gold"
+//     },
+//     {
+//         id:"AB-356",
+//       name: 'Kaiya George',
+//       email: 'kaiya@gmail.com',
+//       avatar: '/images/user/user-18.jpg',
+//       package: 'Strater',
+//       phone: '+237 698745266',
+//       check: '25 Feb 2025',
+//       group : "Gold"
+//     },
+//     {
+//         id:"AB-357",
+//       name: 'Zain Geidt',
+//       email: 'zain@gmail.com',
+//       avatar: '/images/user/user-19.jpg',
+//       package: 'All Suit',
+//       phone: '+237 698745266',
+//       check: '20 Jan 2025',
+//       group : "Gold"
+//     },
+//     {
+//       id:"AB-358",
+//       name: 'Abram Schleifer',
+//       email: 'abram@gmail.com',
+//       avatar: '/images/user/user-20.jpg',
+//       package: 'Vacation',
+//       phone: '+237 698745266',
+//       check: '20 Apr 2025',
+//       group : "Gold"
+//     },
+//     {
+//         id:"AB-359",
+//       name: 'Carla George',
+//       email: 'carla@gmail.com',
+//       avatar: '/images/user/user-21.jpg',
+//       package: 'Honeymoon',
+//       phone: '+237 698745266',
+//       check: '02 Feb 2025',
+//       group : "Silver"
+//     },
+//   ])
 
   const isDropdownOpen = ref(false);
 
@@ -361,6 +377,39 @@ const phoneNumber = ref('')
 const updatePhoneNumber = () => {
   phoneNumber.value = countryCodes[selectedCountry.value as keyof typeof countryCodes]
 }
+
+const fetchUsers = async () => {
+  const response = await getUser();
+  users.value = response.data.data;
+  console.log('userrr',users.value)
+}
+
+const customers = ref<ReservationType[]>([])
+const fetchReservation = async () => {
+  try {
+    const serviceId = serviceStore.serviceId;
+    const response = await getReservation(serviceId);
+    console.log(response.data);
+
+    customers.value = response.data.map((res: any) => {
+      const user = users.value.find((u: any) => u.id === res.userId);
+
+      return {
+        ...res,
+        ...user,
+        userFullName: user ? `${user.firstName} ${user.lastName}` : 'Inconnu',
+        // productName: product ? product.productName : 'Inconnu'
+      };
+    });
+    console.log("////",customers.value)
+  } catch (error) {
+    console.error('fetch failed:', error);
+  }
+};
+onMounted(async () => {
+  await fetchUsers();
+  await fetchReservation();
+});
   </script>
 
   <style scoped>
