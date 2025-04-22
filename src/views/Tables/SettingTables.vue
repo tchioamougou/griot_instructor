@@ -2,7 +2,7 @@
   <div class="flex flex-col md:flex-row gap-4 mb-0">
     <!-- Liste des onglets -->
     <div class="md:w-[20%] w-full">
-      <ul class="flex md:flex-col flex-row justify-between md:space-y-2 space-x-2 md:space-x-0 list-none">
+      <ul class="flex md:flex-col flex-row justify-between md:space-y-2 space-x-2  md:space-x-0 list-none">
         <li
           v-for="(tab, index) in tabs"
           :key="index"
