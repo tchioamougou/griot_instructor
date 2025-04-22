@@ -1,6 +1,22 @@
 <template>
 
+<div v-if="isLoading" class="fixed inset-0 z-[100000] flex items-center justify-center bg-white/80 dark:bg-gray-900/80">
+    <svg class="animate-spin h-10 w-10 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z" />
+    </svg>
 
+</div>
+
+  <!-- <div v-if="isLoading" class="fixed inset-0 z-[9999] bg-white/70 dark:bg-gray-900/70 flex items-center justify-center">
+    <div class="flex flex-col items-center gap-4">
+      <svg class="animate-spin h-12 w-12 text-purple-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+      </svg>
+      <span class="text-gray-700 dark:text-gray-200 text-lg font-semibold">Chargement…</span>
+    </div>
+  </div> -->
   <aside>
 
     <div
@@ -120,6 +136,7 @@
       <router-link
       v-else-if="item.path"
       :to="item.path"
+      @click="startLoading"
       :class="[
       'menu-item group',
       {
@@ -159,6 +176,7 @@
     <li v-for="subItem in item.subItems" :key="subItem.name">
       <router-link
       :to="subItem.path"
+      @click="startLoading"
       :class="[
       'menu-dropdown-item text-md ',
       {
@@ -223,8 +241,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed,ref,watch } from "vue";
 import { useRoute } from "vue-router";
+
 
 import {
   GridIcon,
@@ -238,10 +257,22 @@ import {
   PaymentIcon
 } from "../../icons";
 import { useSidebar } from "@/composables/useSidebar";
+import { isLoading } from '@/composables/spinner';
 
 const route = useRoute();
 
 const { isExpanded, isMobileOpen, isHovered, openSubmenu } = useSidebar();
+
+
+
+const startLoading = () => {
+  isLoading.value = true;
+};
+
+// Stop loading on navigation end
+watch(() => route.fullPath, () => {
+  isLoading.value = false;
+});
 
 
 // === Interfaces de typage ===
@@ -323,7 +354,7 @@ const menuGroups: MenuGroup[] = [
   {
     name: 'Setting',
     icon: SettingsIcon,
-    path: '/line-chart',
+    path: '/setting',
   },
   ],
 },

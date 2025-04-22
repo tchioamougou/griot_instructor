@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/composables/user'
+import { isLoading } from '@/composables/spinner'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,9 +12,7 @@ const router = createRouter({
       path: '/',
       name: 'dashboard',
       component: () => import('../views/Edashboard.vue'),
-      meta: {
-        title: 'Dashboard',
-      },
+      meta: { requiresAuth: true }
     },
     {
       path: '/all_booking',
@@ -78,6 +78,11 @@ const router = createRouter({
       path: '/customers',
       name: 'Customers',
       component: () => import('../views/Customers/CustomersTable.vue'),
+    },
+    {
+      path: '/setting',
+      name: 'Setting',
+      component: () => import('../views/Setting/Setting.vue'),
     },
     {
       path: '/calendar',
@@ -207,11 +212,41 @@ const router = createRouter({
     },
   ],
 })
+router.beforeEach(async (to, from, next) => {
+  isLoading.value = true;
+  const authStore = useAuthStore();
+
+  // Si on a un token mais pas d'utilisateur, on essaie de récupérer l'utilisateur
+  if (authStore.token && !authStore.user) {
+    console.log("We have a token but no user. You should fetch the user data here.");
+  }
+
+  // Si la route nécessite une authentification et qu'on a pas de token
+  if (to.meta.requiresAuth && !authStore.token) {
+    return next('/signin');
+  }
+
+  // Si on va vers /signin et qu'on est déjà connecté
+  if (to.path === '/signin' && authStore.token) {
+    return next('/');
+  }
+
+  next();
+});
+
+router.afterEach(() => {
+  setTimeout(() => {
+    isLoading.value = false;
+  }, 3000);
+});
+
 
 export default router
 
-router.beforeEach((to, from, next) => {
-  // document.title = `Vue.js ${to.meta.title} | TailAdmin - Vue.js Tailwind CSS Dashboard Template`
-  document.title = "Enjoy"
-  next()
-})
+// router.beforeEach((to, from, next) => {
+//   // document.title = `Vue.js ${to.meta.title} | TailAdmin - Vue.js Tailwind CSS Dashboard Template`
+//   document.title = "Enjoy"
+//   next()
+// })
+
+

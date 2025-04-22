@@ -81,11 +81,11 @@ export interface  ReservationType{
 // }
 
 export interface userDataType  {
-  first_name: string
-  last_name: string
+  firstName: string
+  lastName: string
   email: string
   phone_number: string
-  role_id: number | null
+  roleId: number | null
 }
 
 

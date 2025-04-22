@@ -8,7 +8,7 @@
         <img src="/images/user/owner.jpg" alt="User" />
       </span>
 
-      <span class="block mr-1 font-medium text-theme-sm">Musharof </span>
+      <span class="block mr-1 font-medium text-theme-sm"> {{ fullName }} </span>
 
       <ChevronDownIcon :class="{ 'rotate-180': dropdownOpen }" />
     </button>
@@ -20,10 +20,10 @@
     >
       <div>
         <span class="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-          Musharof Chowdhury
+          {{ fullName }}
         </span>
         <span class="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-          randomuser@pimjo.com
+          {{ Email }}
         </span>
       </div>
 
@@ -50,7 +50,7 @@
         <LogoutIcon
           class="text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"
         />
-        Sign out
+       {{$t('SignOut')}}
       </router-link>
     </div>
     <!-- Dropdown End -->
@@ -60,16 +60,41 @@
 <script setup>
 import { UserCircleIcon, ChevronDownIcon, LogoutIcon, SettingsIcon, InfoCircleIcon } from '@/icons'
 import { RouterLink } from 'vue-router'
-import { ref, onMounted, onUnmounted } from 'vue'
-
+import { ref, onMounted, onUnmounted ,computed} from 'vue'
+import { useAuthStore } from '@/composables/user'
+import { useRouter } from 'vue-router'
+import { useI18n } from "vue-i18n";
 const dropdownOpen = ref(false)
 const dropdownRef = ref(null)
-
+const { t } = useI18n();
 const menuItems = [
-  { href: '/profile', icon: UserCircleIcon, text: 'Edit profile' },
-  { href: '/chat', icon: SettingsIcon, text: 'Account settings' },
-  { href: '/profile', icon: InfoCircleIcon, text: 'Support' },
+  { href: '/profile', icon: UserCircleIcon, text: t('Viewprofile') },
+  { href: '/setting', icon: SettingsIcon, text: t('Accountsettings') },
+  // { href: '/profile', icon: InfoCircleIcon, text: 'Support' },
 ]
+
+
+
+
+const authStore = useAuthStore()
+const router = useRouter()
+
+const fullName = computed(() => {
+  const userData = authStore.user
+  const user = JSON.parse(userData);
+  return `${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim()
+})
+const Email = computed(() => {
+  const userData = authStore.user
+  const user = JSON.parse(userData);
+  return `${user?.email ?? ''}`
+})
+
+const signOut = () => {
+  authStore.logout()
+  closeDropdown()
+  router.push('/signin')
+}
 
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value
@@ -79,11 +104,11 @@ const closeDropdown = () => {
   dropdownOpen.value = false
 }
 
-const signOut = () => {
-  // Implement sign out logic here
-  console.log('Signing out...')
-  closeDropdown()
-}
+// const signOut = () => {
+//   // Implement sign out logic here
+//   console.log('Signing out...')
+//   closeDropdown()
+// }
 
 const handleClickOutside = (event) => {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {

@@ -25,6 +25,7 @@ const props = defineProps({
   }, // Désactivation du champ
 });
 
+
 const isDropdownOpen = ref(false);
 
 
@@ -51,6 +52,7 @@ const selectOption = (option) => {
     isDropdownOpen.value = false;
     emit('update:modelValue', option.value); // Propager la nouvelle valeur avec v-model
     emit('select', option); // Émettre un événement pour l'option sélectionnée
+    emit('change', option.value)
   }
 }
 
@@ -67,7 +69,7 @@ onMounted(() => {
 
 
 
-const emit = defineEmits(['update:modelValue', 'select'])
+const emit = defineEmits(['update:modelValue', 'select','change'])
 
 
 // Nettoyer l'écouteur d'événements lors du démontage

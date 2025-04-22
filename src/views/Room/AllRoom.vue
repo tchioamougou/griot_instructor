@@ -190,7 +190,7 @@ import { getOptions,createRoom,createRoomOptions,getServiceProductWithOptions,ge
 import type { OptionType,ServiceProductType,ProductOptionType,RoomTypeData } from '@/types/option'
 import { useToast } from 'vue-toastification'
 import Spinner from '@/components/spinner/Spinner.vue';
-import { useServiceStore } from '@/stores/serviceStore';
+import { useServiceStore } from '@/composables/serviceStore';
 const serviceStore = useServiceStore();
 
 

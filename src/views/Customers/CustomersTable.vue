@@ -198,7 +198,7 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 import type { ColDef, GridReadyEvent, CellClickedEvent, SelectionChangedEvent,ICellRendererParams} from 'ag-grid-community';
 import { getReservation,getUser} from "@/services/api";
-import { useServiceStore } from '@/stores/serviceStore';
+import { useServiceStore } from '@/composables/serviceStore';
 import type {userDataType,ReservationType} from '@/types/option'
 
 const serviceStore = useServiceStore();
@@ -398,7 +398,7 @@ const fetchReservation = async () => {
       return {
         ...res,
         ...user,
-        userFullName: user ? `${user.first_name} ${user.last_name}` : 'Inconnu',
+        userFullName: user ? `${user.firstName} ${user.lastName}` : 'Inconnu',
         // productName: product ? product.productName : 'Inconnu'
       };
     });

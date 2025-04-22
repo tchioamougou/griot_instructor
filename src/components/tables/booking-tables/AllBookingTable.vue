@@ -15,7 +15,7 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 import type { ColDef, GridReadyEvent, SelectionChangedEvent,ICellRendererParams} from 'ag-grid-community';
 import { getReservation,getUser,getServiceProduct} from "@/services/api";
-import { useServiceStore } from '@/stores/serviceStore';
+import { useServiceStore } from '@/composables/serviceStore';
 import type {ReservationType,userDataType,ServiceProductType} from '@/types/option'
 
 const serviceStore = useServiceStore();
@@ -34,7 +34,8 @@ const fetchUsers = async () => {
 const serviceProducts = ref<ServiceProductType[]>([])
 const fetchServiceProduct = async () => {
   try {
-    const serviceId = serviceStore.serviceId
+    // const serviceId = serviceStore.serviceId
+    const serviceId = 4
     const response = await getServiceProduct(serviceId);
    serviceProducts.value = response.data;
      console.log("hhh", serviceProducts.value)
@@ -51,7 +52,7 @@ const fetchReservation = async () => {
   try {
     const serviceId = serviceStore.serviceId;
     const response = await getReservation(serviceId);
-    console.log(response.data);
+    console.log("....",response.data);
 
     reservations.value = response.data.map((res: any) => {
       const user = users.value.find((u: any) => u.id === res.userId);
@@ -61,7 +62,7 @@ const fetchReservation = async () => {
       return {
         ...res,
         ...user,
-        userFullName: user ? `${user.first_name} ${user.last_name}` : 'Inconnu',
+        userFullName: user ? `${user.firstName} ${user.lastName}` : 'Inconnu',
         // productName: product ? product.productName : 'Inconnu'
       };
     });
@@ -96,12 +97,11 @@ headerCheckboxSelection: true,
 { headerName: 'Check In', field: 'arrivedDate' },
 { headerName: 'Check Out', field: 'departDate' },
 {
-  headerName: 'Status',
-  field: 'status',
+  headerName: 'Status', field: 'status',
   cellRenderer: (params:ICellRendererParams) => {
-    if (params.value === 'Active') {
-      return `<span class="bg-success-50 text-success-700 px-2 rounded-full dark:bg-success-500/15 dark:text-success-500">Active</span>`;
-    } else if (params.value === 'pending') {
+    if (params.value === 'inactive') {
+      return `<span class="bg-success-50 text-success-700 px-2 rounded-full dark:bg-success-500/15 dark:text-success-500">Confirmed</span>`;
+    } else if (params.value === 'active') {
       return `<span class="bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-400 rounded-full px-2">Pending</span>`;
     } else {
       return `<span class="bg-red-50 text-red-700 px-2 rounded-full dark:bg-red-500/15 dark:text-red-500">Cancel</span>`;

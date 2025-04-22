@@ -125,6 +125,12 @@
                   />
                 </div>
               </div>
+              <Input
+              :lb="'Password'"
+              :id="'word'"
+              :forLabel="'word'"
+              v-model="form.password"
+            />
             <Select
               :lb="'Role'"
               :options="roles"
@@ -215,6 +221,7 @@ interface Form {
   lastName: string
   phoneNumber: string
   email: string
+  password:string
   role: number | null
 }
 
@@ -225,6 +232,7 @@ const form = ref<Form>({
   role: null,
   phoneNumber: '',
   email: '',
+  password:'',
 })
 
 
@@ -239,6 +247,7 @@ const saveUser = async () => {
       email: form.value.email,
       phone_number: form.value.phoneNumber,
       role_id: form.value.role,
+      password:form.value.password
 
 
     }
@@ -252,6 +261,7 @@ const saveUser = async () => {
       role: null,
       phoneNumber: '',
       email: '',
+      password:''
     }
     console.log('✅ Réservation créée avec succès !', response.data)
   } catch (error: any) {

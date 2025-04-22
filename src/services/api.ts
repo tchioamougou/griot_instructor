@@ -84,7 +84,7 @@ export const getProductOption = (): Promise<AxiosResponse<{ data: ProductOptionT
   return axios.get(`${API_URL}/production_option`)
 }
 
-export const getService = (serviceId?: number): Promise<AxiosResponse< serviceType[] >> => {
+export const getService = (serviceId?: number): Promise<AxiosResponse< any >> => {
   return axios.get(`${API_URL}/services/${serviceId}`)
 }
 
@@ -123,7 +123,7 @@ export const createRoomOptions = (optionsData: { data: RoomOptionData[] }):Promi
      return axios.post(`${API_URL}/production_option`, optionsData);
    };
 
-   export const createUser = (userData: userDataType):Promise<AxiosResponse<any>> => {
+   export const createUser = (userData: any):Promise<AxiosResponse<any>> => {
     return axios.post(`${API_URL}/users`, userData);
   };
 
@@ -137,6 +137,13 @@ export const createReservation = (reservationData: any ):Promise<AxiosResponse<a
     return axios.post(`${API_URL}/reservationswithuser`, reservationData);
 };
 
+export const createPayment = (paymentData: any ):Promise<AxiosResponse<any>> => {
+  return axios.post(`${API_URL}/paymentConfirm`, paymentData);
+};
 
+// services/authService.ts
 
+export function auth(credentials: { email: string, password: string }) {
+  return axios.post(`${API_URL}/auth`, credentials)
+}
 

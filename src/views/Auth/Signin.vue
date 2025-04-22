@@ -5,7 +5,7 @@
         class="relative flex flex-col justify-center w-full h-screen lg:flex-row dark:bg-gray-900"
       >
         <div class="flex flex-col flex-1 w-full lg:w-1/2">
-          <div class="w-full max-w-md pt-10 mx-auto">
+          <!-- <div class="w-full max-w-md pt-10 mx-auto">
             <router-link
               to="/"
               class="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
@@ -28,14 +28,14 @@
               </svg>
               Back to dashboard
             </router-link>
-          </div>
+          </div> -->
           <div class="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
             <div>
               <div class="mb-5 sm:mb-8">
                 <h1
                   class="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md"
                 >
-                  Sign In
+                <strong>Sign In</strong>
                 </h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400">
                   Enter your email and password to sign in!
@@ -115,6 +115,7 @@
                         v-model="email"
                         type="email"
                         id="email"
+                        autocomplete="username"
                         name="email"
                         placeholder="info@gmail.com"
                         class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
@@ -133,6 +134,7 @@
                           v-model="password"
                           :type="showPassword ? 'text' : 'password'"
                           id="password"
+                          autocomplete="current-password"
                           placeholder="Enter your password"
                           class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
                         />
@@ -231,7 +233,12 @@
                         type="submit"
                         class="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-purple-500 shadow-theme-xs hover:bg-purple-600"
                       >
-                        Sign In
+
+                       <span v-if="!isLoading">Sign In</span>
+                        <span v-else class="flex items-center gap-2">
+                          <Spinner class="w-4 h-4" />
+                          Processing...
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -257,9 +264,9 @@
         >
           <div class="flex items-center justify-center z-1">
             <common-grid-shape />
-      
+
           <img
-          src="https://www.kiwili.com/wp-content/uploads/2023/07/Logiciel-gestion-de-taches-collaboratif.webp"
+          src="@/assets/images/header/undraw_secure-login_m11a.svg"
           alt="Background"
           class="w-full h-full object-cover rounded-lg"
           />
@@ -274,21 +281,56 @@
 import { ref } from 'vue'
 import CommonGridShape from '@/components/common/CommonGridShape.vue'
 import FullScreenLayout from '@/components/layout/FullScreenLayout.vue'
+import { useAuthStore } from '@/composables/user'
+import { useRouter } from 'vue-router'
+import { auth } from '@/services/api'
+import Spinner from '@/components/spinner/Spinner.vue';
+const isLoading = ref(false);
+const authStore = useAuthStore()
+const router = useRouter()
+
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
 const keepLoggedIn = ref(false)
+const error = ref('')
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
 
-const handleSubmit = () => {
-  // Handle form submission
-  console.log('Form submitted', {
-    email: email.value,
-    password: password.value,
-    keepLoggedIn: keepLoggedIn.value,
-  })
-}
+// const handleSubmit = () => {
+//   // Handle form submission
+//   console.log('Form submitted', {
+//     email: email.value,
+//     password: password.value,
+//     keepLoggedIn: keepLoggedIn.value,
+//   })
+// }
+
+const handleSubmit = async () => {
+  isLoading.value=true
+    try {
+        const res = await auth({
+            email: email.value,
+            password: password.value,
+        });
+
+        const { user, user_token } = res.data.data;
+
+        if (user && user_token) {
+            authStore.login(user, user_token.token);
+            router.push('/');
+        } else {
+            throw new Error('Données utilisateur manquantes');
+        }
+    } catch (err) {
+        error.value = 'Email ou mot de passe incorrect';
+        console.error(err);
+    }finally{
+      isLoading.value=false
+    }
+};
+
+
 </script>

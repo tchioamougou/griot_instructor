@@ -6,10 +6,10 @@
           <form class="space-y-4" >
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
               <div>
-                <Input :inputType="'text'" :lb="'First Name'" :placeholder="'First Name'" :id="'first'" :forLabel="'first'" v-model="form.firstName" />
+                <Input :inputType="'text'" :lb="$t('FirstName')" :placeholder="$t('FirstName')"  :id="'first'" :forLabel="'first'" v-model="form.firstName" />
               </div>
               <div>
-                <Input :inputType="'text'" :lb="'Last Name'" :placeholder="'Last Name'" :id="'last'" :forLabel="'last'" v-model="form.lastName" />
+                <Input :inputType="'text'" :lb="$t('LastName')"  :placeholder="$t('LastName')"  :id="'last'" :forLabel="'last'" v-model="form.lastName" />
               </div>
               <!-- <div>
                 <Select :lb="'Gender'" :options="Gender" v-model="form.gender"/>
@@ -17,7 +17,7 @@
 
               <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                  Phone
+                  {{ $t('Phone') }}
                 </label>
               <div class="relative">
                   <div class="absolute">
@@ -64,7 +64,7 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
               <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                  Email
+                  {{ $t('Email') }}
                 </label>
                 <div class="relative">
                   <span
@@ -99,27 +99,27 @@
               <!-- <div>
                 <Select :lb="'Customer type'" :options="CustomerTypes" v-model="form.customType"/>
               </div> -->
-              <div><FileInput/></div>
+              <!-- <div><FileInput/></div> -->
               <div>
-                <Select :lb="'Select reservation Type'" :options="Package" v-model="form.package"/>
+                <Select :lb="$t('SelectReservationType')" :options="Package" v-model="form.package"/>
               </div>
 
               <div>
-                <Select :lb="'Select Room'" :options="ServiceProduct" v-model="form.roomType"/>
+                <Select :lb="$t('SelectRoom')" :options="ServiceProduct" v-model="form.roomType" @change="handleRoomSelection()" />
               </div>
               <!-- <div>
                 <Select :lb="'Room Number'" :options="Package" v-model="form.roomNumber"/>
               </div> -->
               <div>
               <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                Arrived Date
+                {{ $t('ArrivedDate') }}
               </label>
               <div class="relative">
                 <flat-pickr
                   v-model="form.arrivalDate"
                   :config="flatpickrConfig"
                   class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
-                  placeholder="Select date"
+                 :placeholder="$t('Selectdate')"
                 />
                 <span
                   class="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400"
@@ -144,14 +144,14 @@
               </div>
               <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                  Depart Date
+                  {{ $t('DepartDate') }}
                 </label>
                 <div class="relative">
                   <flat-pickr
                     v-model="form.departureDate"
                     :config="flatpickrConfig"
                     class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
-                    placeholder="Select date"
+                    :placeholder="$t('Selectdate')"
                   />
                   <span
                     class="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400"
@@ -179,9 +179,9 @@
               </div>
 
               <Input
-                  :lb="'Number of nights'"
+                  :lb="$t('Numberofnights')"
                   :inputType="'Number'"
-                  :placeholder="'Nombre de nuits'"
+                  :placeholder="$t('Numberofnights')"
                   :id="'total1'"
                   :forLabel="'total1'"
                   :modelValue="numberOfNights ?? ''"
@@ -191,13 +191,13 @@
               <!-- Input déclencheur -->
             <div class="relative w-full">
               <label for="total" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                Total Person
+                {{ $t('TotalPerson') }}
               </label>
               <input
                 id="total"
                 type="text"
                 readonly
-                :value="`${totalPersons} personne${totalPersons > 1 ? 's' : ''}`"
+                :value="`${totalPersons} person${totalPersons > 1 ? 's' : ''}`"
                 @click="showDropdown = !showDropdown"
                 class="cursor-pointer dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-md text-gray-800 placeholder:text-gray-400 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
                 placeholder="Total Person"
@@ -211,7 +211,7 @@
                 <!-- Compteurs -->
                 <div class="mb-5">
                   <div class="flex items-center justify-between">
-                    <span class="font-medium text-gray-700 dark:text-white">Adult(s)</span>
+                    <span class="font-medium text-gray-700 dark:text-white">{{$t('Adult')}}(s)</span>
                     <div class="flex items-center gap-2">
                       <button @click.prevent="adults > 0 && adults--" class="px-2  bg-gray-200 dark:bg-gray-700 rounded-full">-</button>
                       <span class="w-6 text-center">{{ adults }}</span>
@@ -222,7 +222,7 @@
 
                 <div class="mb-4">
                   <div class="flex items-center justify-between">
-                    <span class="font-medium text-gray-700 dark:text-white">Children</span>
+                    <span class="font-medium text-gray-700 dark:text-white">{{ $t('Children') }}</span>
                     <div class="flex items-center gap-2">
                       <button @click.prevent="children > 0 && children--" class="px-2  bg-gray-200 dark:bg-gray-700 rounded-full">-</button>
                       <span class="w-6 text-center">{{ children }}</span>
@@ -235,29 +235,32 @@
                   @click.prevent="showDropdown = false"
                   class="w-full bg-purple-500 text-white py-2 rounded-full hover:bg-purple-700 mt-2"
                 >
-                  Validate
+                  {{ $t('Validate') }}
                 </button>
               </div>
             </div>
               <div>
-                <Input :lb="'Total Price'"   :id="'total'" :forLabel="'total'" v-model="form.totalPrice" />
+                <Input :lb="$t('RoomPrice')"  :id="'total'" :forLabel="'total'" v-model="selectedRoomPrice"/>
+              </div>
+              <div>
+                <Input :lb="$t('TotalPrice')"   :id="'totale'" :forLabel="'totale'" v-model="form.totalPrice"/>
               </div>
             </div>
             <div>
               <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                Note
+                {{ $t('Note') }}
               </label>
               <textarea
                 v-model="form.normalDescription"
-                placeholder="Large text area content"
+                :placeholder="$t('Largetext')"
                 rows="6"
                 class="dark:bg-dark-900 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
               ></textarea>
             </div>
           </form>
 
-            <ButtonComponent type="button" :disabled="!!dateError || isLoading" @click="Save ">
-               Add Booking
+            <ButtonComponent type="button" :disabled="!!dateError || isLoading" @click="saveReservation">
+               {{ $t('AddBooking') }}
              </ButtonComponent>
 
         </ComponentCard>
@@ -265,94 +268,95 @@
     </AdminLayout>
 
     <Modal v-if="isPaymentModalOpen" @close="isPaymentModalOpen = false">
-  <template #body>
-    <div
-      class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11"
-    >
-      <!-- Close button -->
-      <button
-        @click="isPaymentModalOpen = false"
-        class="transition-color absolute right-5 top-5 z-999 flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 dark:bg-gray-700 dark:bg-white/[0.05] dark:text-gray-400 dark:hover:bg-white/[0.07] dark:hover:text-gray-300"
-      >
-        <svg
-          class="fill-current"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
+      <template #body>
+        <div
+          class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11"
         >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M6.04 16.54a.9.9 0 0 0 1.41 1.42L12 13.41l4.54 4.55a.9.9 0 1 0 1.41-1.42L13.41 12l4.55-4.54a.9.9 0 0 0-1.42-1.41L12 10.59 7.46 6.05a.9.9 0 0 0-1.41 1.42L10.59 12l-4.55 4.54Z"
-            fill=""
-          />
-        </svg>
-      </button>
+          <!-- Close button -->
+          <button
+            @click="isPaymentModalOpen = false"
+            class="transition-color absolute right-5 top-5 z-999 flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 dark:bg-gray-700 dark:bg-white/[0.05] dark:text-gray-400 dark:hover:bg-white/[0.07] dark:hover:text-gray-300"
+          >
+            <svg
+              class="fill-current"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M6.04 16.54a.9.9 0 0 0 1.41 1.42L12 13.41l4.54 4.55a.9.9 0 1 0 1.41-1.42L13.41 12l4.55-4.54a.9.9 0 0 0-1.42-1.41L12 10.59 7.46 6.05a.9.9 0 0 0-1.41 1.42L10.59 12l-4.55 4.54Z"
+                fill=""
+              />
+            </svg>
+          </button>
 
-      <!-- Title -->
-      <div class="mb-6 text-center">
-        <h4 class="text-2xl font-semibold text-gray-800 dark:text-white/90">
-          Confirm Booking & Payment
-        </h4>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          Review the reservation details before confirming.
-        </p>
-      </div>
-      <form  class="flex flex-col">
-      <div class="custom-scrollbar h-[300px] overflow-y-auto p-2">
-        <div class="space-y-8">
+          <!-- Title -->
+          <div class="mb-6 text-center">
+            <h4 class="text-2xl font-semibold text-gray-800 dark:text-white/90">
+              {{ $t('ConfirmBookingPayment') }}
+            </h4>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{ $t('Reviewthereservationdetailsbeforeconfirming.') }}
+            </p>
+          </div>
+          <form  class="flex flex-col">
+          <div class="custom-scrollbar h-[300px] overflow-y-auto p-2">
+            <div class="space-y-8">
 
-        <div class="border rounded-md p-4 text-sm text-gray-700 dark:text-gray-300">
-          <div class="space-y-2">
-            <div><strong>Client:</strong> {{ selectedReservation?.userFullName }}</div>
-            <div><strong>Room:</strong> {{ selectedReservation?.roomName }}</div>
-            <div><strong>Type:</strong> {{ selectedReservation?.reservationType }}</div>
-            <div><strong>Total:</strong> {{ selectedReservation?.totalPrice }} FCFA</div>
+            <div class="border rounded-md p-4 text-sm text-gray-700 dark:text-gray-300">
+              <div class="space-y-2">
+                <div><strong>{{ $t('Customer') }}:</strong> {{ reservationSummary.clientName }}</div>
+                <div><strong>{{ $t('Room') }}:</strong> {{ reservationSummary.room }}</div>
+                <div><strong>{{ $t('Type') }}:</strong> {{ reservationSummary.type }}</div>
+                <div><strong>{{ $t('Total') }}:</strong> {{ reservationSummary.total }} FCFA</div>
+
+              </div>
+            </div>
+
+            <!-- <div class="mt-6 border rounded-md p-4">
+              <Select :lb="'Payment Method'" :options="Payements[0].paymentMethods" v-model="selectedPaymentMethod"/>
+
+            </div> -->
+            <Select
+              :lb="$t('PaymentMethod')"
+              :options="Payements[0].paymentMethods"
+              v-model="selectedPaymentMethod"
+            />
+
+          </div>
+          </div>
+          </form>
+
+          <!-- Buttons -->
+          <div class="mt-8 flex flex-col-reverse items-center justify-end gap-3 sm:flex-row">
+            <!-- Cancel -->
+            <button
+              type="button"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.05] sm:w-auto"
+              @click="isPaymentModalOpen = false"
+            >
+              {{ $t('Cancel') }}
+            </button>
+
+            <!-- Confirm -->
+            <ButtonComponent
+              type="button"
+              :disabled="isLoading || !selectedPaymentMethod"
+              @click="savePayment"
+            >
+              <span v-if="!isLoading">{{ $t('ConfirmPay') }}</span>
+              <span v-else class="flex items-center gap-2">
+                <Spinner class="w-4 h-4" />
+                {{ $t('Processing') }}...
+              </span>
+            </ButtonComponent>
           </div>
         </div>
-
-        <!-- <div class="mt-6 border rounded-md p-4">
-          <Select :lb="'Payment Method'" :options="Payements[0].paymentMethods" v-model="selectedPaymentMethod"/>
-
-        </div> -->
-        <Select
-          :lb="'Payment Method'"
-          :options="Payements"
-          v-model="selectedPaymentMethod"
-        />
-
-      </div>
-      </div>
-      </form>
-
-      <!-- Buttons -->
-      <div class="mt-8 flex flex-col-reverse items-center justify-end gap-3 sm:flex-row">
-        <!-- Cancel -->
-        <button
-          type="button"
-          class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.05] sm:w-auto"
-          @click="isPaymentModalOpen = false"
-        >
-          Cancel
-        </button>
-
-        <!-- Confirm -->
-        <ButtonComponent
-          type="button"
-          :disabled="isLoading || !selectedPaymentMethod"
-          @click="confirmReservation"
-        >
-          <span v-if="!isLoading">Confirm & Pay</span>
-          <span v-else class="flex items-center gap-2">
-            <Spinner class="w-4 h-4" />
-            Processing...
-          </span>
-        </ButtonComponent>
-      </div>
-    </div>
-  </template>
-</Modal>
+      </template>
+    </Modal>
 
   </template>
 
@@ -361,27 +365,29 @@ import { ref,computed, watch,onMounted } from "vue";
 import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
 import AdminLayout from '@/components/layout/AdminLayout.vue';
 import ComponentCard from "@/components/common/ComponentCard.vue";
-import FileInput from "@/components/forms/FormElements/FileInput.vue";
+// import FileInput from "@/components/forms/FormElements/FileInput.vue";
 import Input from "@/components/forms/FormElements/Input.vue";
 import Select from "@/components/forms/FormElements/Select.vue";
 import flatPickr from 'vue-flatpickr-component'
 import ButtonComponent from "@/components/buttons/ButtonComponent.vue";
-import { getServiceProduct,createReservation,getService} from "@/services/api";
-import type { ProductType, ReservationType} from '@/types/option'
+import { getServiceProduct,createReservation,getService,createPayment} from "@/services/api";
+import type { ProductType} from '@/types/option'
 import 'flatpickr/dist/flatpickr.css'
 import { useToast } from 'vue-toastification'
 import Spinner from '@/components/spinner/Spinner.vue'; // adapte le chemin
-import { useServiceStore } from '@/stores/serviceStore';
+import { useServiceStore } from '@/composables/serviceStore';
 const serviceStore = useServiceStore();
 import Modal from '@/components/profile/Modal.vue'
+import { useI18n } from "vue-i18n";
+
+
 
 
 const isLoading = ref(false);
-
+const { t } = useI18n();
 
 const isPaymentModalOpen = ref(false);
-const selectedReservation = ref<any>(null);
-  const toast = useToast()
+const toast = useToast()
 
 
 
@@ -393,21 +399,18 @@ const adults = ref(1)
 const children = ref(0)
 
 const totalPersons = computed(() => adults.value + children.value)
-const currentPageTitle = ref("Add Booking");
+const currentPageTitle =computed(()=>t("AddBooking"));
 const selectedCountry = ref('GB')
-const Gender = ref([
-  {value: 'male', label: "Male"},
-  {value: 'female', label: "Female"},
-  {value: 'other', label: "Other"},
-])
-const Package = ref([
-  {value: 'Individual', label: 'Individual'},
-  {value: 'Group', label: "Group"},
-  {value: 'Corporate', label: "Corporate"},
-  {value: 'Wedding', label: "Wedding"},
-  {value: 'Honeymoon', label: "Honeymoon"},
-  {value: 'Standard', label: "Standard"},
-])
+
+const Package = computed(() => [
+  { value: 'Individual', label: t('Individual') },
+  { value: 'Group', label: t('Group') },
+  { value: 'Corporate', label: t('Corporate') },
+  { value: 'Wedding', label: t('Wedding') },
+  { value: 'Honeymoon', label: t('Honeymoon') },
+  { value: 'Standard', label: t('Standard') },
+]);
+
 
 
 const countryCodes = {
@@ -417,136 +420,75 @@ const countryCodes = {
   AU: '+61',
 }
 
-// const Payements = ref<any[]>([]);
+const Payements = ref<any[]>([]);
+  const reservationSummary = ref({
+  clientName: '',
+  room: 0,
+  type: '',
+  total: 0,
+});
+
 
 const updatePhoneNumber = () => {
   form.value.phoneNumber = countryCodes[selectedCountry.value as keyof typeof countryCodes]
 }
 
 
-interface serviceType {
-  id: number;
-  name: string;
-  description: string;
-  email: string;
-  phoneNumber: string;
-  website: string;
-  logo: string | null;
-  images: string[] | null;
-  address: {
-    text: string;
-    lat: number;
-    lng: number;
-  };
-  categoryId: number;
-  capacity: number | null;
-  facilities: string[];
-  policies: string;
-  priceRange: string | null;
-  paymentMethods: { label: string; value: string }[];
-  openings: Record<string, { opening: string; closing: string }>;
-  status: 'active' | 'inactive'; // Ajuste selon tes valeurs possibles
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string | null;
-  lastModifiedBy: string | null;
-}
 
 
 
+// const Payements  = ref([
+// {value: 'Especes', label: "Especes"},
+// {value: 'Carte bancaire', label: "Carte bancaire"},
 
-const Payements  = ref([
-{value: 'Especes', label: "Especes"},
-{value: 'Carte bancaire', label: "Carte bancaire"},
-
-])
-
-
-// const fetchServiceData = async () => {
-//   try {
-//     const serviceId = serviceStore.serviceId;
-//     const response = await getService(serviceId);
-
-//     const service = response.data;
-
-//     const parsedMethods: string[] = JSON.parse(service.paymentMethods || '[]');
-
-//     const paymentMethods = parsedMethods.map(method => ({
-//       label: method,
-//       value: method
-//     }));
-
-//     Payements.value = [{
-//       ...service,
-//       paymentMethods
-//     }];
+// ])
 
 
-//     console.log('Service formaté:', Payements.value);
-//   } catch (error) {
-//     console.error('Erreur lors de la récupération du service:', error);
-//   }
-// };
+const fetchServiceData = async () => {
+  try {
+    const serviceId = serviceStore.serviceId;
+    const response = await getService(serviceId);
+
+    const service = response.data;
+
+    const parsedMethods: string[] = JSON.parse(service.paymentMethods || '[]');
+
+    const paymentMethods = parsedMethods.map(method => ({
+      label: method,
+      value: method
+    }));
+
+    Payements.value = [{
+      ...service,
+      paymentMethods
+    }];
 
 
-// const fetchServiceData = async () => {
-//   try {
-//     const serviceId = serviceStore.serviceId;
-//     const response = await getService(serviceId);
-//     const service = response.data;
-
-//     // 🔧 Parse des champs JSON stringifiés
-//     const parsedAddress = JSON.parse(service.address || '{}');
-//     const parsedFacilities: string[] = JSON.parse(service.facilities || '[]');
-//     const parsedOpenings = JSON.parse(service.openings || '{}');
-//     const parsedMethods: string[] = JSON.parse(service.paymentMethods || '[]');
-
-//     // Format des méthodes de paiement
-//     const paymentMethods = parsedMethods.map(method => ({
-//       label: method,
-//       value: method
-//     }));
-
-//     // ✅ Construction manuelle de l'objet conforme à serviceType
-//     const formattedService: serviceType = {
-//       id: service.id,
-//       name: service.name,
-//       description: service.description,
-//       email: service.email,
-//       phoneNumber: service.phoneNumber,
-//       website: service.website,
-//       logo: service.logo,
-//       images: service.images,
-//       address: parsedAddress,
-//       categoryId: service.categoryId,
-//       capacity: service.capacity,
-//       facilities: parsedFacilities,
-//       policies: service.policies,
-//       priceRange: service.priceRange,
-//       paymentMethods,
-//       openings: parsedOpenings,
-//       status: service.status,
-//       createdAt: service.createdAt,
-//       updatedAt: service.updatedAt,
-//       createdBy: service.createdBy,
-//       lastModifiedBy: service.lastModifiedBy
-//     };
-
-//     Payements.value = [formattedService];
-
-//     console.log('Service formaté:', Payements.value[0].paymentMethods
-//     );
-//   } catch (error) {
-//     console.error('Erreur lors de la récupération du service:', error);
-//   }
-// };
+    console.log('Service formaté:', Payements.value);
+  } catch (error) {
+    console.error('Erreur lors de la récupération du service:', error);
+  }
+};
 
 
+
+const selectedRoomPrice = ref<number | null>(null);
+  const handleRoomSelection = () => {
+      const selectedProduct = ServiceProduct.value.find(
+        (product: any) => product.productName === form.value.roomType
+      );
+      if (selectedProduct) {
+        selectedRoomPrice.value = selectedProduct.price;
+        // form.value.totalPrice = selectedProduct.price
+        console.log("Prix de la chambre sélectionnée:", selectedRoomPrice.value);
+      }
+    };
 
 
 
 
 const ServiceProduct = ref<ProductType[]>([]);
+const reservations = ref({})
 
 const fetchServiceProduct = async () => {
   try {
@@ -559,6 +501,7 @@ const fetchServiceProduct = async () => {
         ...products,
         value: products.productName,
         label: products.productName,
+        price: products.price
       }
     });
 
@@ -571,6 +514,7 @@ const fetchServiceProduct = async () => {
 
 fetchServiceProduct()
 
+
 const flatpickrConfig = {
   dateFormat: 'Y-m-d',
   altInput: true,
@@ -581,17 +525,24 @@ const flatpickrConfig = {
 watch(totalPersons, (newVal:any) => {
   form.value.totalPerson = newVal
 })
+watch(selectedRoomPrice, (newPrice:any) => {
+  // form.value.totalPrice = newPrice;
+  console.log('newPrice',newPrice)
+});
 
-// onMounted(()=>{
-//   fetchServiceData()
-// })
+watch(reservations.value, (newReservation:any) => {
+  console.log('✅ reservations', newReservation)
+});
+onMounted(()=>{
+  fetchServiceData()
+})
 
 interface ReservationForm {
   firstName: string
   lastName: string
   phoneNumber: string
   email: string
-  roomType:string
+  roomType:number | null
   package:string
   arrivalDate: string
   departureDate: string
@@ -604,13 +555,13 @@ interface ReservationForm {
 
 const selectedPaymentMethod = ref('')
 
-const paymentStatus = selectedPaymentMethod.value === 'Carte bancaire' ? 'pending' : 'paid';
+// const paymentStatus = selectedPaymentMethod.value === 'Carte bancaire' ? 'pending' : 'paid';
 const form = ref<ReservationForm>({
   firstName: '',
   lastName: '',
   phoneNumber: '',
   email: '',
-  roomType: '',
+  roomType: null,
   package:'',
   arrivalDate: '',
   departureDate: '',
@@ -618,10 +569,13 @@ const form = ref<ReservationForm>({
   totalPerson: totalPersons.value,
   totalPrice:null,
   numberOfNights: totalPersons.value,
-  payment: paymentStatus
+  payment: 'pending'
 })
+const reservationId = ref<number | null>(null);
 
-const confirmReservation = async () => {
+const userId =  ref<number | null>(null)
+
+const saveReservation = async () => {
   isLoading.value = true;
   try {
 
@@ -631,9 +585,9 @@ const confirmReservation = async () => {
       last_name: form.value.lastName,
       email: form.value.email,
       phone_number: form.value.phoneNumber,
-      role_id: 1,
-      created_by: 2,
-      last_modified_by: 2,
+      // role_id: 1,
+      // created_by: 2,
+      // last_modified_by: 2,
       service_id: serviceStore.serviceId,
       reservation_type: form.value.package,
       reservation_product:form.value.roomType,
@@ -648,13 +602,25 @@ const confirmReservation = async () => {
     console.log('✅ reservationPayload', reservationPayload)
 
     const response = await createReservation(reservationPayload)
+    reservationSummary.value = {
+      clientName: `${form.value.firstName} ${form.value.lastName}`,
+      room: Number(form.value.roomType ?? 0),
+      type: form.value.package ?? '',
+      total: Number(form.value.totalPrice ?? 0),
+  }
+  reservationId.value = response.data.reservation.id;
+  userId.value = response.data.reservation.userId;
+
+
+  console.log("User ID:", userId.value);
+  console.log("Reservation ID:", reservationId.value);
 
     form.value = {
       firstName: '',
       lastName: '',
       phoneNumber: '',
       email: '',
-      roomType: '',
+      roomType: null,
       package:'',
       arrivalDate: '',
       departureDate: '',
@@ -664,8 +630,10 @@ const confirmReservation = async () => {
       numberOfNights: totalPersons.value,
       payment:''
     }
-    isPaymentModalOpen.value = false;
+    isPaymentModalOpen.value = true;
+    reservations.value=response.data
     console.log('✅ Réservation créée avec succès !', response.data)
+    console.log('✅ Réservation créée avec succès !', reservations.value)
   } catch (error: any) {
     console.error('❌ Error while saving:', error.response?.data || error.message)
   }finally {
@@ -673,87 +641,41 @@ const confirmReservation = async () => {
   }
 }
 
-// const selectedPaymentMethod = ref('');
-
-// const confirmReservation = async () => {
-//   if (!selectedPaymentMethod.value) {
-//     console.log("Veuillez sélectionner un mode de paiement.");
-//     return;
-//   }
-
-//   const status = selectedPaymentMethod.value === 'cash' ? 'paid' : 'pending';
-
-//   const reservationData = {
-//     first_name: form.value.firstName,
-//     last_name: form.value.lastName,
-//     email: form.value.email,
-//     phone_number: form.value.phoneNumber,
-//     role_id: 1,
-//     created_by: 2,
-//     last_modified_by: 2,
-//     service_id: serviceStore.serviceId,
-//     reservation_type: form.value.package,
-//     reservation_product: form.value.roomType,
-//     status: status,
-//     total_price: form.value.totalPrice,
-//     total_person: form.value.totalPerson,
-//     arrived_date: form.value.arrivalDate,
-//     depart_date: form.value.departureDate,
-//     comment: form.value.normalDescription,
-//     paymentMethod: status
-//   };
-
-//   if (selectedPaymentMethod.value === 'cash') {
-//     try {
-//       await createReservation(reservationData);
-//       toast.success("Réservation enregistrée avec succès !");
-
-//       form.value = {
-//         firstName: '',
-//         lastName: '',
-//         gender: '',
-//         phoneNumber: '',
-//         email: '',
-//         address: '',
-//         roomType: '',
-//         package: '',
-//         arrivalDate: '',
-//         departureDate: '',
-//         normalDescription: '',
-//         totalPerson: totalPersons.value,
-//         totalPrice: null,
-//         numberOfNights: totalPersons.value,
-//       };
-//       isPaymentModalOpen.value = false;
-//     } catch (err) {
-//       console.log("Erreur lors de la réservation.");
-//     }
-//   } else if (selectedPaymentMethod.value === 'card') {
-//     selectedReservation.value = reservationData;
-//     isPaymentModalOpen.value = true;
-//   }
-
-// };
 
 
+const savePayment = async () => {
+  isLoading.value=true
+  try {
+    const payload = {
+      user_id: userId.value,
+      reservation_id: reservationId.value,
+      amount_paid: reservationSummary.value.total,
+      payment_method: selectedPaymentMethod.value,
+      payment_date: new Date().toISOString(),
+      transaction_id : '#TRAN-001',
+      created_by : userId.value,
+      last_modified_by : userId.value
+    };
 
-const Save = () => {
-  // // Exemples de vérifications simples
-  // if (dateError || !formData.userId || !formData.totalPrice || !formData.reservationType) {
-  //   // Tu peux aussi afficher une alerte ici si tu veux
-  //   return;
-  // }
+    console.log("payment",payload)
+    const response = await createPayment(payload);
+    console.log('payment',response.data)
 
-  // Préparer les données pour affichage dans la modal
-  selectedReservation.value = {
-    userFullName: form.value.firstName,
-    totalPrice: form.value.totalPrice,
-    reservationType: form.value.package
-  };
-
-  // Ouvre la modal de paiement
-  isPaymentModalOpen.value = true;
+    if (response.status === 201) {
+      toast.success('Paiement enregistré avec succès.');
+      isPaymentModalOpen.value = false;
+    } else {
+      toast.error('Erreur lors de l’enregistrement du paiement.');
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error('Une erreur est survenue pendant le paiement.');
+  }finally{
+    isLoading.value=false
+  }
 };
+
+
 
 const dateError = ref<string | null>(null)
 
