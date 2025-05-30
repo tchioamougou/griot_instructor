@@ -1,6 +1,6 @@
 <template>
     <div class="footer border-t bg-white p-6 text-md text-gray-500 font-normal flex justify-between items-center">
-  <p class="mb-0">2025 &copy; Enjoy</p>
+  <p class="mb-0">2025 &copy; AF Griot</p>
   <!-- <ButtonLanguage></ButtonLanguage> -->
 </div>
 

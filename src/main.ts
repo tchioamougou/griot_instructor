@@ -9,6 +9,7 @@ import Toast from 'vue-toastification'
 import type { PluginOptions } from 'vue-toastification'
 import  {  POSITION } from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import { createApp } from 'vue'
 import App from './App.vue'

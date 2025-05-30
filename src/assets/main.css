@@ -170,7 +170,216 @@ layer(base);
   If we ever want to remove these styles, we need to add an explicit border
   color utility to any element that depends on these defaults.
 */
+/* color palette from <https://github.com/vuejs/theme> */
+:root {
+  --griot-body-bg: #f1f5f9;
+  --vt-c-white: #ffffff;
+  --vt-c-white-soft: #f8f8f8;
+  --vt-c-white-mute: #f2f2f2;
+  --g-c-green: #5050ce;
+  --g-c-text-home: rgba(0, 0, 0, 0.98);
+  --g-c-blue-dark: #5050ce;
+  --g-c-white-mute: #f2f2f2;
+  --vt-c-black: #181818;
+  --vt-c-black-soft: #222222;
+  --vt-c-black-mute: #282828;
 
+  --vt-c-indigo: #2c3e50;
+
+  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
+  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
+  --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
+  --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
+
+  --vt-c-text-light-1: var(--vt-c-indigo);
+  --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
+  --vt-c-text-dark-1: var(--vt-c-white);
+  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+
+  --popper-theme-background-color: #ffffff;
+  --popper-theme-background-color-hover: #ffffff;
+  --popper-theme-text-color: black;
+  --popper-theme-border-width: 0px;
+  --popper-theme-border-style: solid;
+  --popper-theme-border-radius: 0px;
+  --popper-theme-padding: 0.5em 5px;
+  --popper-theme-box-shadow: 0 6px 30px -6px rgba(0, 0, 0, 0.25);
+  --g-c-text-color: black;
+  --g-c-color-item: #8282d9;
+  --font-stack-heading: BlinkMacSystemFont, "Segoe UI",
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  --font-stack-heading-serif: SuisseWorks, Georgia, Times, "Times New Roman",
+    serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-stack-text: "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol";
+  --griot-blue: #0d6efd;
+  --griot-indigo: #6610f2;
+  --griot-purple: #6f42c1;
+  --griot-pink: #d63384;
+  --griot-red: #dc3545;
+  --griot-orange: #fd7e14;
+  --griot-yellow: #ffc107;
+  --griot-green: #198754;
+  --griot-teal: #20c997;
+  --griot-cyan: #0dcaf0;
+  --griot-black: #000;
+  --griot-gray: #475569;
+  --griot-gray-dark: #1e293b;
+  --griot-gray-black: #000;
+  --griot-gray-100: #f1f5f9;
+  --griot-gray-200: #e2e8f0;
+  --griot-gray-300: #cbd5e1;
+  --griot-gray-400: #94a3b8;
+  --griot-gray-500: #64748b;
+  --griot-gray-600: #475569;
+  --griot-gray-700: #334155;
+  --griot-gray-800: #1e293b;
+  --griot-gray-900: #0f172a;
+  --griot-gray-1000: #0b1324;
+  --griot-gray-white: #fff;
+  --griot-primary: #754ffe;
+  --griot-secondary: #64748b;
+  --griot-success: #38a169;
+  --griot-info: #0ea5e9;
+  --griot-warning: #f59e0b;
+  --griot-danger: #dc2626;
+  --griot-light: #f1f5f9;
+  --griot-dark: #0f172a;
+  --griot-white: #fff;
+  --griot-light-primary: #ede9fe;
+  --griot-light-danger: #fad9d8;
+  --griot-light-info: #e1f6ff;
+  --griot-light-warning: #ffeeda;
+  --griot-light-secondary: #e4e3e9;
+  --griot-light-success: #d1f5ea;
+  --griot-light-dark: #d1cfd8;
+  --griot-dark-primary: #593cc1;
+  --griot-dark-warning: #c28135;
+  --griot-dark-info: #51a0c2;
+  --griot-dark-danger: #ae302e;
+  --griot-dark-success: #139a74;
+  --griot-dark-secondary: #5c596d;
+  --griot-primary-rgb: 117, 79, 254;
+  --griot-secondary-rgb: 100, 116, 139;
+  --griot-success-rgb: 56, 161, 105;
+  --griot-info-rgb: 14, 165, 233;
+  --griot-warning-rgb: 245, 158, 11;
+  --griot-danger-rgb: 220, 38, 38;
+  --griot-light-rgb: 241, 245, 249;
+  --griot-dark-rgb: 15, 23, 42;
+  --griot-light-primary-rgb: 237, 233, 254;
+  --griot-light-danger-rgb: 250, 217, 216;
+  --griot-light-info-rgb: 225, 246, 255;
+  --griot-light-warning-rgb: 255, 238, 218;
+  --griot-light-secondary-rgb: 228, 227, 233;
+  --griot-light-success-rgb: 209, 245, 234;
+  --griot-light-dark-rgb: 209, 207, 216;
+  --griot-dark-primary-rgb: 89, 60, 193;
+  --griot-dark-warning-rgb: 194, 129, 53;
+  --griot-dark-info-rgb: 81, 160, 194;
+  --griot-dark-danger-rgb: 174, 48, 46;
+  --griot-dark-success-rgb: 19, 154, 116;
+  --griot-dark-secondary-rgb: 92, 89, 109;
+  --griot-primary-text-emphasis: #2f2066;
+  --griot-secondary-text-emphasis: #282e38;
+  --griot-success-text-emphasis: #16402a;
+  --griot-info-text-emphasis: #06425d;
+  --griot-warning-text-emphasis: #623f04;
+  --griot-danger-text-emphasis: #580f0f;
+  --griot-light-text-emphasis: #334155;
+  --griot-dark-text-emphasis: #334155;
+  --griot-primary-bg-subtle: #e3dcff;
+  --griot-secondary-bg-subtle: #e0e3e8;
+  --griot-success-bg-subtle: #d7ece1;
+  --griot-info-bg-subtle: #cfedfb;
+  --griot-warning-bg-subtle: #fdecce;
+  --griot-danger-bg-subtle: #f8d4d4;
+  --griot-light-bg-subtle: #f8fafc;
+  --griot-dark-bg-subtle: #94a3b8;
+  --griot-primary-border-subtle: #c8b9ff;
+  --griot-secondary-border-subtle: #c1c7d1;
+  --griot-success-border-subtle: #afd9c3;
+  --griot-info-border-subtle: #9fdbf6;
+  --griot-warning-border-subtle: #fbd89d;
+  --griot-danger-border-subtle: #f1a8a8;
+  --griot-light-border-subtle: #e2e8f0;
+  --griot-dark-border-subtle: #64748b;
+  --griot-white-rgb: 255, 255, 255;
+  --griot-black-rgb: 0, 0, 0;
+  --griot-font-sans-serif: "Inter", "sans-serif";
+  --griot-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --griot-gradient: linear-gradient(180deg, hsla(0, 0%, 100%, .15), hsla(0, 0%, 100%, 0));
+  --griot-body-font-family: "Inter", "sans-serif";
+  --griot-body-font-size: 0.875rem;
+  --griot-body-font-weight: 400;
+  --griot-body-line-height: 1.6;
+  --griot-body-color: #64748b;
+  --griot-body-color-rgb: 100, 116, 139;
+  --griot-body-bg: #f1f5f9;
+  --griot-body-bg-rgb: 241, 245, 249;
+  --griot-emphasis-color: #000;
+  --griot-emphasis-color-rgb: 0, 0, 0;
+  --griot-secondary-color: rgba(100, 116, 139, .75);
+  --griot-secondary-color-rgb: 100, 116, 139;
+  --griot-secondary-bg: #e2e8f0;
+  --griot-secondary-bg-rgb: 226, 232, 240;
+  --griot-tertiary-color: rgba(100, 116, 139, .5);
+  --griot-tertiary-color-rgb: 100, 116, 139;
+  --griot-tertiary-bg: #f1f5f9;
+  --griot-tertiary-bg-rgb: 241, 245, 249;
+  --griot-link-color: #754ffe;
+  --griot-link-color-rgb: 117, 79, 254;
+  --griot-link-decoration: none;
+  --griot-link-hover-color: #5e3fcb;
+  --griot-link-hover-color-rgb: 94, 63, 203;
+  --griot-code-color: #d63384;
+  --griot-highlight-bg: #fff3cd;
+  --griot-border-width: 1px;
+  --griot-border-style: solid;
+  --griot-border-color: var(--griot-border-color);
+  --griot-border-color-translucent: #cbd5e1;
+  --griot-border-radius: 0.375rem;
+  --griot-border-radius-sm: 0.25rem;
+  --griot-border-radius-lg: 0.5rem;
+  --griot-border-radius-xl: 2rem;
+  --griot-border-radius-xxl: 2rem;
+  --griot-border-radius-2xl: var(--griot-border-radius-xxl);
+  --griot-border-radius-pill: 50rem;
+  --griot-box-shadow: 0px 3px 6px rgba(17, 24, 39, .1);
+  --griot-box-shadow-sm: 0px 1px 3px rgba(17, 24, 39, .09);
+  --griot-box-shadow-lg: 0 6px 8px 0 rgba(17, 24, 39, .08), 0 0 0 1px rgba(17, 24, 39, .04);
+  --griot-box-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, .075);
+  --griot-focus-ring-width: 0.25rem;
+  --griot-focus-ring-opacity: 0.25;
+  --griot-focus-ring-color: rgba(117, 79, 254, .25);
+  --griot-form-valid-color: #38a169;
+  --griot-form-valid-border-color: #38a169;
+  --griot-form-invalid-color: #dc2626;
+  --griot-form-invalid-border-color: #dc2626;
+}
+
+/* semantic color variables for this project */
+:root {
+  --color-background: var(--vt-c-white);
+  --color-background-soft: var(--vt-c-white-soft);
+  --color-background-mute: var(--vt-c-white-mute);
+
+  --color-border: var(--vt-c-divider-light-2);
+  --color-border-hover: var(--vt-c-divider-light-1);
+
+  --color-heading: var(--vt-c-text-light-1);
+  --color-text: var(--g-c-text-color);
+
+  --section-gap: 160px;
+  --color-button: var(--g-c-blue-dark);
+  --bs-link-color: var(--g-c-blue-dark);
+  --g-color-item: var(--g-c-color-item);
+  --g-color-total-title: var(--bs-blue);
+  --g-color-total-value: var(--bs-red);
+  --g-color-table-header: var(--bs-blue);
+}
 @layer base {
   *,
   ::after,
@@ -760,4 +969,27 @@ span.flatpickr-weekday,
 
 .edit-button {
   @apply flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto;
+}
+
+
+.g-tip {
+  border: 1px solid var(--griot-gray-400);
+  padding: 1em;
+  margin-top: 1.5em;
+  border-radius: 0.4em;
+}
+
+.g-tip .title {
+  font-family: 'Benton Sans', sans-serif;
+  font-size: 0.91em;
+  margin-bottom: 0.5em;
+}
+
+.g-tip ul li {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: small;
+}
+
+.g-tip .title i {
+  color: var(--g-c-blue-dark);
 }

@@ -15,7 +15,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AppSidebar from './AppSidebar.vue'
 import AppFooter from './AppFooter.vue'
 import AppHeader from './AppHeader.vue'

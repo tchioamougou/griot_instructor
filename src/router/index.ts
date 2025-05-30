@@ -210,19 +210,26 @@ const router = createRouter({
         title: 'Signup',
       },
     },
+
+
+    // manage instructor information in the course creation process
+
+    {
+      path: '/course',
+      name: 'All Courses',
+      component: () => import('../views/courses/Courses.vue'),
+      meta: {
+        title: 'All Courses',
+      },
+    },
   ],
 })
 router.beforeEach(async (to, from, next) => {
   isLoading.value = true;
   const authStore = useAuthStore();
 
-  // Si on a un token mais pas d'utilisateur, on essaie de récupérer l'utilisateur
-  if (authStore.token && !authStore.user) {
-    console.log("We have a token but no user. You should fetch the user data here.");
-  }
-
   // Si la route nécessite une authentification et qu'on a pas de token
-  if (to.meta.requiresAuth && !authStore.token) {
+  if (to.meta.requiresAuth && !authStore.user) {
     return next('/signin');
   }
 
