@@ -202,7 +202,8 @@ const close = () => {
   showAddCourse.value = false;
 };
 
-const created = (courseId) => {
+const created = (courseId : any) => {
+  console.log('created', courseId);
   close();
   toast.success('Created');
   getCourseLocal();

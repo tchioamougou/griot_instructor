@@ -222,6 +222,19 @@ const router = createRouter({
         title: 'All Courses',
       },
     },
+
+    /// Course Edit instruction 
+
+      {
+      path: "/course/:courseId/manage/:item",
+      name: "editCourse",
+      component: () => import('../views/courses/EditCourse.vue'),
+      meta: {
+        requiresAuth: true,
+        noHeader: true,
+        onlyInstructor: true,
+      },
+    },
   ],
 })
 router.beforeEach(async (to, from, next) => {

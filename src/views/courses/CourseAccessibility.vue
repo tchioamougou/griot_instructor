@@ -1,0 +1,20 @@
+<template>
+  <div class="card g-box-shadow">
+    <div class="card-body">
+      <h5 class="g-title g-header">Accessibility</h5>
+      <div class="g-container">
+        is coming
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "CourseAccessibility"
+}
+</script>
+
+<style scoped>
+
+</style>
