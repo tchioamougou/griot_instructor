@@ -1965,5 +1965,7 @@
     "": "",
     " ": " ",
     "Favorites": "Favorites",
-    "Add new answer": "Add new answer"
+    "Add new answer": "Add new answer",
+    "add_response": "+ Add more to your response",
+    "upload":"Upload"
 }

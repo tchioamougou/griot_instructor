@@ -47,7 +47,4 @@ const changeTab = (tabIndex: number) => {
   selectedTab.value = tabs.value[tabIndex - 1]?.name || 'general';
 };
 
-
-
-
 </script>

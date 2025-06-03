@@ -48,7 +48,7 @@
 
           <img v-else class=" rounded-full w-10" src="/src/assets/images/header/logo2.png" alt="Logo" />
           <span v-if="isExpanded || isHovered || isMobileOpen"
-            class="inline-flex text-2xl text-gray-900 font-bold">EnjoyAdmin</span>
+            class="inline-flex text-2xl text-gray-900 font-bold">Instructor</span>
         </router-link>
       </div>
       <div class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar mt-2"

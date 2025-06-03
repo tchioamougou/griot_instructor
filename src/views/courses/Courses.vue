@@ -45,7 +45,7 @@
               <div class="image_title">
                 <div class="col-4 image">
                   <span><img v-if="course.picture" :src="course.picture" class="g-image" alt="Course Image" />
-                    <img v-if="!course.picture" src="../../assets/images/logo.png" class="g-image"
+                    <img v-if="!course.picture" src="@/assets/images/placeholder.png" class="g-image"
                       alt="Course Image" /></span>
                 </div>
                 <div class="pb-2 pt-2 title">

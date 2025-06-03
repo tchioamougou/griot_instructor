@@ -72,8 +72,8 @@
   </div>
 </template>
 
-<script setup>
-import { coursesStep } from "../../database/griot";
+<script setup lang="ts">
+import { coursesStep } from "@/services/griot_service";
 const props = defineProps({
   course: {
     type: Object,
@@ -93,7 +93,6 @@ if (!props.course.courseFilmEditStep) {
       console.log("error==>coursesStep", error);
     });
 }
-coursesStep();
 </script>
 
 <style scoped>

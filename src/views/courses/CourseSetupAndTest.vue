@@ -1,12 +1,7 @@
 <template>
-  <div class="card g-box-shadow">
-    <div class="card-body">
-      <div class="g-block-header">
-        <div class="block_title">
-          <h4 class="g-title">{{ $t('setup.title') }}</h4>
-        </div>
-      </div>
-      <div class="g-container">
+  <ItemLayout :title="$t('setup.title')">
+    <template #main>
+      <div class="g-container text-sm">
         <h1 class="mb-4 mt-5">{{ $t('setup.title') }}</h1>
         <p>
           {{ $t('setup.p_1') }}
@@ -82,11 +77,22 @@
           </li>
         </ul>
       </div>
+    </template>
+  </ItemLayout>
+  <div class="card g-box-shadow">
+    <div class="card-body">
+      <div class="g-block-header">
+        <div class="block_title">
+          <h4 class="g-title">{{ $t('setup.title') }}</h4>
+        </div>
+      </div>
+      
     </div>
   </div>
 </template>
-<script setup>
-import { coursesStep } from "../../database/griot";
+<script setup lang="ts">
+import { coursesStep } from "@/services/griot_service";
+import ItemLayout from "./items/ItemLayout.vue";
 const props = defineProps({
   course: {
     type: Object,
@@ -106,7 +112,6 @@ if (!props.course.courseSetupTestStep) {
       console.log("error==>coursesStep", error);
     });
 }
-coursesStep();
 </script>
 <style scoped>
 h1 {
