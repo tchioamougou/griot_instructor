@@ -22,7 +22,7 @@
                                 <label class="answer_value" :for="'In' + index" v-html="ans.content"></label>
                             </div>
                         </template>
-                        <div class="error" v-if="hasError">{{ $t(messageError) }}</div>
+                        <div class="error" v-if="hasError">{{ $t(messageError??'') }}</div>
                     </div>
                 </div>
             </template>
@@ -78,33 +78,33 @@
     </template>
     <template v-if="isSaving"><g-spinner /></template>
 </template>
-<script setup>
-import { computed, onDeactivated, ref, watch } from "vue";
-import { getLecture, updateProgression } from "../../database/griot";
-import GSpinner from "../../resources/GSpinner.vue";
-import GRichTextEditor from "../../resources/GRichTextEditor.vue";
-import SpinnerCmp from "../../resources/Spinner.vue";
-import GConfirmation from "../../resources/GConfirmation.vue";
-import store from "../../store";
-const props = defineProps({
-    lectureProgression: {
-        type: Object,
-        required: true,
-    },
-});
+<script setup lang="ts">
+import { computed, ref, watch } from "vue";
+import { getLecture, updateProgression } from "@/services/griot_service";
+import GSpinner from "@/components/spinner/Spinner.vue";
+import GRichTextEditor from "@/components/forms/FormElements/GRichTextEditor.vue";
+import SpinnerCmp from "@/components/spinner/Spinner.vue";
+import GConfirmation from '@/components/ui/GConfirmation.vue';
+import { useAuthStore } from '@/composables/user';
 
-const emits = defineEmits(["finished",'next']);
-const currentQuestion = ref({});
+
+
+const props = defineProps<{
+  lectureProgression: Record<string, any>;
+}>();
+
+const emits = defineEmits<["finished", "next"]>();
+
+const currentQuestion = ref<Record<string, any>>({} as Record<string, any>);
 const questionNumber = ref(0);
 const totalQuestion = ref(0);
-const questions = ref(0);
-const interval = ref(null);
+const questions = ref<Record<string, any>[]>([]);
 const remainMinutes = ref(0);
-const remaining = ref(null);
-const answeredQuestions = ref([]);
+const remaining = ref<number | null>(null);
+const answeredQuestions = ref<Record<string, any>[]>([]);
 const hasError = ref(false);
 const loadingQuestion = ref(false);
-const messageError = ref();
+const messageError = ref<string | undefined>();
 const finished = ref(false);
 const confirmation = ref();
 const submit = ref();
@@ -114,190 +114,168 @@ const isLoading = ref(false);
 const practiceTestPlay = ref(null);
 const isSaving = ref(false);
 const displayResult = ref(false);
-const currentQuestionAnswered = ref({});
+const currentQuestionAnswered = ref<Record<string, any>>({} as Record<string, any>);
 const questionNumberAnswered = ref(0);
+
 const progress = computed(() => {
-    return (questionNumber.value / totalQuestion.value) * 100;
+  return (questionNumber.value / totalQuestion.value) * 100;
 });
-const user = computed(() => {
-    return store.state.user;
-});
-/** this function is used to save user progression*
- */
-const getCorrect = (index) => {
-    const answers = currentQuestion.value.responses.map((e) => {
-        return { ...e, choice: false };
-    });
-    answers[index].choice = true;
-    currentQuestion.value.responses = [...answers];
+
+const user = computed(() => JSON.parse(useAuthStore().getUser));
+
+const getCorrect = (index: number) => {
+  const answers = currentQuestion.value.responses.map((e:any) => ({ ...e, choice: false }));
+  answers[index].choice = true;
+  currentQuestion.value.responses = [...answers];
 };
-/** navigate to next question*/
+
 const next = () => {
-    if (!checkResponse()) {
-        hasError.value = true;
+  if (!checkResponse()) {
+    hasError.value = true;
+  } else {
+    hasError.value = false;
+    loadingQuestion.value = true;
+    validateUserResponse();
+
+    if (questionNumber.value < answeredQuestions.value.length) {
+      questionNumber.value++;
+      currentQuestion.value = answeredQuestions.value[questionNumber.value - 1];
+      loadingQuestion.value = false;
     } else {
-        hasError.value = false;
-        loadingQuestion.value = true;
-        validateUserResponse();
-        if (questionNumber.value < answeredQuestions.value.length) {
-            console.log("Answer Area==>", answeredQuestions.value);
-            questionNumber.value++;
-            console.log("Answer questionNumber==>", questionNumber.value);
-            currentQuestion.value = answeredQuestions.value[questionNumber.value - 1];
-            loadingQuestion.value = false;
-        } else {
-            answeredQuestions.value.push(currentQuestion.value);
-            console.log("Answer Area newt==>", answeredQuestions.value);
-            getNextQuestion();
-        }
+      answeredQuestions.value.push(currentQuestion.value);
+      getNextQuestion();
     }
+  }
 };
-/**check if user select the right element*/
-const checkResponse = () => {
-    const userChoice = currentQuestion.value.responses.filter((e) => e.choice);
-    if (currentQuestion.value.type === "Choice") {
-        messageError.value = "quiz_error_choice";
-        return userChoice && userChoice.length === 1;
-    } else if (currentQuestion.value.type.toLowerCase() === "select") {
-        messageError.value = "quiz_error_select";
-        return userChoice && userChoice.length >= 2;
-    }
-    return true;
+
+const checkResponse = (): boolean => {
+  const userChoice = currentQuestion.value.responses.filter((e:any) => e.choice);
+  if (currentQuestion.value.type === "Choice") {
+    messageError.value = "quiz_error_choice";
+    return userChoice.length === 1;
+  } else if (currentQuestion.value.type.toLowerCase() === "select") {
+    messageError.value = "quiz_error_select";
+    return userChoice.length >= 2;
+  }
+  return true;
 };
+
 const validateUserResponse = () => {
-    let answers = currentQuestion.value.responses;
-    const choice = answers.reduce((correct, ans) => {
-        if (correct) {
-            if (!ans.isCorrect && ans.choice) {
-                return false;
-            } else if (ans.isCorrect && !ans.choice) {
-                return false;
-            } else {
-                return correct;
-            }
-        } else {
-            return false;
-        }
-    }, true);
-    currentQuestion.value.responseCorrect = choice;
+  const answers = currentQuestion.value.responses;
+  const choice = answers.reduce((correct:any, ans:any) => {
+    if (!correct) return false;
+    if (!ans.isCorrect && ans.choice) return false;
+    if (ans.isCorrect && !ans.choice) return false;
+    return true;
+  }, true);
+  currentQuestion.value.responseCorrect = choice;
 };
+
 const isFinished = computed(() => {
-    return  answeredQuestions.value.length>=(questions.value.length - 1);
-})
+  return answeredQuestions.value.length >= (questions.value.length - 1);
+});
+
 const getNextQuestion = () => {
-    currentQuestion.value = questions.value[questionNumber.value];
-    questionNumber.value++;
-    loadingQuestion.value = false;
+  currentQuestion.value = questions.value[questionNumber.value];
+  questionNumber.value++;
+  loadingQuestion.value = false;
 };
+
 const previous = () => {
-    const fil = answeredQuestions.value.filter(
-        (e) => e.id === currentQuestion.value.id
-    );
-   // console.log("filter daa", fil);
-    if (!fil || fil.length <= 0) {
-        answeredQuestions.value.push(currentQuestion.value);
-    }
-    questionNumber.value = questionNumber.value - 1;
-  //  console.log("Answer questionNumber==>", questionNumber.value);
-    currentQuestion.value = answeredQuestions.value[questionNumber.value - 1];
-    finished.value = false;
+  const fil = answeredQuestions.value.filter(e => e.id === currentQuestion.value.id);
+  if (!fil.length) {
+    answeredQuestions.value.push(currentQuestion.value);
+  }
+  questionNumber.value--;
+  currentQuestion.value = answeredQuestions.value[questionNumber.value - 1];
+  finished.value = false;
 };
 
 const submitTest = () => {
-        if (!checkResponse()) {
-            hasError.value = true;
-        } else {
-            hasError.value = false;
-            validateUserResponse();
-            if (questionNumber.value < answeredQuestions.value.length) {
-                console.log("Answer Area==>", answeredQuestions.value);
-            } else {
-                answeredQuestions.value.push(currentQuestion.value);
-                console.log("Answer Area newt==>", answeredQuestions.value);
-            }
-            finishedTest();
-        }
-};
-const finishedTest = () => {
-    answeredQuestions.value.forEach((question) => {
-        if (question.responseCorrect) {
-            correctQuestion.value++;
-        } else if (question.skipped) {
-            skipQuestion++;
-        } else {
-            failedQuestion.value++;
-        }
-    });
-    console.log('correctQuestion',correctQuestion.value);
-    if (correctQuestion.value === questions.value.length) {
-        if (props.lectureProgression.status != 'Finish') {
-                isSaving.value = true;
-            const request = {
-                "percentage": 100,
-                "lectureId": props.lectureProgression.id
-            };
-            updateProgression(user.value.id, request)
-                .then((response) => {
-                  //  console.log("updateProgression=>response", response);
-                    return response.json();
-                })
-                .then((result) => {
-                  //  console.log("updateProgression=>result", result);
-                })
-                .catch((error) => {
-                  //  console.log("updateProgression=>error", error);
-                }).finally(() => {
-                    isSaving.value = false;
-                    displayResult.value = true;
-                    currentQuestionAnswered.value = answeredQuestions.value[0];
-                    questionNumberAnswered.value = 1;
-                });
-        } else {
-            displayResult.value = true;
-            currentQuestionAnswered.value = answeredQuestions.value[0];
-            questionNumberAnswered.value = 1;
-        }
-    } else {
-          displayResult.value = true;
-            currentQuestionAnswered.value = answeredQuestions.value[0];
-            questionNumberAnswered.value = 1;
+  if (!checkResponse()) {
+    hasError.value = true;
+  } else {
+    hasError.value = false;
+    validateUserResponse();
+
+    if (questionNumber.value >= answeredQuestions.value.length) {
+      answeredQuestions.value.push(currentQuestion.value);
     }
+    finishedTest();
+  }
 };
-const retake = () => {
-    init();
-    displayResult.value = false;
-    answeredQuestions.value = [];
-    currentQuestion.value = questions.value[0];
-        questionNumber.value = 1;
-}
-const nextLecture = () => {
-    emits('next', true);
-}
-const init = () => {
-    questionNumber.value = 1;
-    getLecture(props.lectureProgression.lecture.id)
-        .then((response) => {
-            return response.json();
-        })
-        .then((result) => {
-            questions.value = result.quiz;
-            currentQuestion.value = result.quiz[0];
-            totalQuestion.value = result.quiz.length;
-        })
-        .catch((error) => {
-            console.log("error", error);
+
+const finishedTest = () => {
+  answeredQuestions.value.forEach((question) => {
+    if (question.responseCorrect) {
+      correctQuestion.value++;
+    } else if (question.skipped) {
+      // skip logic (not defined)
+    } else {
+      failedQuestion.value++;
+    }
+  });
+
+  const completed = () => {
+    displayResult.value = true;
+    currentQuestionAnswered.value = answeredQuestions.value[0];
+    questionNumberAnswered.value = 1;
+  };
+
+  if (correctQuestion.value === questions.value.length) {
+    if (props.lectureProgression.status !== 'Finish') {
+      isSaving.value = true;
+      const request = {
+        percentage: 100,
+        lectureId: props.lectureProgression.id,
+      };
+      updateProgression(user.value.id, request)
+        .then((res) => res.json())
+        .then(() => {})
+        .catch((err) => console.error(err))
+        .finally(() => {
+          isSaving.value = false;
+          completed();
         });
+    } else {
+      completed();
+    }
+  } else {
+    completed();
+  }
 };
-watch(() => props.lectureProgression, (newval, oldval) => {
-    init();
-})
-// setup
-store.dispatch("hideHeader");
-init();
-onDeactivated(() => {
-    store.dispatch("showHeader");
+
+const retake = () => {
+  init();
+  displayResult.value = false;
+  answeredQuestions.value = [];
+  currentQuestion.value = questions.value[0];
+  questionNumber.value = 1;
+};
+
+const nextLecture = () => {
+  emits('next', true);
+};
+
+const init = () => {
+  questionNumber.value = 1;
+  getLecture(props.lectureProgression.lecture.id)
+    .then((response) => response.json())
+    .then((result) => {
+      questions.value = result.quiz;
+      currentQuestion.value = result.quiz[0];
+      totalQuestion.value = result.quiz.length;
+    })
+    .catch((error) => {
+      console.error("error", error);
+    });
+};
+
+watch(() => props.lectureProgression, () => {
+  init();
 });
 </script>
+
 
 <style scoped>
 .g_question_play {

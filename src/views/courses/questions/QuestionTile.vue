@@ -9,37 +9,36 @@
 </div>
 </template>
 
-<script>
-import {extractContent} from "../../resources/UtilityFunction";
+<script setup lang="ts">
+import { extractContent } from '@/utilities/UtilityFunction';
+import { defineProps, defineEmits, computed } from 'vue';
 
-export default {
-  name: "QuestionTile",
-  emits:['edit','delete'],
-  props:{
-    question:{
-      type:Object,
-      required:true,
-    },
-    position:{
-      type:Number,
-      required:true,
-    }
-  },
-  methods:{
-    remove(){
-      this.$emit('delete')
-    },
-    edit(){
-      this.$emit('edit');
-    }
-  },
-  computed:{
-    content(){
-      return extractContent(this.question.content, true);
-    }
-  }
+interface Question {
+  content: string;
+  [key: string]: any; // Add more properties as needed
 }
+
+const props = defineProps<{
+  question: Question;
+  position: number;
+}>();
+
+const emit = defineEmits<{
+  (e: 'edit'): void;
+  (e: 'delete'): void;
+}>();
+
+const remove = () => {
+  emit('delete');
+};
+
+const edit = () => {
+  emit('edit');
+};
+
+const content = computed(() => extractContent(props.question.content, true));
 </script>
+
 
 <style scoped>
 .g_question_tile{

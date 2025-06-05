@@ -38,181 +38,170 @@
   </div>
   <g-toast ref="message" :duration="10000" direction="top-right" />
 </template>
-<script setup>
-import { ANSWER_LIMIT } from "../../resources/utilityConstant";
-import { computed, ref } from "vue";
-import { AddQuestions, createQuestions, updateQuestion } from "../../database/griot";
-import GRichTextEditor from "../../resources/GRichTextEditor.vue";
-import SpinnerCmp from "../../resources/Spinner.vue";
-import GToast from "../../resources/GToast.vue";
+<script setup lang="ts">
+import { computed, ref, type Ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { ANSWER_LIMIT } from "@/utilities/utilityConstant";
+import { AddQuestions, createQuestions, updateQuestion } from "@/services/griot_service";
+import GRichTextEditor from "@/components/forms/FormElements/GRichTextEditor.vue";
+import { useToast } from 'vue-toastification'
+
+const toast = useToast();
+// i18n
 const { t } = useI18n();
 
-const emits = defineEmits(["save", 'cancel']);
-const props = defineProps({
-  questionType: {
-    type: String,
-    required: true,
-  },
-  action: {
-    type: String,
-    required: true,
-  },
-  question: {
-    type: Object,
-  },
-  ptId: {
-    type: String,
-    required: false,
-  },
-  lectureId: {
-    type: String,
-    required: false
-  },
-  courseId: {
-    type: String,
-    required: false
-  }
-});
-const questionContent = ref(null);
-const questionExplanation = ref(null);
-const questionDescription = ref(null);
-const message = ref();
-const answers = ref([
+// Emits
+const emit = defineEmits<{
+  (e: 'save'): void;
+  (e: 'cancel'): void;
+}>();
+
+// Props
+const props = defineProps<{
+  questionType: string; //'Choice' | 'Select'
+  action: string; //'new' | 'edit'
+  question?: Record<string,any>;
+  ptId?: string;
+  lectureId?: string;
+  courseId?: string;
+}>();
+
+// State
+const questionContent = ref<string >('');
+const questionExplanation = ref<string >('');
+const questionDescription = ref<string >('');
+
+const answers = ref<Record<string,any>[]>([
   { content: "", isCorrect: false },
   { content: "", isCorrect: false },
   { content: "", isCorrect: false },
 ]);
-const initAnswer = ref([
+
+const initAnswer = ref<Record<string,any>[]>([
   { content: "", isCorrect: false },
   { content: "", isCorrect: false },
   { content: "", isCorrect: false },
 ]);
+
 const isSaving = ref(false);
-const type = computed(() => {
-  return props.questionType == "Choice" ? "radio" : "checkbox";
+
+const type = computed<'radio' | 'checkbox'>(() => {
+  return props.questionType === "Choice" ? "radio" : "checkbox";
 });
-const cancel = () => {
-  emits('cancel');
+
+// Methods
+const cancel = (): void => {
+  emit("cancel");
 };
-const verifyQuestion = computed(() => {
-  console.log("question data", answers.value);
-  if (!questionContent.value) {
-    return false;
-  } else {
-    let notValid = true;
-    for (let i = 0; i < answers.value.length - 2; i++) {
-      if (!answers.value[i].content) {
-        notValid = false;
-        break;
-      }
-    }
-    if (!notValid) {
-      return notValid;
-    } else {
-      const ans = answers.value.filter((a) => a.isCorrect);
-      if (props.questionType === "Choice") {
-        if (!ans || ans.length !== 1) {
-          return false;
-        }
-      } else if (props.questionType === "Select") {
-        if (!ans || ans.length < 2) {
-          return false;
-        }
-      }
-    }
-    return true;
+
+const verifyQuestion = computed<boolean>(() => {
+  if (!questionContent.value) return false;
+
+  for (let i = 0; i < answers.value.length - 2; i++) {
+    if (!answers.value[i].content) return false;
   }
+
+  const correctAnswers = answers.value.filter((a) => a.isCorrect);
+  if (props.questionType === "Choice" && correctAnswers.length !== 1) {
+    return false;
+  }
+  if (props.questionType === "Select" && correctAnswers.length < 2) {
+    return false;
+  }
+
+  return true;
 });
-const remove = (index) => {
+
+const remove = (index: number): void => {
   if (answers.value.length > 1) {
     answers.value.splice(index, 1);
   }
 };
-const addAnswer = (index) => {
-  console.log("index", index);
-  if (
-    answers.value.length - 1 === index &&
-    answers.value.length <= ANSWER_LIMIT
-  ) {
+
+const addAnswer = (index: number): void => {
+  if (answers.value.length - 1 === index && answers.value.length <= ANSWER_LIMIT) {
     answers.value.push({ content: "", position: index + 1, isCorrect: false });
-    console.log("this.answers", answers.value);
   }
 };
-const reset = () => {
-  questionExplanation.value = null;
-  questionContent.value = null;
-  answers.value = initAnswer.value;
+
+const reset = (): void => {
+  questionExplanation.value = '';
+  questionContent.value = '';
+  answers.value = [...initAnswer.value];
 };
-const getCorrect = (index) => {
-  answers.value = answers.value.map((e) => {
-    return { ...e, isCorrect: false };
-  });
-  answers.value[index].isCorrect = true;
+
+const getCorrect = (index: number): void => {
+  answers.value = answers.value.map((e, i) => ({
+    ...e,
+    isCorrect: i === index,
+  }));
 };
-const save = () => {
+
+const save = async (): Promise<void> => {
   isSaving.value = true;
-  let __answers = answers.value.filter((e) => e.content);
-  for (let i = 0; i < __answers.length - 1; i++) {
-    __answers[i].position = i + 1;
-  }
-  if (props.action === "new") {
-    let questionObject = {
-      type: props.questionType,
-      explanation: questionExplanation.value ?? "",
-      responses: __answers,
-      content: questionContent.value,
-      description: questionDescription.value ?? "",
-      practiceTestId: props.ptId ?? ""
-    };
-    var servicecall = props.lectureId ? AddQuestions(props.lectureId, props.courseId, [questionObject]) : createQuestions([questionObject]);
-    servicecall.then((response) => {
-      return response.json();
-    })
-      .then((data) => {
-        message.value.toast(t("Question"), t("new_question_added"), "success");
-        emits('save');
-      })
-      .catch((error) => {
-        message.value.toast(t("Question"), t("error_occur"), "error");
-      }).finally(() => {
-        isSaving.value = false;
-      });
-  } else if (props.action === "edit") {
-    let questionObject = {
-      ...props.question,
-      explanation: questionExplanation.value,
-      responses: __answers,
-      content: questionContent.value,
-      description: questionDescription.value,
-    };
-    updateQuestion(props.question.id, questionObject)
-      .then((response) => {
-        console.log("Response", response);
-        return response.json();
-      })
-      .then((data) => {
-        message.value.toast(t("Question"), t("question_updated"), "success");
-        emits('save');
-      })
-      .catch((error) => {
-        message.value.toast(t("Question"), t("error_occur"), "error");
-        console.error(error);
-      }).finally(() => {
-        isSaving.value = false;
-      })
+  const validAnswers = answers.value.filter((e) => e.content);
+
+  validAnswers.forEach((answer, i) => {
+    answer.position = i + 1;
+  });
+
+  const questionPayload: Record<string,any> = {
+    type: props.questionType,
+    explanation: questionExplanation.value ?? "",
+    responses: validAnswers,
+    content: questionContent.value ?? "",
+    description: questionDescription.value ?? "",
+    practiceTestId: props.ptId ?? "",
+  };
+
+  try {
+    if (props.action === "new") {
+      const serviceCall = props.lectureId
+        ? AddQuestions(props.lectureId, props.courseId!, [questionPayload])
+        : createQuestions([questionPayload]);
+
+      const response = await serviceCall;
+      await response.json();
+
+     toast.success( t("new_question_added"));
+      emit("save");
+    } else if (props.action === "edit" && props.question) {
+      const updatedQuestion: Record<string,any> = {
+        ...props.question,
+        content: questionContent.value ?? "",
+        explanation: questionExplanation.value ?? "",
+        description: questionDescription.value ?? "",
+        responses: validAnswers,
+      };
+
+      const response = await updateQuestion(props.question.id!, updatedQuestion);
+      await response.json();
+
+      toast.success(t("question_updated"));
+      emit("save");
+    }
+  } catch (error) {
+    toast.error( t("error_occur") );
+    console.error(error);
+  } finally {
+    isSaving.value = false;
   }
 };
-const init = () => {
-  questionContent.value = props.question.content;
-  questionExplanation.value = props.question.explanation;
-  questionDescription.value = props.question.description;
-  answers.value = props.question.responses ?? [];
-}
-if (props.action === 'edit') {
+
+const init = (): void => {
+  if (props.question) {
+    questionContent.value = props.question.content;
+    questionExplanation.value = props.question.explanation ?? null;
+    questionDescription.value = props.question.description ?? null;
+    answers.value = props.question.responses ?? [];
+  }
+};
+
+if (props.action === "edit") {
   init();
 }
 </script>
+
 <style scoped>
 .g_question_edit {
   padding: 0.5em 1em;

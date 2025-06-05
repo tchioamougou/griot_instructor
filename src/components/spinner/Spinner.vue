@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // rien ici pour le moment
 </script>
 
@@ -13,14 +13,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 1rem;
+  padding: 0.01rem;
 }
 .spinner {
   border: 4px solid #f3f3f3;
   border-top: 4px solid #3498db;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 10px;
+  height: 10px;
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin {

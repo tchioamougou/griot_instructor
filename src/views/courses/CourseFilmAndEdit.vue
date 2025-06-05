@@ -1,12 +1,7 @@
 <template>
-  <div class="card g-box-shadow">
-    <div class="card-body">
-      <div class="g-block-header">
-        <div class="block_title">
-          <h4 class="g-title">{{$t('film.title')}}</h4>
-        </div>
-      </div>
-      <div class="g-container">
+  <ItemLayout :title="$t('film.title')"> 
+<template #main>
+  <div class="g-container">
         <div>
           <h2>{{$t('film.h2_1')}}</h2>
           <p class="mt-2 mb-5">
@@ -68,12 +63,13 @@
           </p>
         </div>
       </div>
-    </div>
-  </div>
+</template>
+  </ItemLayout>
 </template>
 
 <script setup lang="ts">
 import { coursesStep } from "@/services/griot_service";
+import ItemLayout from "./items/ItemLayout.vue";
 const props = defineProps({
   course: {
     type: Object,

@@ -229,7 +229,7 @@
 <script setup>
 import { COURSE_TYPE, LEARNING_STATUS } from "../../resources/utilityConstant";
 import store from "../../store";
-import router from "../../router";
+import router from "../../../router";
 import { getCoursesProgressionById } from "../../database/griot";
 import { computed, defineAsyncComponent, ref } from "vue";
 import GQuestionPlay from "./GQuestionPlay.vue";

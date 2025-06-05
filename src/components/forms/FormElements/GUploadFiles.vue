@@ -45,7 +45,7 @@ const props = defineProps<{
   repository: string;
   user?: Record<string, any>;
   allowFile: string;
-  course: Record<string, any>;
+  course?: Record<string, any>;
   source: string;
   label?: string;
   placeholder: string;
@@ -137,9 +137,9 @@ const handleChange = (e: Event) => {
   } else if (props.source === "Profile") {
     filename = `${props.repository}/${props.user?.id}__p`;
   } else if (props.source === "CourseImage") {
-    filename = `${props.repository}/${props.course.id}__ci`;
+    filename = `${props.repository}/${props.course?.id}__ci`;
   } else {
-    filename = `Video/${props.course.id}__pv`;
+    filename = `Video/${props.course?.id}__pv`;
   }
 
   if (props.type === "Video") {

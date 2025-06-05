@@ -122,7 +122,7 @@ const GSpinner = defineAsyncComponent(()=>import('../../resources/GSpinner.vue')
 const SpinnerCmp = defineAsyncComponent(()=>import('../../resources/Spinner.vue')) ;
 const PracticeTestItem = defineAsyncComponent(()=>import('./PracticeTestItem.vue')) ;
 import {createPractices} from "../../database/griot";
-import router from "../../router";
+import router from "../../../router";
 import GToast from "../../resources/GToast.vue";
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();

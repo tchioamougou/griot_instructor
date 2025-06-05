@@ -61,7 +61,7 @@ const CourseSetupAndTest = defineAsyncComponent(() => import('./CourseSetupAndTe
 const CourseCaptions = defineAsyncComponent(() => import('./CourseCaptions.vue'));
 const CourseLandingPage = defineAsyncComponent(() => import('./CourseLandingPage.vue'));
 const SpinnerCmp = defineAsyncComponent(() => import('@/components/spinner/Spinner.vue'));
-const PracticeTest = defineAsyncComponent(() => import('./PracticeTest.vue'));
+const PracticeTest = defineAsyncComponent(() => import('./practices/PracticeTest.vue'));
 
 // i18n
 const { t } = useI18n();

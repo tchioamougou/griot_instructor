@@ -1,16 +1,7 @@
 <template>
-  <div class="card g-box-shadow">
-    <div class="card-body">
-      <div class="g-block-header">
-        <div class="block_title">
-          <h5 class="g-title">{{$t('curriculum')}}</h5>
-        </div>
-        <div class="block_action">
-          <button class="g-button me-3" @click="preview">{{ $t('preview') }}</button>
-          <button class="g-button">{{ $t('bulk_upload') }}</button>
-        </div>
-      </div>
-      <div class="g-container">
+  <ItemLayout :title="$t('curriculum')">
+    <template #main>
+       <div class="g-container">
         <div class="g-tip">
           <div class="title important">
             <i class="bi bi-patch-exclamation-fill"></i> {{
@@ -33,12 +24,12 @@
           </div>
         </div>
         <!-- Course details -->
-        <div style="position: relative">
-          <template v-for="section in course.sections" :key="section.position">
+        <div style="position: relative" class="mt-10 ">
+          <template v-for="section in sortedSections" :key="section.position">
             <g-section :section="section" @refresh="refresh" />
           </template>
-          <div class="g-add-more-button">
-            <span @click="addSection()" v-if="!addingSection">+</span>
+          <div class="g-add-more-button mt-6">
+            <button @click="addSection()" v-if="!addingSection" class="border-1 text-sm hover:bg-gray-200 rounded px-2 py-1 border-purple-400 "> + {{ $t('section') }}</Button>
             <div
               class="new_section_btn_cancel"
               v-if="addingSection"
@@ -48,24 +39,22 @@
             </div>
           </div>
         </div>
-        <div class="new_section" v-if="addingSection">
+        <div class="border-1 px-4 py-3 rounded border-black/25 mb-10" v-if="addingSection">
           <div class="new_section_content">
-            <div class="new_section_content_label">
+            <div class="new_section_content_label text-sm">
               <span>{{ $t('new_section') }} :</span>
             </div>
             <div class="new_section_content_input">
               <div class="new_section_content_div">
-                <g-input
-                  :max="80"
+                <BaseInput
                   :placeholder="$t('new_section_ob.title_placeholder')"
                   show-rest
                   v-model="currentSection.title"
-                  :is-error="hasError && !currentSection.title"
-                  :message-error="$t('field_blank_error')"
+                  :maxlength="80"
                 />
-                <g-input
+                <BaseInput
                   :label="$t('new_section_ob.objective_label')"
-                  :max="200"
+                  :maxlength="200"
                   :placeholder="$t('new_section_ob.objective_placeholder')"
                   show-rest
                   v-model="currentSection.learningObjectives"
@@ -74,14 +63,15 @@
                 />
               </div>
               <div class="new_section_content_action">
-                <div class="actions">
-                  <button class="cancel" @click="cancel">{{ $t('cancel_btn') }}</button>
-                  <button
+                <div class="flex justify-end gap-2">
+                  <Button variant="neutral" class="cancel" @click="cancel" size="sm">{{ $t('cancel_btn') }}</button>
+                  <Button
                     class="save"
                     @click="saveSection"
                     :disabled="isSaving"
+                    :size="'sm'"
                   >
-                    <spinner-cmp v-if="isSaving" />
+                    <Spinner v-if="isSaving" />
                     {{$t('add_section')}}
                   </button>
                 </div>
@@ -90,87 +80,115 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-  <g-toast ref="message" :duration="10000" direction="top-right" />
+    </template>
+  </ItemLayout>
 </template>
-<script setup>
-import GSection from "./GSection.vue";
-import GInput from "../../resources/GInput.vue";
-import GToast from "../../resources/GToast.vue";
-import SpinnerCmp from "../../resources/Spinner.vue";
-import {ref, watch} from "vue";
-import { createSections } from "../../database/griot";
-import router from "../../router";
-const emits = defineEmits(["refresh"]);
+<script setup lang="ts">
+import { ref, watch } from "vue";
+import { useRouter } from "vue-router";
+
+import GSection from "./sections/GSection.vue";
+import BaseInput from '@/components/forms/FormElements/BaseInput.vue';
+import ItemLayout from './items/ItemLayout.vue';
+import { createSections } from "@/services/griot_service.ts";
+import { useToast } from 'vue-toastification'
+import Spinner from "@/components/spinner/Spinner.vue";
+const toast = useToast();
+import { useI18n } from "vue-i18n";
+import Button from "@/components/ui/Button.vue";
+const { t } = useI18n();  
+const router = useRouter();
+
+const emits = defineEmits<{
+  (e: "refresh"): void;
+}>();
+
+const props = defineProps<{
+  course: Record<string, any> 
+}>();
+
 const loading = ref(false);
 const isSaving = ref(false);
-const currentSection = ref({});
+const currentSection = ref<Partial<Record<string,any>>>({});
 const addingSection = ref(false);
 const hasError = ref(false);
+const message = ref<string | null>(null);
+
 const cancel = () => {
   addingSection.value = false;
   currentSection.value = {};
 };
+
 const addSection = () => {
   addingSection.value = true;
   hasError.value = false;
 };
-const props = defineProps({
-  course: {
-    type: Object,
-    required: true,
-  },
-});
+
 const saveSection = () => {
-  if (!currentSection.value.title || !currentSection.value.learningObjectives) {
+  if (
+    !currentSection.value.title ||
+    !currentSection.value.learningObjectives
+  ) {
     hasError.value = true;
     return;
   }
+
   isSaving.value = true;
-  let section = currentSection.value;
-  section.courseId = props.course.id;
-  section.position = props.course.sections.length + 1;
+
+  const section: Record<string,any> = {
+    ...currentSection.value,
+    courseId: props.course.id,
+    position: props.course.sections.length + 1,
+  };
+
   createSections([section])
-    .then((response) => {
-      return response.json();
-    })
+    .then((response) => response.json())
     .then((data) => {
-      console.log("createSessions", data);
+      console.log("createSections", data);
       isSaving.value = false;
       emits("refresh");
       cancel();
-      message.value.toast("Success", "Section Created successfully", "success");
+      toast.success("Section Created successfully");
     })
     .catch((error) => {
-      console.log("createSessions=> error", error);
+      console.error("createSections error", error);
+      toast.error(t('error_occur'));
       isSaving.value = false;
     });
 };
+
 const refresh = () => {
   emits("refresh");
 };
-const message = ref(null);
+
 const preview = () => {
   router.push({
     name: "courseView",
     params: { id: props.course.id },
   });
 };
-watch(()=>props.course,(value)=>{init()})
+
+const sortedSections = ref<Array<Record<string, any>>>([]);
+
 const init = () => {
-  props.course.sections
-    ?.sort((a, b) => {
-      return a.position - b.position;
-    })
-    .forEach((e) =>
-      e.lectures?.sort((l, l2) => {
-        return l.position - l2.position;
-      })
-    );
+  if (props.course.sections) {
+    // Deep copy and sort sections and lectures to avoid mutating props
+    sortedSections.value = props.course.sections
+      .map((section:any) => ({
+        ...section,
+        lectures: section.lectures
+          ? [...section.lectures].sort((l1: Record<string, any>, l2: Record<string, any>) => l1.position - l2.position)
+          : []
+      }))
+      .sort((a: Record<string, any>, b: Record<string, any>) => a.position - b.position);
+  } else {
+    sortedSections.value = [];
+  }
 };
-init();
+
+watch(() => props.course, () => init(), { immediate: true });
 </script>
+
 <style scoped>
 .new_section {
   padding: 0 1em;
@@ -187,7 +205,6 @@ init();
   font-family: sans-serif;
   font-weight: 900;
   width: 15%;
-  padding: 1.5em 0;
 }
 
 .new_section_content_input {
