@@ -93,7 +93,10 @@ const props = defineProps<{
   lectureProgression: Record<string, any>;
 }>();
 
-const emits = defineEmits<["finished", "next"]>();
+const emits = defineEmits<{
+    (e: 'finished'): void;
+    (e: 'next', value: any): void;
+}>();
 
 const currentQuestion = ref<Record<string, any>>({} as Record<string, any>);
 const questionNumber = ref(0);

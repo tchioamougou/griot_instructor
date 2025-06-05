@@ -8,7 +8,7 @@
             $t('unpublished') }}</span>
             {{ $t(item.type) }} {{ item.position }} : {{ item.title }}
           </span>
-          <span >
+          <span>
             <span @click="startEditLecture" class="ms-2"><i class="bi bi-pencil-fill"></i></span>
             <span class="ms-2" @click="confirmDelete"><i class="bi bi-x-circle"></i></span>
           </span>
@@ -19,8 +19,9 @@
             <span v-if="item.documentType"> {{ $t('update_content') }} </span>
             <span v-else>{{ $t('add_content') }}</span>
           </Button>
-          <!--<span class="g-add-content-btn" v-if="isQuiz" @click="initAddQuestion">
-            <span>+ {{ $t('Questions') }}</span></span>-->
+          <Button size="sm" v-if="isQuiz" @click="initAddQuestion">
+            <span>+ {{ $t('Questions') }}</span>
+          </Button>
           <span class="ms-4">
             <i class="bi bi-chevron-down" v-if="!showDetails" @click="showDetails = true"></i>
             <i class="bi bi-chevron-up" v-else @click="showDetails = false"></i>
@@ -49,34 +50,41 @@
           </div>
         </div>
         <div class="lecture_content" v-if="showDetails && !isQuiz">
-          <div class="lecture_details" v-if="item.documentType">
+          <div class="lecture_details border-t-1 border-black/25 py-3" v-if="item.documentType">
             <div class="block_preview">
               <div class="image">
-                <img src="../../assets/images/home/create-account.svg" height="100" width="100" />
+                <img src="@/assets/images/home/create-account.svg" height="100" width="100" />
               </div>
               <div class="details">
-                <div class="title">{{ item.title }}</div>
+                <div class="title text-sm">{{ item.title }}</div>
                 <div class="">{{ getFileSizeLocal(item.size) }}</div>
                 <div class="time">{{ duration }}</div>
                 <div class="edit">
-                  <i class="bi bi-pencil-fill"></i> {{ $t('edit_content') }}
+                  <i class="bi bi-pencil-fill text-sm"></i> {{ $t('edit_content') }}
                 </div>
               </div>
             </div>
-            <div class="block_parameters">
+            <div class="block_parameters gap-2">
               <div class="preview">
-                <div class="form-check form-switch">
-                  <label class="form-check-label" for="preview">{{ $t('FreePreview') }}</label>
-                  <input class="form-check-input" type="checkbox" id="preview" v-model="localItem.preview"
-                    :disabled="isSaving" @change="updateLectureLocal" />
-                </div>
+                <label class="inline-flex items-center cursor-pointer">
+                  <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 me-2">{{ $t('FreePreview') }}</span>
+                  <input type="checkbox" value="" class="sr-only peer" v-model="localItem.preview" id="preview"
+                    :disabled="isSaving" @change="updateLectureLocal">
+                  <div
+                    class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600">
+                  </div>
+                </label>
               </div>
               <div class="download">
-                <div class="form-check form-switch">
-                  <label class="form-check-label" for="download">{{ $t('Downloadable') }}</label>
-                  <input class="form-check-input" type="checkbox" id="download" v-model="localItem.downloadable"
-                    :disabled="isSaving" @change="updateLectureLocal" />
-                </div>
+                <label class="inline-flex items-center cursor-pointer">
+                  <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 me-2">{{ $t('Downloadable')
+                  }}</span>
+                  <input type="checkbox" value="" class="sr-only peer" id="download" v-model="localItem.downloadable"
+                    :disabled="isSaving" @change="updateLectureLocal">
+                  <div
+                    class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600">
+                  </div>
+                </label>
               </div>
             </div>
           </div>
@@ -191,7 +199,7 @@
         <div class="lectureAddContent border-t-1 py-3 px-3 border-black/25" v-if="addingContent">
           <div class="lectureAddContent_title">
             <span>{{ $t('addingContent_ob.description') }} <a href="#">{{ $t('addingContent_ob.description_url')
-            }}</a></span>
+                }}</a></span>
           </div>
           <div class="lectureAddContent_type">
             <input type="radio" id="Video" value="Video" v-model="documentType" class=""
@@ -203,9 +211,10 @@
           </div>
           <div v-if="documentType == 'Video'" class="lectureAddContent_video">
             <div class="lectureAddContent_video_file">
-              <g-upload-files repository="Videos_Course" :file-name="item.id" source="videoCourse" :allow-file="ALLOW_FILE.video"
-                :apiName="item.id" :placeholder="$t('No file selected')" :button-name="$t('select_Video')" type="Video"
-                @selected="onGetVideoDetails" v-model="localItem.contentLink" />
+              <g-upload-files repository="Videos_Course" :file-name="item.id" source="videoCourse"
+                :allow-file="ALLOW_FILE.video" :apiName="item.id" :placeholder="$t('No file selected')"
+                :button-name="$t('select_Video')" type="Video" @selected="onGetVideoDetails"
+                v-model="localItem.contentLink" />
             </div>
             <div class="nb">
               <span>{{ $t('lecture_video_nb') }}</span>
@@ -224,15 +233,16 @@
           </div>
         </div>
         <div class="" v-if="isQuiz">
-          <div class="" v-if="showDetails">
+          <div class="border-t-1 border-black/25 py-3" v-if="showDetails">
             <template v-if="!addingQuestion">
-              <div class="g_pt-content--question-type">
-                <div class="g_pt-content--question-type-item" @click="selectType('Choice')">
-                  <div class="icon"><i class="bi bi-question-circle"></i></div>
+              <div class="flex justify-center gap-11">
+                <div class=" flex flex-col justify-center self-center hover:bg-gray-100 cursor-pointer"
+                  @click="selectType('Choice')">
+                  <div class="icon self-center"><i class="bi bi-question-circle"></i></div>
                   <div class="type">{{ $t('multiple_choice') }}</div>
                 </div>
-                <div class="g_pt-content--question-type-item" @click="selectType('Select')">
-                  <div class="icon"><i class="bi bi-question-circle"></i></div>
+                <div class="flex flex-col hover:bg-gray-100 cursor-pointer" @click="selectType('Select')">
+                  <div class="icon self-center"><i class="bi bi-question-circle"></i></div>
                   <div class="type">{{ $t('muliple_select') }}</div>
                 </div>
               </div>
@@ -254,7 +264,7 @@
     </div>
   </template>
   <g-confirmation :id="'item_' + item.id" ref="confirmation" @accepted="accepted" :message="$t('confirm_delete_item')"
-    @cancel="refuse" :title="$t('please_confirm')" :accept-label="$t('yes')"  :show-cancel="true"/>
+    @cancel="refuse" :title="$t('please_confirm')" :accept-label="$t('yes')" :show-cancel="true" />
   <GConfirmation :id="'questio_' + item.id" ref="confirmationQuestion" @accepted="acceptedQuestion"
     :message="$t('confirm_delete_question')" @cancel="refuse" :title="$t('please_confirm')" />
 </template>
@@ -359,8 +369,8 @@ const initAddContent = () => {
 };
 
 const initAddQuestion = () => {
-  addingQuestion.value = true;
-  showDetails.value = false;
+  // addingQuestion.value = true;
+  showDetails.value = true;
 };
 
 const onHover = () => {
@@ -443,12 +453,13 @@ const updateLectureContent = () => {
   if (!documentType.value || !localItem.value) return;
   localItem.value.documentType = documentType.value;
   if (documentType.value === 'Article') {
-    localItem.value.duration = estimateReadingTime(localItem.value.article ?? '');
+    localItem.value.duration = parseInt(`${estimateReadingTime(localItem.value.article ?? '0')}`);
   }
   updateLectureLocal();
 };
 
 const updateLectureLocal = () => {
+  console.log('updateLectureLocal', localItem.value);
   if (!localItem.value?.title) {
     hasError.value = true;
     return;
@@ -640,7 +651,6 @@ const refuse = () => {
   display: flex;
   justify-content: space-between;
   font-family: sans-serif;
-  border-bottom: 0.01em solid gray;
   margin: 0.5em;
 }
 

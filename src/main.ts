@@ -17,7 +17,7 @@ import router from './router'
 import { createPinia } from 'pinia'
 import VueApexCharts from 'vue3-apexcharts'
 import { createI18n } from 'vue-i18n';
-
+import './firebase'
 
 import messages from '@/lang/index';
 

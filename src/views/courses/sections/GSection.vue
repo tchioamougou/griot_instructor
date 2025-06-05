@@ -91,6 +91,10 @@ import GItem from './GItem.vue';
 import Button from '@/components/ui/Button.vue';
 import Spinner from '@/components/spinner/Spinner.vue';
 import GConfirmation from '@/components/ui/GConfirmation.vue';
+import { useToast } from 'vue-toastification'
+
+
+const toast = useToast();
 const { t } = useI18n();
 const props = defineProps({
   section: {
@@ -111,7 +115,7 @@ const confirmation = ref();
 const action = ref('');
 
 let newItem: any = {};
-const itemTypes = ['Lecture', "Quiz"]; // 'Coding Exercise',', , 'Assigment'
+const itemTypes = ['Lecture',"Practice Test","Quiz"]; // 'Coding Exercise',', , 'Assigment'// "Quiz"
 
 const updateSectionLocal = () => {
   if (!currentSection.value.title || !currentSection.value.learningObjectives) {
@@ -125,11 +129,11 @@ const updateSectionLocal = () => {
       isSaving.value = false;
       emits('refresh');
       cancel();
-      message.value.toast(t('Section'), t('section_updated'), 'success');
+      toast.success( t('section_updated'));
     })
     .catch(err => {
       console.error(err);
-      message.value.toast(t('Section'), t('error_occur'), 'error');
+      toast.error(t('error_occur'), );
       isSaving.value = false;
     });
 };
@@ -192,7 +196,7 @@ const saveNewItem = () => {
       isSaving.value = false;
       emits('refresh');
       cancel();
-      message.value.toast('Success', 'Section Created Lecture', 'success');
+      toast.success('Section Created Lecture');
     })
     .catch(err => {
       console.error(err);

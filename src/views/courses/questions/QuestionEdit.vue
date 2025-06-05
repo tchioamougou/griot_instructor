@@ -29,11 +29,11 @@
       <g-rich-text-editor :label="$t('Description')" api-name="description" :justify-content="false"
         :description="$t('Description')" v-model="questionDescription" :content="questionDescription" />
     </div>
-    <div class="actions">
-      <button @click="cancel">{{ $t('cancel_btn') }}</button>
-      <button class="save" :disabled="isSaving || !verifyQuestion" @click="save">
+    <div class="flex justify-end gap-3">
+      <Button variant="neutral" size="sm" @click="cancel">{{ $t('cancel_btn') }}</Button>
+      <Button class="save" size="sm" :disabled="isSaving || !verifyQuestion" @click="save">
         <spinner-cmp v-if="isSaving" /> {{ $t('save') }}
-      </button>
+      </Button>
     </div>
   </div>
   <g-toast ref="message" :duration="10000" direction="top-right" />
@@ -45,6 +45,7 @@ import { ANSWER_LIMIT } from "@/utilities/utilityConstant";
 import { AddQuestions, createQuestions, updateQuestion } from "@/services/griot_service";
 import GRichTextEditor from "@/components/forms/FormElements/GRichTextEditor.vue";
 import { useToast } from 'vue-toastification'
+import Button from "@/components/ui/Button.vue";
 
 const toast = useToast();
 // i18n
@@ -161,6 +162,7 @@ const save = async (): Promise<void> => {
         : createQuestions([questionPayload]);
 
       const response = await serviceCall;
+      console.log("response", response);
       await response.json();
 
      toast.success( t("new_question_added"));

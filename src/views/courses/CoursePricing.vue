@@ -1,16 +1,7 @@
 <template>
-  <div class="card g-box-shadow">
-    <div class="card-body">
-      <div class="g-block-header">
-        <div class="block_title">
-          <h5 class="g-title">{{ $t('Pricing') }}</h5>
-        </div>
-      </div>
-      <template v-if="loading">
-        <g-spinner />
-      </template>
-      <template v-if="!loading">
-        <div class="g-container">
+  <ItemLayout :title="$t('Pricing')" >
+    <template #main>
+     <div class="g-container">
           <div class="g-tip">
             <div class="title important">
               <i class="bi bi-patch-exclamation-fill"></i> {{ $t('important') }}
@@ -35,12 +26,12 @@
           </div>
           <div class="g-pricing-line mt-4">
             <div class="currency">
-              <g-select :options="currencyOptions" v-model="currency" :disabled="isSaving" />
+              <BaseSelect :options="currencyOptions" v-model="currency" :disabled="isSaving" />
             </div>
             <div class="value">
-              <g-select :options="pricingOptions" v-if="localCoursePricing.type === 'Standard'"
+              <BaseSelect :options="pricingOptions" v-if="localCoursePricing.type === 'Standard'"
                 v-model="localCoursePricing.price" :disabled="isSaving" />
-              <g-input type="Number" v-if="localCoursePricing.type === 'Custom'" v-model="localCoursePricing.price"
+              <BaseInput type="Number" v-if="localCoursePricing.type === 'Custom'" v-model="localCoursePricing.price"
                 :disabled="isSaving" />
             </div>
             <div class="action">
@@ -51,93 +42,106 @@
             </div>
           </div>
         </div>
-      </template>
-    </div>
-  </div>
-  <g-toast ref="message" :duration="10000" direction="top-right" />
+    </template>
+  </ItemLayout>
+
 </template>
-<script setup>
-import GSelect from "../../resources/GSelect.vue";
-import GInput from "../../resources/GInput.vue";
-import GSpinner from "../../resources/GSpinner.vue";
-import SpinnerCmp from "../../resources/Spinner.vue";
-import GToast from "../../resources/GToast.vue";
+<script lang="ts" setup>
+import GSpinner from "@/components/ui/GSpinner.vue";
+
 import { computed, ref, watch } from "vue";
-import { CURRENCY_CODE, CURRENCY_OB, DOLLAR_Rate } from "../../resources/commonCurrency";
-import { STANDARD_PRICING_OPTIONS } from "../../resources/utilityConstant";
-import { coursesPricing } from "../../database/griot";
+import { CURRENCY_CODE, CURRENCY_OB, DOLLAR_Rate } from "@/utilities/commonCurrency";
+import { STANDARD_PRICING_OPTIONS } from "@/utilities/utilityConstant";
+import { coursesPricing } from "@/services/griot_service";
 import { useI18n } from "vue-i18n";
+import BaseInput from "@/components/forms/FormElements/BaseInput.vue";
+import BaseSelect from "@/components/forms/FormElements/BaseSelect.vue";
+import ItemLayout from "./items/ItemLayout.vue";
+
+
 const { t } = useI18n();
-const emits = defineEmits(['refresh'])
-const props = defineProps({
-  course: {
-    type: Object,
-    required: true,
-  },
-});
-const localCoursePricing = ref({});
-const currency = ref("XAF");
-const isSaving = ref(false);
-const message = ref(null);
-const loading = ref(false)
-const currencyOptions = ref(
+
+const emits = defineEmits<{
+  (e: 'refresh'): void;
+}>();
+
+const props = defineProps<{
+  course: Record<string, any>; // Assuming course is an object with a price property
+}>();
+
+const localCoursePricing = ref<Record<string, any>>({});
+const currency = ref<string>("XAF");
+const isSaving = ref<boolean>(false);
+const message = ref<any>(null); // GToast might expose a proper type you could use instead of any
+const loading = ref<boolean>(false);
+
+const currencyOptions = ref<Record<string, any>[]>(
   CURRENCY_OB.map((e) => {
-    return { ...e, originalName: e.name, name: e.code, value: e.code };
+    return { ...e, originalName: e.name, label: e.code, value: e.code };
   })
 );
+
 const pricingOptions = computed(() => {
-  const currencyLocal = CURRENCY_CODE[currency.value].symbol.toLocaleLowerCase();
-  return STANDARD_PRICING_OPTIONS.map(e => {
+  const currencyLocal = CURRENCY_CODE[currency.value as keyof typeof CURRENCY_CODE].symbol.toLocaleLowerCase();
+  return STANDARD_PRICING_OPTIONS.map((e: any) => {
+    const val = e[currencyLocal];
     return {
-      ...e, name: e[currencyLocal] === 0 ? "Free" : (CURRENCY_CODE[currency.value].symbol + ' ' + e[currencyLocal]),
-      value: e[currencyLocal]
-    }
+      ...e,
+      name: val === 0 ? "Free" : `${CURRENCY_CODE[currency.value as keyof typeof CURRENCY_CODE].symbol} ${val}`,
+      value: val,
+    };
   });
 });
+
 const updateCoursePrice = () => {
   if (
     localCoursePricing.value.type &&
-    localCoursePricing.value.price &&
+    localCoursePricing.value.price !== undefined &&
     currency.value
   ) {
     isSaving.value = true;
-    const cur = currencyOptions.value.filter(
-      (e) => e.value === currency.value
-    )[0];
+
+    const cur = currencyOptions.value.find(e => e.value === currency.value);
+    if (!cur) return;
+
     const request = {
-      "id": props.course.price?.id,
-      "type": localCoursePricing.value.type,
-      "currencySymbol": cur.symbol,
-      "value": localCoursePricing.value.price,
-      "currencyName": cur.name,
-      "currencyCode": cur.code,
-    }
+      id: props.course.price?.id,
+      type: localCoursePricing.value.type,
+      currencySymbol: cur.symbol,
+      value: localCoursePricing.value.price,
+      currencyName: cur.name,
+      currencyCode: cur.code,
+    };
+
     coursesPricing(props.course.id, request)
-      .then((response) => {
-        response.json();
-      })
-      .then((result) => {
+      .then((response: Response) => response.json())
+      .then(() => {
         message.value.toast(t('Price'), t("save_price_ms"), "success");
         isSaving.value = false;
         emits('refresh');
       })
-      .catch((e) => {
+      .catch(() => {
         message.value.toast(t('Price'), t('error_occur'), "error");
         isSaving.value = false;
       });
   }
 };
+
 const init = () => {
   if (props.course.price) {
     localCoursePricing.value.price = props.course.price.value;
     localCoursePricing.value.type = props.course.price.type;
     currency.value = props.course.price.currencyCode;
   }
-}
-watch(() => props.course,
-  (value) => { init() });
-init()
+};
+
+watch(() => props.course, () => {
+  init();
+});
+
+init();
 </script>
+
 <style scoped>
 .g-pricing-line {
   display: flex;
