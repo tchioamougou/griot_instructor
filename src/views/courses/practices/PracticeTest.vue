@@ -117,13 +117,11 @@
 </template>
 <script setup>
 import {computed, defineAsyncComponent, ref} from "vue";
-const GInput = defineAsyncComponent(()=>import('../../resources/GInput.vue')) ;
-const GSpinner = defineAsyncComponent(()=>import('../../resources/GSpinner.vue')) ;
-const SpinnerCmp = defineAsyncComponent(()=>import('../../resources/Spinner.vue')) ;
+const GInput = defineAsyncComponent(()=>import('@/components/forms/FormElements/BaseInput.vue')) ;
+const SpinnerCmp = defineAsyncComponent(()=>import('@/components/spinner/Spinner.vue')) ;
 const PracticeTestItem = defineAsyncComponent(()=>import('./PracticeTestItem.vue')) ;
-import {createPractices} from "../../database/griot";
+import {createPractices} from "@/services/griot_service";
 import router from "../../../router";
-import GToast from "../../resources/GToast.vue";
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 const props = defineProps({
@@ -139,7 +137,11 @@ const loading = ref(false);
 const addingPt = ref(false);
 const hasError = ref(false);
 const isSaving = ref(false);
-const practiceTest = computed(()=>{return props.course.practiceTests?.sort((a, b) => (a.position > b.position) ? 1 : ((b.position > a.position) ? -1 : 0))})
+const practiceTest = computed(() => {
+  return props.course.practiceTests
+    ? [...props.course.practiceTests].sort((a, b) => (a.position > b.position) ? 1 : ((b.position > a.position) ? -1 : 0))
+    : [];
+});
 const currentPt = ref({});
 const addPt = () => {
   addingPt.value = true;

@@ -517,7 +517,7 @@ export const createPractices = (practices:any) => {
     });
 };
 /** this function is used to update practices in databases*/
-export const updatePractice = (id:string, practice:string) => {
+export const updatePractice = (id:string, practice:Record<string, any>) => {
     return fetch(`${uriPractice}/${id}`, {
         method: "PUT",
         headers: {

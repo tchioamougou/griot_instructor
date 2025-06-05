@@ -430,7 +430,7 @@ import {
   getCourseProgressionByCourseId,
   getUser,
   updateWishList,
-} from "../../database/griot";
+} from "@/services/griot_service";
 import { generateUniqueId, getGuestUserId } from "../../database/guest_user/guest_user";
 import {
   convertSecondsToTime,

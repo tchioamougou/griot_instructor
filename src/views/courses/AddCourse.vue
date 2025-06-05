@@ -38,7 +38,7 @@
          
         </div>
         <div class="flex justify-end gap-3">
-           <ButtonComponent type="button" :disabled="!!dateError || isLoading" @click="cancel" variant="danger">
+           <ButtonComponent type="button" :disabled="isLoading" @click="cancel" variant="danger">
              {{ $t('Cancel') }}
              </ButtonComponent>
               <ButtonComponent type="button" :disabled="disabledSave" @click="createCourse">
@@ -56,26 +56,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
-import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
-import AdminLayout from '@/components/layout/AdminLayout.vue';
-import ComponentCard from "@/components/common/ComponentCard.vue";
+import { ref, computed, watch, onMounted } from "vue"; 
 import Input from "@/components/forms/FormElements/Input.vue";
 import Select from "@/components/forms/FormElements/Select.vue";
 import ButtonComponent from "@/components/buttons/ButtonComponent.vue";
-import type { ProductType } from '@/types/option'
-import { useToast } from 'vue-toastification'
+ import { useToast } from 'vue-toastification'
 import Spinner from '@/components/spinner/Spinner.vue'; // adapte le chemin
-import { useServiceStore } from '@/composables/serviceStore';
-import Modal from '@/components/profile/Modal.vue'
+ import Modal from '@/components/profile/Modal.vue'
 import { useI18n } from "vue-i18n";
 import * as GR_CONST from '@/utilities/utilityConstant'
-import router from '../../router'
-import { retrieveDataWithFilter } from '../../firebase/firestore'
+ import { retrieveDataWithFilter } from '../../firebase/firestore'
 import {
   generateReferralCode,
-  sendGriotEmail,
-} from '@/utilities/UtilityFunction'
+ } from '@/utilities/UtilityFunction'
 import { COLLECTION_NAME } from '@/utilities/utilityConstant'
 import { createCourses } from '@/services/griot_service'
 import { useAuthStore } from '@/composables/user'
@@ -88,14 +81,13 @@ const typeCourseOption = ref([
   { label: t("createNewCourse_Course"), value: "Course" },
   { label: t("createNewCourse_practiceTest"), value: "PracticeTest" },
 ]);
-const form = ref({})
+const form = ref<Record<string,any>>({})
 
-const emits = defineEmits(['colse',"created"])
+const emits = defineEmits(['close',"created"])
 const categoriesOptions = ref<any[]>([])
 const courseCategory = ref<string>('')
 const courseSubCategory = ref<string>('')
 const courseSubCategoryOptions = ref<any[]>([])
-const alert = ref<any>(null)
 const isSaving = ref(false);
 const disabledSave = computed(()=>{
   return !form.value.title || !form.value.type || !form.value.subtitle || !courseCategory.value || !courseSubCategory.value
@@ -109,7 +101,7 @@ const cancel = () => {
 
 const createCourse = async () => {
   isSaving.value = true
-  let course = {
+  let course :Record<string,any>= {
     type: form.value.type,
     title: form.value.title,
     categories: categoriesOptions.value.find((e) => e.id === courseCategory.value)?.id,
@@ -136,7 +128,7 @@ const createCourse = async () => {
 
 const retrieveCategory = async () => {
   try {
-    const result = await retrieveDataWithFilter(COLLECTION_NAME.categories, null, null)
+    const result :any = await retrieveDataWithFilter(COLLECTION_NAME.categories, null, null)
     categoriesOptions.value = result.map((e: any) => ({ ...e, label: e.title, value: e.id }))
     categoriesOptions.value.push({ name: "I don't know yet", value: '0' })
     courseCategory.value = categoriesOptions.value[0].value

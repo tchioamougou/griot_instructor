@@ -124,7 +124,7 @@
 <script setup>
 import {computed, onDeactivated, ref} from "vue";
 import { timerFormat } from "../../resources/UtilityFunction";
-import { getPracticeTestById, upsertPlay } from "../../database/griot";
+import { getPracticeTestById, upsertPlay } from "@/services/griot_service";
 import GSpinner from "../../resources/GSpinner.vue";
 import GRichTextEditor from "../../resources/GRichTextEditor.vue";
 import SpinnerCmp from "../../resources/Spinner.vue";

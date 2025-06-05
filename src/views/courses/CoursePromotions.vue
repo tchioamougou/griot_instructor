@@ -1,11 +1,6 @@
 <template>
-  <div class="card g-box-shadow">
-    <div class="card-body">
-      <div class="g-block-header">
-        <div class="block_title">
-          <h5 class="g-title">{{ $t('promotions') }}</h5>
-        </div>
-      </div>
+  <ItemLayout :title="$t('promotions')">
+    <template #main>
       <div class="g-container">
         <div class="g-tip">
           <div class="title">
@@ -19,7 +14,7 @@
               </li>
             </ul>
           </div>
-          <g-input type="text" :disabled="true" show-right-message :model-value="referralLink" button="Copy"
+          <BaseInput type="text" :disabled="true" show-right-message :model-value="referralLink" button="Copy"
             :is-copy="true" />
         </div>
         <div class="block">
@@ -53,7 +48,7 @@
               <div class="type">
                 <div class="title">{{ $t('pick_coupon_type_msg') }}</div>
                 <div class="row">
-                  <div class="col-md-4 col-sm-12" v-for="(cp,i) in couponCategories" :key="i">
+                  <div class="col-md-4 col-sm-12" v-for="(cp, i) in couponCategories" :key="i">
                     <div class="coupon_card">
                       <div class="input">
                         <input type="radio" :id="cp.type" name="couponType" v-model="couponType" :value="cp.type" />
@@ -69,20 +64,20 @@
                 </div>
               </div>
               <div class="value">
-                <g-input :label="$t('set_price')" type="number" :description="$t('set_price_description')"
+                <BaseInput :label="$t('set_price')" type="number" :description="$t('set_price_description')"
                   show-description v-if="couponType == 'CustomPrice'" v-model="customPrice" />
-                <g-input :label="$t('percentage')" type="number" :description="$t('percentage_description')"
-                  show-description v-if="couponType == 'CustomRate'" v-model="customRate" />
+                <CustomInput :label="$t('percentage')" type="number" :description="$t('percentage_description')"
+                  show-description v-if="couponType == 'CustomRate'" v-model:number="customRate" />
               </div>
               <div class="StartDate">
-                <g-input :label="$t('start_date')" type="datetime-local" v-model="startDate" />
+                <BaseInput :label="$t('start_date')" type="datetime-local" v-model="startDate" />
               </div>
               <div class="endDate">
                 <span class="label">{{ $t('end_date') }}</span>
                 <span class="value">{{ endDate }}</span>
               </div>
               <div class="editCoupon">
-                <g-input v-model="couponCode" :label="$t('edit_coupon_code')" type="text"
+                <BaseInput v-model="couponCode" :label="$t('edit_coupon_code')" type="text"
                   :description="$t('edit_coupon_code_description')" show-description />
               </div>
               <div class="actions">
@@ -103,8 +98,9 @@
               </div>
             </template>
             <template v-else>
+              <!-- @un-activate="cancelPromotionsConfirmation"-->
               <course-data-table :columns="columnsActive" :records="activeCoupons"
-                v-if="activeCoupons && activeCoupons.length > 0" @un-activate="cancelPromotionsConfirmation" />
+                v-if="activeCoupons && activeCoupons.length > 0" />
               <div class="align-content-center" v-if="!activeCoupons || activeCoupons.length < 1">
                 {{ $t('no_coupon_found') }}
               </div>
@@ -120,8 +116,9 @@
               </div>
             </template>
             <template v-else>
+              <!-- @delete="deleteConfirmation"-->
               <course-data-table v-if="recordsExpired && recordsExpired.length > 0" :columns="columnsExpired"
-                :records="recordsExpired" @delete="deleteConfirmation" />
+                :records="recordsExpired" />
               <div class="align-content-center" v-if="!recordsExpired || recordsExpired.length < 1">
                 {{ $t('no_coupon_found') }}
               </div>
@@ -129,12 +126,12 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-  <g-confirmation id="promotions" ref="confirmation" :message="$t(message)" :title="$t(title)" @accepted="onAccepted"
+    </template>
+  </ItemLayout>
+  <GConfirmation id="promotions" ref="confirmation" :message="$t(message)" :title="$t(title)" @accepted="onAccepted"
     @cancel="onCancel" />
 </template>
-<script setup>
+<script lang="ts" setup>
 import { computed, ref, watch } from "vue";
 import {
   convertTimestampToDate,
@@ -143,93 +140,68 @@ import {
   generateCoupon,
   generateReferralCode,
   getCurrentMonth,
-} from "../../resources/UtilityFunction";
-import GInput from "../../resources/GInput.vue";
-import CourseDataTable from "../instructor/CourseDataTable.vue";
-import SpinnerCmp from "../../resources/Spinner.vue";
+} from "@/utilities/UtilityFunction";
+import CourseDataTable from "@/components/tables/GTable.vue";
+import SpinnerCmp from "@/components/spinner/Spinner.vue";
 import {
   createCoupon,
   createNewPromotions,
   updatePromotions,
-} from "../../stripe/Products";
-import { createPromotions, deletePromotion, UpdatePromotion } from "../../database/griot";
-import GConfirmation from "../../resources/GConfirmation.vue";
-const emits = defineEmits(["refresh"]);
-const props = defineProps({
-  course: {
-    type: Object,
-    required: true,
-  },
-});
-const recordsExpired = ref([]);
-const activeCoupons = ref([]);
+} from "@/stripe/Products";
+import { createPromotions, deletePromotion, UpdatePromotion } from "@/services/griot_service";
+import BaseInput from "@/components/forms/FormElements/BaseInput.vue";
+import CustomInput from "@/components/forms/FormElements/CustomInput.vue";
+import GConfirmation from "@/components/ui/GConfirmation.vue";
+import ItemLayout from "./items/ItemLayout.vue";
+
+
+const emits = defineEmits<{
+  (e: 'refresh'): void;
+}>();
+
+const props = defineProps<{
+  course: Record<string, any>; // Assuming course is an object with properties like id, stripeProductId, etc.
+}>();
+
+const recordsExpired = ref<object[]>([]);
+const activeCoupons = ref<object[]>([]);
 const creatingCoupon = ref(false);
-const couponType = ref("");
+const couponType = ref<string>("");
 const isSaving = ref(false);
-const startDate = ref(currentTime());
-const customPrice = ref(2000);
-const customRate = ref(10);
-const couponCode = ref(null);
-const duration = ref(5);
+const startDate = ref<string>(currentTime());
+const customPrice = ref<number>(2000);
+const customRate = ref<number>(10);
+const couponCode = ref<string>('');
+const duration = ref<number>(5);
 const isLoadingActive = ref(false);
 const isLoadingExpired = ref(false);
-const waiting = ref(true);
-const maximunCoupons = ref(3);
-const couponCategories = ref([{
-  type: "Free",
-  title: "Free",
-  message: "Completely free course",
-  rdt: 'Unlimited Redemptions',
-  days: "5 Days"
-},
-{
-  type: "CustomRate",
-  "title": "Custom Rate",
-  "message": "Between 10% and 80%",
-  "rdt": "Unlimited Redemptions",
-  "days": "5 Days"
-}
-])
-const columnsActive = ref([
+const maximunCoupons = ref<number>(3);
+
+const couponCategories = ref<Record<any,any>[]>([
   {
-    name: "Code",
-    value: "code",
-    isSortable: true,
-    isImage: false,
-    isRating: false,
-    isText: true,
+    type: "Free",
+    title: "Free",
+    message: "Completely free course",
+    rdt: "Unlimited Redemptions",
+    days: "5 Days",
   },
   {
-    name: "Discount",
-    value: "discount",
-    isSortable: true,
-    isPercentage: false,
-    isText: true,
+    type: "CustomRate",
+    title: "Custom Rate",
+    message: "Between 10% and 80%",
+    rdt: "Unlimited Redemptions",
+    days: "5 Days",
   },
+]);
+
+const columnsActive = ref<Record<string, any>[]>([
+  { name: "Code", value: "code", isSortable: true, isText: true },
+  { name: "Discount", value: "discount", isSortable: true, isText: true },
+  { name: "Start date", value: "createdAt", isSortable: true, isDate: true },
+  { name: "End date", value: "expiresAt", isSortable: true, isDate: true },
+  { name: "Redemptions", value: "coupon_max_redemptions", isSortable: true, isText: true },
   {
-    name: "Start date",
-    value: "createdAt",
-    isSortable: true,
-    isDate: true,
-  },
-  {
-    name: "End date",
-    value: "expiresAt",
-    isSortable: true,
-    isDate: true,
-  },
-  {
-    name: "Redemptions",
-    value: "coupon_max_redemptions",
-    isSortable: true,
-    isText: true,
-  },
-  {
-    name: " ",
-    value: "",
-    isAction: true,
-    actionName: "view-course",
-    buttons: [
+    name: " ", value: "", isAction: true, actionName: "view-course", buttons: [
       {
         fieldName: "Redemptions",
         icon: "bi-share",
@@ -243,93 +215,81 @@ const columnsActive = ref([
         isIcon: true,
         actionName: "unActivate",
         tooltip: "Cancel promotions",
-      },
-
-    ],
-  },
+      }
+    ]
+  }
 ]);
-const confirmation = ref(null);
-const currentPr = ref(null);
-const message = ref("");
-const title = ref("");
-let action = null;
-const columnsExpired = ref([...columnsActive.value]);
-const getCurrentMonthLabel = computed(() => {
-  return getCurrentMonth();
-});
+
+const columnsExpired = ref<Record<string, any>[]>([...columnsActive.value]);
+
+const confirmation = ref<InstanceType<typeof GConfirmation> | null>(null);
+const currentPr = ref<Record<string, any> | null>(null);
+const message = ref<string>("");
+const title = ref<string>("");
+let action: "edit" | "delete" | null = null;
+
+const getCurrentMonthLabel = computed(() => getCurrentMonth());
+
 const endDate = computed(() => {
   const myDate = new Date(convertToTimestamp(startDate.value));
   myDate.setDate(myDate.getDate() + duration.value);
   return myDate;
 });
-const restOfCoupon = computed(() => {
-  return maximunCoupons.value - activeCoupons.value.length;
-});
-const canCreateCoupon = computed(() => {
-  return restOfCoupon.value > 0;
-});
+
+const restOfCoupon = computed(() => maximunCoupons.value - activeCoupons.value.length);
+
+const canCreateCoupon = computed(() => restOfCoupon.value > 0);
+
 const referralLink = computed(() => {
-  return (
-    import.meta.env.VITE_APP_HOST +
-    "course/" +
-    props.course.id +
-    "?referralCode=" +
-    (props.course.referralCode
-      ? props.course.referralCode
-      : generateReferralCode())
-  );
+  return `${import.meta.env.VITE_APP_HOST}course/${props.course.id}?referralCode=${props.course.referralCode ?? generateReferralCode()}`;
 });
+
 const createCouponStripe = () => {
-  const params = {
-    applies_to: {
-      products: [props.course.stripeProductId],
-    },
+  const params: any = {
+    applies_to: { products: [props.course.stripeProductId] },
     max_redemptions: 100,
     metadata: {
       applies_to_product: props.course.stripeProductId,
-      startDate: startDate.value, // Replace with your product ID
+      startDate: startDate.value,
       endDate: endDate.value,
       couponCode: couponCode.value,
     },
   };
+
   isSaving.value = true;
-  if (couponType.value == "CustomRate") {
+
+  if (couponType.value === "CustomRate") {
     params.percent_off = customRate.value;
-    params.name = customRate.value + "% off " + props.course.title;
+    params.name = `${customRate.value}% off ${props.course.title}`;
   } else if (couponType.value === "CustomPrice") {
     params.amount_off = customPrice.value;
-    params.name = customPrice.value + " XOF off " + props.course.title;
+    params.name = `${customPrice.value} XOF off ${props.course.title}`;
     params.currency = 'eur';
   } else if (couponType.value === "Free") {
     params.percent_off = 100;
-    params.name = customRate.value + "% off " + props.course.title;
+    params.name = `100% off ${props.course.title}`;
   }
+
   params.name = params.name.slice(0, 40);
+
   createCoupon(params)
-    .then(async (result) => {
-      console.log("Coupons details", result);
+    .then(async (result: any) => {
       const paramPromo = {
         coupon: result.id,
         code: result.metadata.couponCode,
-        expires_at: convertToTimestamp(endDate.value) / 1000,
+        expires_at: convertToTimestamp(endDate.value.toISOString()) / 1000,
       };
-      createNewPromotions(paramPromo)
-        .then((result) => {
-          console.log("Promotion details", result);
-          createNewPromotionsLocal(result);
-        })
-        .catch((error) => {
-          isSaving.value = false;
-          console.log("error=>", error);
-        });
+      return createNewPromotions(paramPromo)
+        .then((res: any) => createNewPromotionsLocal(res));
     })
-    .catch((error) => {
-      console.log("error=>", error);
+    .catch((error: any) => {
+      console.error("Error creating coupon:", error);
       isSaving.value = false;
     });
 };
-const createNewPromotionsLocal = (pr) => {
-  const pro = {
+
+const createNewPromotionsLocal = (pr: any) => {
+  const pro: Record<string, any> = {
     id: pr.id,
     active: pr.active,
     code: pr.code,
@@ -350,115 +310,93 @@ const createNewPromotionsLocal = (pr) => {
     coupon_valid: pr.coupon.valid,
     courseId: props.course.id,
   };
+
   createPromotions(props.course.id, [pro])
-    .then((response) => {
-      console.log("createNewPromotionsLocal===>response", response);
-      return response.json();
-    })
-    .then((result) => {
-      console.log("createNewPromotionsLocal===>result", result);
+    .then((res) => res.json())
+    .then(() => {
       cancel();
       isSaving.value = false;
       emits("refresh");
     })
     .catch((error) => {
-      console.log("createNewPromotionsLocal===>error", error);
+      console.error("Error saving local promotion:", error);
       isSaving.value = false;
     });
 };
-const cancelPromotions = (record) => {
-  const params = { active: false };
-  updatePromotions(record.id, params)
-    .then((result) => {
-      //console.log("Coupons details", result);
-      UpdatePromotion(props.course.id, result.id, params)
-        .then((response) => {
-          return response.json();
-        })
-        .then((result) => {
-          emits("refresh");
-          confirmation.value.hideSpinner();
-          confirmation.value.hide();
-        })
-        .catch((error) => {
-          //console.log("Coupons details", error);
-          confirmation.value.hideSpinner();
-        });
+
+const cancelPromotions = (record: Record<string, any>) => {
+  updatePromotions(record.id, { active: false })
+    .then((updated: any) => {
+      return UpdatePromotion(props.course.id, updated.id, { active: false });
+    })
+    .then((res: any) => res.json())
+    .then(() => {
+      emits("refresh");
+      confirmation.value?.hideSpinner();
+      confirmation.value?.hide();
+    })
+    .catch((error: any) => {
+      console.error("Cancel error:", error);
+      confirmation.value?.hideSpinner();
+    });
+};
+
+const deleteCoupon = (record: Record<string, any>) => {
+  deletePromotion(props.course.id, record.id)
+    .then((response) => {
+      confirmation.value?.hideSpinner();
+      if (response.status === 200) {
+        emits("refresh");
+        confirmation.value?.hide();
+      }
     })
     .catch((error) => {
-      console.log("error", error);
-      confirmation.value.hideSpinner();
+      console.error("Delete error:", error);
+      confirmation.value?.hideSpinner();
     });
 };
-const deleteCoupon = (record) => {
-  deletePromotion(props.course.id, record.id).then((response) => {
-    confirmation.value.hideSpinner();
-    if (response.status == 200) {
-      emits("refresh");
-      confirmation.value.hide();
-    } else {
-      /*!TODO defined how todo*/
-    }
-  }).catch((error) => {
-    console.log("error", error);
-    confirmation.value.hideSpinner();
-  })
-}
-const cancelPromotionsConfirmation = (record) => {
+
+const cancelPromotionsConfirmation = (record: Record<string, any>) => {
   currentPr.value = record;
-  message.value =
-    "Are you sure to want to deactivate this coupons?. this action is not reversible ";
+  message.value = "Are you sure to want to deactivate this coupons? This action is not reversible.";
   title.value = "Deactivate coupon";
-  confirmation.value.show();
+  confirmation.value?.show();
   action = "edit";
 };
-const deleteConfirmation = (record) => {
+
+const deleteConfirmation = (record: Record<string, any>) => {
   currentPr.value = record;
-  message.value =
-    "Are you sure to want to delete this coupons?. This action is not reversible ";
+  message.value = "Are you sure to want to delete this coupon? This action is not reversible.";
   title.value = "Delete coupon";
-  confirmation.value.show();
+  confirmation.value?.show();
   action = "delete";
-}
-const initCreateCoupon = () => {
-  creatingCoupon.value = true;
 };
-const cancel = () => {
-  creatingCoupon.value = false;
-};
+
+const initCreateCoupon = () => creatingCoupon.value = true;
+const cancel = () => creatingCoupon.value = false;
+
 const onAccepted = () => {
-  confirmation.value.showSpinner();
-  if (action === "edit") {
-    cancelPromotions(currentPr.value);
-  } else if (action === 'delete') {
-    deleteCoupon(currentPr.value);
-  }
+  confirmation.value?.showSpinner();
+  if (action === "edit" && currentPr.value) cancelPromotions(currentPr.value);
+  if (action === "delete" && currentPr.value) deleteCoupon(currentPr.value);
 };
-const onCancel = () => {
-  confirmation.value.hide();
-};
+
+const onCancel = () => confirmation.value?.hide();
+
 const initData = () => {
-  if (props.course && props.course.promotions) {
-    const promotions = props.course.promotions.map((e) => {
-      return {
-        ...e,
-        discount: e.coupon_amount_off
-          ? -e.coupon_amount_off
-          : e.coupon_percent_off + "%",
-      };
-    });
-    activeCoupons.value = promotions.filter((s) => s.active);
-    recordsExpired.value = promotions.filter((s) => !s.active);
+  if (props.course?.promotions) {
+    const promotions = props.course.promotions.map((e: any) => ({
+      ...e,
+      discount: e.coupon_amount_off ? -e.coupon_amount_off : `${e.coupon_percent_off}%`,
+    }));
+    activeCoupons.value = promotions.filter((s: any) => s.active);
+    recordsExpired.value = promotions.filter((s: any) => !s.active);
   }
 };
-watch(
-  () => props.course,
-  (val) => {
-    initData();
-  }
-);
-/** Setup of course*/
+
+watch(() => props.course, initData);
 initData();
+
 couponCode.value = generateCoupon();
 columnsExpired.value[columnsExpired.value.length - 1] = {
   name: " ",
@@ -475,6 +413,7 @@ columnsExpired.value[columnsExpired.value.length - 1] = {
   ],
 };
 </script>
+
 <style scoped>
 .g-border-1 {
   border: 0.1em solid rgb(169, 169, 169, 0.3);

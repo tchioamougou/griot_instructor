@@ -1,77 +1,89 @@
 <template>
-  <div class="g-students">
-    <div class="header">
-      <div class="header_title">
-        <div class="title">{{ $t('Students') }}</div>
-      </div>
-    </div>
-    <template v-if="isLoading">
-      <div class="spinner_div">
-        <spinner-cmp color="text-black" />
-      </div>
-    </template>
-    <template v-else>
-      <div class="number_student">
-        <span class="number">{{ totalStudent }}</span><span>{{ $t('Students') }}</span>
-      </div>
-      <div class="students_list">
-        <div class="title">{{ $t('pleople_taking_your_course') }}</div>
-        <div class="list">
-          <g-student-carousel :elements="students" />
+  <ItemLayout :title="$t('Students')">
+    <template #main>
+      <template v-if="isLoading">
+        <div class="spinner_div">
+          <spinner-cmp color="text-black" />
+        </div>
+      </template>
+      <template v-else>
+        <div class="number_student">
+          <span class="number">{{ totalStudent }}</span><span>{{ $t('Students') }}</span>
+        </div>
+        <div class="students_list">
+          <div class="title">{{ $t('pleople_taking_your_course') }}</div>
+          <div class="list">
+          <!--  <g-student-carousel :elements="students" />-->
+          </div>
+        </div>
+      </template>
+      <div class="your_reach">
+        <div class="your_reach-header">
+          <span><span class="title">{{ $t('you_reach') }}</span><span class="subTitle">{{ $t('see_student') }}</span>
+          </span>
+          <hr />
         </div>
       </div>
     </template>
-    <div class="your_reach">
-      <div class="your_reach-header">
-        <span><span class="title">{{ $t('you_reach') }}</span><span class="subTitle">{{ $t('see_student') }}</span>
-        </span>
-        <hr />
-      </div>
-    </div>
-  </div>
+  </ItemLayout>
 </template>
-<script setup>
+<script setup lang="ts">
 import { computed, defineAsyncComponent, ref } from "vue";
-import { getStudents } from "../../database/griot";
-const SpinnerCmp = defineAsyncComponent(() => import('../../resources/Spinner.vue'));
-const GStudentCarousel = defineAsyncComponent(() => import('../instructor/performance/GStudentCaroussel.vue'));
+import { getStudents } from "@/services/griot_service";
+import ItemLayout from "./items/ItemLayout.vue";
 
-const user = computed(() => {
-  return store.state.user;
-});
-const props = defineProps({
-  courseId: {
-    type: String,
-    required: true,
-  }
-})
-const courseOptions = ref([{ label: "All course", value: "AllCourse" }]);
-const students = ref([]);
-const isLoading = ref(false);
-const totalStudent = ref(0);
-const init = ref(true);
-const getStudentsLocal = () => {
+const SpinnerCmp = defineAsyncComponent(() => import('@/components/spinner/Spinner.vue'));
+//const GStudentCarousel = defineAsyncComponent(() => import('../instructor/performance/GStudentCaroussel.vue'));
+
+// Assuming you have a Vuex or Pinia store available
+// Replace this with the correct store import and type
+// import { useStore } from "@/store"; 
+// const store = useStore();
+const store: any = {}; // TEMP fallback, replace with actual store usage
+
+const user = computed(() => store.state.user);
+
+interface CourseOption {
+  label: string;
+  value: string;
+}
+
+interface Student {
+  // Add actual properties from your student model
+  id: string;
+  name: string;
+  [key: string]: any;
+}
+
+const props = defineProps<{
+  courseId: string;
+}>();
+
+const courseOptions = ref<CourseOption[]>([{ label: "All course", value: "AllCourse" }]);
+const students = ref<Student[]>([]);
+const isLoading = ref<boolean>(false);
+const totalStudent = ref<number>(0);
+const init = ref<boolean>(true);
+
+const getStudentsLocal = (): void => {
   isLoading.value = true;
-  getStudents([props.courseId]).then((response) => {
-    return response.json();
-  }).then((result) => {
-    totalStudent.value = result.length;
-    students.value = result;
-    isLoading.value = false;
-    //console.log('result is comming',students);
-
-  }).catch((error) => {
-    isLoading.value = false;
-    console.log('error is comming', error);
-  })
+  getStudents([props.courseId])
+    .then((response) => response.json())
+    .then((result: Student[]) => {
+      totalStudent.value = result.length;
+      students.value = result;
+      isLoading.value = false;
+    })
+    .catch((error: unknown) => {
+      isLoading.value = false;
+      console.error("Error fetching students:", error);
+    });
 };
 
-
-/***start/
- *
- */
+// Initialize data on component mount
 getStudentsLocal();
 </script>
+
 <style scoped>
 #chartdiv {
   width: 100%;

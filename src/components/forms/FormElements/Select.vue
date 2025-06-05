@@ -4,14 +4,13 @@ import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 
 const props = defineProps({
   lb: String,
-  options: Array,
   defaultValue: Array,
   isRequired: {
     type: Boolean,
     default: false,
   },
   modelValue: {
-    type: [String, Number],
+    type: [String, Number,null],
     default: ''
   },
   options: {
@@ -31,11 +30,11 @@ const isDropdownOpen = ref(false);
 
 const selectWrapper = ref(null);
 
-const selectedOption = ref(props.options.find(option => option.value === props.modelValue) || null);
+const selectedOption = ref(props.options.find((option:any) => option.value === props.modelValue) || null);
 
 // Synchroniser la sélection de l'option avec la prop modelValue
 watch(() => props.modelValue, (newVal) => {
-  selectedOption.value = props.options.find(option => option.value === newVal) || null;
+  selectedOption.value = props.options.find((option:any) => option.value === newVal) || null;
 });
 
 // Gérer l'ouverture et la fermeture du dropdown
@@ -46,7 +45,7 @@ const handleDropdownToggle = () => {
 };
 
 // Gérer la sélection d'une option
-const selectOption = (option) => {
+const selectOption = (option:any) => {
   if (!props.disabled) {
     selectedOption.value = option;
     isDropdownOpen.value = false;
@@ -56,8 +55,8 @@ const selectOption = (option) => {
   }
 }
 
-const handleClickOutside = (event) => {
-  if (selectWrapper.value && !selectWrapper.value.contains(event.target)) {
+const handleClickOutside = (event:any) => {
+  if (selectWrapper.value && !selectWrapper.value?.contains(event.target)) {
     isDropdownOpen.value = false;
   }
 };

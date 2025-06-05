@@ -34,9 +34,9 @@
               <BaseInput type="Number" v-if="localCoursePricing.type === 'Custom'" v-model="localCoursePricing.price"
                 :disabled="isSaving" />
             </div>
-            <div class="action">
-              <button class="g-button" @click="updateCoursePrice">
-                <spinner-cmp v-if="isSaving" />
+            <div class="">
+              <Button size="sm" class="g-button" @click="updateCoursePrice" :disabled="isSaving">
+                <GSpinner v-if="isSaving" />
                 {{ $t('save') }}
               </button>
             </div>
@@ -47,7 +47,7 @@
 
 </template>
 <script lang="ts" setup>
-import GSpinner from "@/components/ui/GSpinner.vue";
+import GSpinner from "@/components/spinner/Spinner.vue";
 
 import { computed, ref, watch } from "vue";
 import { CURRENCY_CODE, CURRENCY_OB, DOLLAR_Rate } from "@/utilities/commonCurrency";
@@ -57,6 +57,10 @@ import { useI18n } from "vue-i18n";
 import BaseInput from "@/components/forms/FormElements/BaseInput.vue";
 import BaseSelect from "@/components/forms/FormElements/BaseSelect.vue";
 import ItemLayout from "./items/ItemLayout.vue";
+import Button from "@/components/ui/Button.vue";
+import { useToast } from 'vue-toastification'
+
+const toast = useToast();
 
 
 const { t } = useI18n();
@@ -69,10 +73,13 @@ const props = defineProps<{
   course: Record<string, any>; // Assuming course is an object with a price property
 }>();
 
-const localCoursePricing = ref<Record<string, any>>({});
+const localCoursePricing = ref<Record<string, any>>({
+  type: "Standard",
+  price: 0,
+});
 const currency = ref<string>("XAF");
 const isSaving = ref<boolean>(false);
-const message = ref<any>(null); // GToast might expose a proper type you could use instead of any
+
 const loading = ref<boolean>(false);
 
 const currencyOptions = ref<Record<string, any>[]>(
@@ -87,7 +94,7 @@ const pricingOptions = computed(() => {
     const val = e[currencyLocal];
     return {
       ...e,
-      name: val === 0 ? "Free" : `${CURRENCY_CODE[currency.value as keyof typeof CURRENCY_CODE].symbol} ${val}`,
+      label: val === 0 ? "Free" : `${CURRENCY_CODE[currency.value as keyof typeof CURRENCY_CODE].symbol} ${val}`,
       value: val,
     };
   });
@@ -116,12 +123,12 @@ const updateCoursePrice = () => {
     coursesPricing(props.course.id, request)
       .then((response: Response) => response.json())
       .then(() => {
-        message.value.toast(t('Price'), t("save_price_ms"), "success");
+      toast.success( t("save_price_ms"));
         isSaving.value = false;
         emits('refresh');
       })
       .catch(() => {
-        message.value.toast(t('Price'), t('error_occur'), "error");
+        toast.error( t('error_occur'));
         isSaving.value = false;
       });
   }

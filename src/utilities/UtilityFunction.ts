@@ -280,3 +280,98 @@ export function getTimeAgo(timestamp: number): string {
     return `${years} ${years === 1 ? "year" : "years"} ago`;
   }
 }
+
+// UtilityFunction.ts
+
+/** Converts a UNIX timestamp (in seconds) to an ISO 8601 date string. */
+export function convertTimestampToDate(timestamp: number): string {
+  const date = new Date(timestamp * 1000); // Convert seconds to milliseconds
+  return date.toISOString();
+}
+
+/** Parses a date string into a UNIX timestamp (in milliseconds). */
+export function convertToTimestamp(dateformat: string): number {
+  return Date.parse(dateformat);
+}
+
+/** Returns the current date and time formatted for input[type="datetime-local"]. */
+export function currentTime(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = ("0" + (now.getMonth() + 1)).slice(-2);
+  const day = ("0" + now.getDate()).slice(-2);
+  const hour = ("0" + now.getHours()).slice(-2);
+  const minute = ("0" + now.getMinutes()).slice(-2);
+
+  return `${year}-${month}-${day}T${hour}:${minute}`;
+}
+
+/** Generates a 20-character uppercase alphanumeric coupon code starting with "GSC". */
+export function generateCoupon(): string {
+  const length = 20;
+  const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let coupon = "GSC";
+  for (let i = 0; i < length - 3; ++i) {
+    coupon += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  return coupon;
+}
+
+/** Returns the current month as a string, e.g., "June". */
+export function getCurrentMonth(): string {
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  return months[new Date().getMonth()];
+}
+
+
+/** 
+ * This function takes a Date or date string as input and returns a formatted date string in the format `yyyyMMddTHHmmss`.
+ */
+export function formatDateToTimeZone(dateInputValue: string | number | Date): string {
+  const date = new Date(dateInputValue);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+
+  return `${year}${month}${day}T${hours}${minutes}${seconds}`;
+}
+
+/**
+ * Sorts an array of objects by a given key in ascending order.
+ * @param array - The array to sort.
+ * @param key - The object key to sort by.
+ */
+export function sortByKeyASC<T extends Record<string, any>>(array: T[], key: keyof T): T[] {
+  return [...array].sort((a, b) => {
+    const x = a[key];
+    const y = b[key];
+    return x < y ? -1 : x > y ? 1 : 0;
+  });
+}
+
+/**
+ * Sorts an array of objects by a given key in descending order.
+ * @param array - The array to sort.
+ * @param key - The object key to sort by.
+ */
+export function sortByKeyDESC<T extends Record<string, any>>(array: T[], key: keyof T): T[] {
+  return [...array].sort((a, b) => {
+    const x = a[key];
+    const y = b[key];
+    return x < y ? 1 : x > y ? -1 : 0;
+  });
+}
+
+export function formatDateT(dateString: string): string {
+  const date = new Date(dateString);
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+  const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
+  return formattedDate;
+}

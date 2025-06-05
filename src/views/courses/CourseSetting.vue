@@ -51,42 +51,42 @@
     :accept-label="$t('delete')"
   />
 </template>
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
-import GConfirmation from "../../resources/GConfirmation.vue";
-import { deleteCourse } from "../../database/griot";
+import GConfirmation from "@/components/ui/GConfirmation.vue";
+import { deleteCourse } from "@/services/griot_service";
 import router from "../../router";
 
 const props = defineProps({
   course: {
-    type: String,
+    type: Object,
     required: true,
   },
 });
 const message = ref(null);
-const confirmation = ref(null);
+const confirmation = ref<InstanceType<typeof GConfirmation> | null>(null);
 const confirmAction = () => {
-  confirmation.value.show();
+  confirmation.value?.show();
 };
 const accepted = () => {
-  confirmation.value.showSpinner();
+  confirmation.value?.showSpinner();
   deleteCourseLocal();
 };
 const refuse = () => {
-  confirmation.value.hide();
+  confirmation.value?.hide();
 };
 const deleteCourseLocal = () => {
   deleteCourse(props.course.id)
     .then((response) => {
       console.log("deleteCourseLocal", response);
       if (response.status == 200) {
-        confirmation.value.hideSpinner();
-        confirmation.value.hide();
+        confirmation.value?.hideSpinner();
+        confirmation.value?.hide();
         router.push("/instructor/courses");
       }
     })
     .catch((error) => {
-      confirmation.value.hideSpinner();
+      confirmation.value?.hideSpinner();
       console.log("error", error);
     });
 };

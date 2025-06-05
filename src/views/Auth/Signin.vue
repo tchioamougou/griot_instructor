@@ -164,7 +164,7 @@ import FullScreenLayout from '@/components/layout/FullScreenLayout.vue'
 import { useAuthStore } from '@/composables/user'
 import Spinner from '@/components/spinner/Spinner.vue';
 import { getUser } from '@/services/griot_service.ts';
-import { ref, defineAsyncComponent, onMounted } from "vue"
+import { ref } from "vue"
 import router from "@/router"
 import { auth } from "@/firebase"
 import {
@@ -181,6 +181,8 @@ const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
 const keepLoggedIn = ref(false)
+const isLoginGoogle = ref<boolean>(false)
+const isLoginFacebook = ref<boolean>(false)
 const error = ref('')
 
 const togglePasswordVisibility = () => {
@@ -246,12 +248,12 @@ const login = async () => {
   if (checkEmail && checkPass) {
     try {
       await signInWithEmailAndPassword(auth, email.value, password.value)
-      await getUser(auth.currentUser.uid).then((response) => {
+      await getUser(auth.currentUser?.uid ?? "").then((response) => {
         console.log('get blog user', response);
         return response.json();
       }).then((result) => {
-         useAuthStore().login(result, auth.currentUser.uid);
-         router.push('/');
+        useAuthStore().login(result, auth.currentUser?.uid);
+        router.push('/');
       }).catch((error) => {
         console.log("get user error", error)
         error.value = "login_error_occur"
@@ -276,33 +278,45 @@ const login = async () => {
 }
 
 const loginWithGoogle = async () => {
-  msg.value = {}
+  error.value = ''
   isLoginGoogle.value = true
   try {
     await signInWithPopup(auth, new GoogleAuthProvider())
-    const data = await griot_user(auth.currentUser)
-    await store.dispatch("saveUserData", data)
-    await verifyGuest()
-    redirection(auth, data)
-  } catch (error: any) {
-    if (error.code !== "auth/popup-closed-by-user") {
-      msg.value.firebaseError = "login_error_occur"
+    await getUser(auth.currentUser?.uid ?? "").then((response) => {
+      console.log('get blog user', response);
+      return response.json();
+    }).then((result) => {
+      useAuthStore().login(result, auth.currentUser?.uid);
+      router.push('/');
+    }).catch((error) => {
+      console.log("get user error", error)
+      error.value = "login_error_occur"
+    });
+  } catch (e: any) {
+    if (e.code !== "auth/popup-closed-by-user") {
+      error.value = "login_error_occur"
     }
   } finally {
     isLoginGoogle.value = false
   }
 }
 const loginWithFacebook = async () => {
-  msg.value = {}
+  error.value = ""
   isLoginFacebook.value = true
   try {
     await signInWithPopup(auth, new FacebookAuthProvider())
-    const data = await griot_user(auth.currentUser)
-    await store.dispatch("saveUserData", data)
-    await verifyGuest()
-    redirection(auth, data)
-  } catch (error) {
-    msg.value.firebaseError = "login_error_occur"
+    await getUser(auth.currentUser?.uid ?? "").then((response) => {
+      console.log('get blog user', response);
+      return response.json();
+    }).then((result) => {
+      useAuthStore().login(result, auth.currentUser?.uid);
+      router.push('/');
+    }).catch((error) => {
+      console.log("get user error", error)
+      error.value = "login_error_occur"
+    });
+  } catch (e: any) {
+    error.value = "login_error_occur"
   } finally {
     isLoginFacebook.value = false
   }

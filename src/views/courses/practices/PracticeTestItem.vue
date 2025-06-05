@@ -1,13 +1,14 @@
 <template>
   <template v-if="localItem">
     <div class="curriculum_item">
-      <div class="g-item" @mouseover="onHover" v-if="!editPracticeTest" @mouseleave="onLeave">
+      <div class="g-item" v-if="!editPracticeTest" >
         <div class="block_left">
           <i class="bi bi-check-circle-fill me-2"></i>
+          <!--@click="confirmDelete"-->
           <span>{{ $t('createNewCourse_practiceTest') }} {{ position }} : {{ item.title }} </span>
           <span :class="itClass">
             <span @click="editItem" class="ms-2"><i class="bi bi-pencil-fill"></i></span>
-            <span class="ms-2" @click="confirmDelete"><i class="bi bi-x-circle"></i></span>
+            <span class="ms-2" ><i class="bi bi-x-circle"></i></span>
           </span>
         </div>
         <div class="block_right">
@@ -33,7 +34,7 @@
                 <g-input :max="80" show-rest v-model="localItem.title" :is-error="hasError"
                   :message-error="$t('field_blank_error')" :label="$t('title')" />
                 <g-input v-model="localItem.description" :label="$t('Description')" />
-                <g-input v-model="item.duration" :is-error="hasError" :label="$t('duration')" type="number" />
+                <g-input v-model="localItem.duration" :is-error="hasError" :label="$t('duration')" type="number" />
                 <g-input v-model="localItem.minimumScore" :is-error="hasError" :label="$t('minimun_percentage')"
                   type="number" />
               </div>
@@ -107,7 +108,7 @@
   <g-confirmation :id="'item_' + item.id" ref="confirmation" @accepted="accepted" :message="$t('confirm_delete_item')"
     @cancel="refuse" :title="$t('please_confirm')" />
 </template>
-<script setup>
+<script setup lang="ts">
 import { computed, defineAsyncComponent, ref, watch } from "vue";
 import {
   createQuestions,
@@ -115,241 +116,222 @@ import {
   deleteQuestion,
   getPracticeTestById,
   updatePractice,
-} from "../../database/griot";
+} from "@/services/griot_service";
 import { useI18n } from "vue-i18n";
-import { result } from "lodash";
-const GToast = defineAsyncComponent(() => import("../../resources/GToast.vue"));
-const SpinnerCmp = defineAsyncComponent(() =>
-  import("../../resources/Spinner.vue")
-);
-const GConfirmation = defineAsyncComponent(() =>
-  import("../../resources/GConfirmation.vue")
-);
-const QuestionEdit = defineAsyncComponent(() => import("./QuestionEdit.vue"));
-const QuestionTile = defineAsyncComponent(() => import("./QuestionTile.vue"));
-const GInputFile = defineAsyncComponent(() =>
-  import("../../resources/GInputFile.vue")
-);
-const GInput = defineAsyncComponent(() => import("../../resources/GInput.vue"));
-const GSelect = defineAsyncComponent(() =>
-  import("../../resources/GSelect.vue")
-);
+
+// Async components
+const SpinnerCmp = defineAsyncComponent(() => import("@/components/spinner/Spinner.vue"));
+const GConfirmation = defineAsyncComponent(() => import("@/components/ui/GConfirmation.vue"));
+const QuestionEdit = defineAsyncComponent(() => import("@/views/courses/questions/QuestionEdit.vue"));
+const QuestionTile = defineAsyncComponent(() => import("@/views/courses/questions/QuestionTile.vue"));
+const GInput = defineAsyncComponent(() => import("@/components/forms/FormElements/BaseInput.vue"));
+
 const { t } = useI18n();
-const props = defineProps({
-  item: {
-    type: Object,
-    required: true,
-  },
-  position: {
-    type: Number,
-    required: true
-  }
-});
-const emits = defineEmits(["refresh", "delete"]);
+
+
+const props = defineProps < {
+  item: Record<string, any>;
+  position: number;
+} > ();
+
+const emits = defineEmits < {
+  (e: "refresh"): void;
+(e: "delete", id: string): void;
+}> ();
+
+// UI State
 const itClass = ref("g-hide");
-const localItem = ref(null);
+const localItem = ref < Record<string, any> | null > (null);
 const isSaving = ref(false);
 const editPracticeTest = ref(false);
 const addingResources = ref(false);
 const showDetails = ref(false);
 const hasError = ref(false);
-const action = ref(null);
-const message = ref(null);
-const confirmation = ref(null);
-const questionToDelete = ref(null);
-const questionType = ref(null);
+const action = ref < string > ('');
+const message = ref < any > (null); // Replace with actual toast instance type
+const confirmation = ref < any > (null); // Replace with actual confirmation dialog instance type
+const questionToDelete = ref < Record<string, any> > ();
+const questionType = ref < string > ('');
 const addingQuestion = ref(false);
 const batchAction = ref(false);
-const currentEditQuestion = ref(null);
+const currentEditQuestion = ref < Record<string, any> > ();
 const isLoading = ref(false);
+const recordToImport = ref < Record<string, any>[] > ([]);
+
+// Computed
+const questionsList = computed(() => localItem.value?.questions ?? []);
+const canEdit = computed(() => {
+  return (
+    isSaving.value ||
+    !localItem.value?.title ||
+    !localItem.value?.duration ||
+    !localItem.value?.minimumScore
+  );
+});
+const canSave = computed(() => recordToImport.value.length > 0);
+
+// Core methods
 const editItem = () => {
   editPracticeTest.value = true;
   addingResources.value = false;
   showDetails.value = false;
   hasError.value = false;
 };
-const questionsList = computed(() => {
-  return localItem.value.questions;
-});
+
 const updatePracticeLocal = () => {
+  if (!localItem.value) return;
   isSaving.value = true;
-  let practice = localItem.value;
-  console.log("questionsList", practice);
-  updatePractice(props.item.id, practice)
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
+  updatePractice(props.item.id, localItem.value)
+    .then((response) => response.json())
+    .then(() => {
       isSaving.value = false;
       message.value.toast(t("section"), t("section_updated"), "success");
       editPracticeTest.value = false;
     })
-    .catch((error) => {
+    .catch(() => {
       isSaving.value = false;
       message.value.toast(t("section"), t("error_occur"), "error");
-
     });
 };
-const onHover = () => {
-  itClass.value = "g-show";
-};
-const onLeave = () => {
-  itClass.value = "g-hide";
-};
+
 const deleteItemLocal = () => {
   deletePractice(props.item.id)
     .then((response) => {
-      if (response.status === 200) {
-        emits("delete", props.item.id);
+      if (response.status === 200) emits("delete", props.item.id);
+      confirmation.value.hideSpinner();
+      confirmation.value.hide();
+    })
+    .catch(console.error);
+};
+
+const deleteQuestionLocal = () => {
+  if (!questionToDelete.value) return;
+  deleteQuestion(questionToDelete.value.id!)
+    .then((response) => {
+      if (response.status === 200 && localItem.value) {
+        localItem.value.questions = localItem.value.questions.filter((q:any) => q.id !== questionToDelete.value?.id);
       }
       confirmation.value.hideSpinner();
       confirmation.value.hide();
     })
-    .catch((error) => {
-      console.log("delete record error", error);
-    });
+    .catch(console.error);
 };
-const confirmDelete = () => {
-  action.value = "delete";
-  confirmation.value.show();
-};
+
 const accepted = () => {
-  if (action.value === "delete") {
-    deleteItemLocal();
-  }
-  if (action.value === "deleteQuestion") {
-    deleteQuestionLocal();
-  }
   confirmation.value.showSpinner();
+  if (action.value === "delete") deleteItemLocal();
+  if (action.value === "deleteQuestion") deleteQuestionLocal();
 };
+
 const refuse = () => {
-  questionToDelete.value = null;
+  questionToDelete.value = undefined;
   confirmation.value.hide();
 };
-const confirmDeleteQuestion = (index) => {
+
+const editQuestion = (index: number) => {
+  currentEditQuestion.value = questionsList.value[index];
+  questionType.value = currentEditQuestion.value?.type;
+  addingQuestion.value = true;
+  action.value = "edit";
+};
+
+const confirmDeleteQuestion = (index: number) => {
   questionToDelete.value = questionsList.value[index];
   action.value = "deleteQuestion";
   confirmation.value.show();
 };
-const selectType = (type) => {
+
+const closeEditQuestion = () => {
+  addingQuestion.value = false;
+  currentEditQuestion.value = undefined;
+};
+
+const selectType = (type: string) => {
   questionType.value = type;
   action.value = "new";
   addingQuestion.value = true;
 };
+
 const batchUpload = () => {
   batchAction.value = true;
 };
-const saveQuestion = () => {
-  getPraticeTestLocal();
-  addingQuestion.value = false;
-  currentEditQuestion.value = null;
-};
-const closeEditQuestion = () => {
-  addingQuestion.value = false;
-  currentEditQuestion.value = null;
-};
+
 const cancel = () => {
   showDetails.value = true;
   editPracticeTest.value = false;
   addingQuestion.value = false;
   batchAction.value = false;
 };
-const editQuestion = (index) => {
-  currentEditQuestion.value = questionsList.value[index];
-  addingQuestion.value = true;
-  action.value = "edit";
-  questionType.value = currentEditQuestion.value.type;
-};
-const deleteQuestionLocal = () => {
-  deleteQuestion(questionToDelete.value.id)
-    .then((response) => {
-      if (response.status === 200) {
-        localItem.value.questions = localItem.value.questions.filter(e => e.id !== questionToDelete.value.id)
-      }
-      confirmation.value.hideSpinner();
-      confirmation.value.hide();
-    })
-    .catch((error) => {
-      console.log("delete record error", error);
-    });
-};
-const canEdit = computed(() => {
-  return (
-    isSaving.value ||
-    !localItem.value.title ||
-    !localItem.value.duration ||
-    !localItem.value.minimumScore
-  );
-});
-/** batch download* /
- *
- */
-const readCSVFile = (file) => {
-  let reader = new FileReader();
-  const self = this;
-  // Read file as string
-  reader.readAsText(file);
-  //self.isLoading = true;
-  console.log("file", file);
-  reader.onload = function (event) {
-    // Read file data
-    try {
-      let data = event.target.result;
-      // Split by line break to gets rows Array
-      if (file.type === "text/plain") buildQuestions(data);
-      else if (file.type === "text/csv") buildQuestionFromCsv(data);
-      else if (file.type === "application/json") buildQuestionsFromJson(data);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-};
-let recordToImport = ref([]);
+
 const cancelImport = () => {
   addingQuestion.value = false;
   batchAction.value = false;
   recordToImport.value = [];
 };
-const canSave = computed(() => {
-  return recordToImport.value.length > 0;
-});
-const buildQuestionsFromJson = (jsonString) => {
-  const mp = { 0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f" }
-  /* try {
-     const fullQuestion = JSON.parse(jsonString);
-     console.log('e',fullQuestion)
-     const questions = fullQuestion.map((e,i) => {
-       return {
-         type: e.assessment_type === "multi-select"
-             ? "Select"
-             : e.assessment_type == "multiple-choice"
-                 ? "Choice"
-                 : "",
-         explanation: e.prompt.explanation,
-         responses: e.prompt.answers?.map((ans,index) => {
-           return {
-             content: ans,
-             isCorrect: e.correct_response.includes(mp[index]),
-           }
-         }),
-         position:i+1,
-         content: e.question_plain,
-         description: "",
-         practiceTestId: props.item.id,
-       }
-     });
-     recordToImport.value = questions;
-   } catch (error) {
-     console.log('error',error)
-   };*/
 
+const saveQuestion = () => {
+  getPracticeTestLocal();
+  closeEditQuestion();
+};
+
+const getPracticeTestLocal = async () => {
+  const result = await getPracticeTestById(props.item.id);
+  if (result.jsonResponse && result.httpStatusCode === 200) {
+    localItem.value = result.jsonResponse;
+  } else {
+    // handle error
+  }
+};
+
+const importQuestion = () => {
+  isSaving.value = true;
+  createQuestions(recordToImport.value)
+    .then((response) => response.json())
+    .then(() => {
+      message.value.toast("Success", "Questions imported successfully", "success");
+      isSaving.value = false;
+      getPracticeTestLocal();
+      cancelImport();
+    })
+    .catch((error) => {
+      message.value.toast("Error", "An error occurred when importing question.", "error");
+      console.error(error);
+      isSaving.value = false;
+    });
+};
+
+const getDetails = () => {
+  showDetails.value = true;
+  if ((!questionsList.value?.length && localItem.value?.totalQuestions > 0)) {
+    getPracticeTestLocal();
+  }
+};
+
+// File upload handling
+const readCSVFile = (file: File) => {
+  const reader = new FileReader();
+  reader.readAsText(file);
+  reader.onload = (event) => {
+    try {
+      const data = event.target?.result as string;
+      if (file.type === "text/plain") buildQuestions(data);
+      else if (file.type === "text/csv") buildQuestionFromCsv(data);
+      else if (file.type === "application/json") buildQuestionsFromJson(data);
+    } catch (e) {
+      console.error("File parsing error", e);
+    }
+  };
+};
+const buildQuestionsFromJson = (jsonString:string) => {
+  const mp = { 0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f" }
+ 
   try {
     const fullQuestion = JSON.parse(jsonString);
     console.log('e', fullQuestion)
-    const questions = fullQuestion.map((e, i) => {
-      let ques = {
+    const questions = fullQuestion.map((e:any, i:number) => {
+      const ques:any = {
         explanation: e.explanation ?? " ",
-        responses: e.response?.map((ans, index) => {
+        responses: e.response?.map((ans:any, index:number) => {
           return {
             content: ans.content,
             isCorrect: ans.isCorrect ? true : false
@@ -360,7 +342,7 @@ const buildQuestionsFromJson = (jsonString) => {
         description: "",
         practiceTestId: props.item.id,
       }
-      const totaltrue = ques.responses?.filter(e => e.isCorrect)?.length;
+      const totaltrue = ques.responses?.filter((e:any )=> e.isCorrect)?.length;
       if (totaltrue && totaltrue > 1) {
         ques.type = "select";
       } else { ques.type = "Choice" }
@@ -372,8 +354,8 @@ const buildQuestionsFromJson = (jsonString) => {
     console.log('error', error)
   };
 }
-
-const buildQuestions = (text) => {
+// Question builders (keep as is — already typed inline)
+const buildQuestions = (text:string) => {
   const questions = text.split(/\d+ of \d+/);
   const questionsJSON = [];
   for (let i = 0; i < questions.length; i++) {
@@ -403,7 +385,7 @@ const buildQuestions = (text) => {
 
     }
 
-    let result = {
+    const result :any = {
       type: "Choice",
       explanation: explanation,
       responses: options,
@@ -411,7 +393,7 @@ const buildQuestions = (text) => {
       description: "",
       practiceTestId: props.item.id,
     };
-    const totaltrue = result.responses?.filter(e => e.isCorrect)?.length;
+    const totaltrue = result.responses?.filter((e:any) => e.isCorrect)?.length;
     if (totaltrue && totaltrue > 1) {
       result.type = "select";
     }
@@ -474,15 +456,15 @@ const buildQuestions = (text) => {
   console.log("text", json);
   recordToImport.value = json;
 };*/
-const buildQuestionFromCsv = (csvdata) => {
-  let rowData = csvdata.split("\n");
-  let questions = [];
+const buildQuestionFromCsv = (csvdata:string) => {
+  const rowData = csvdata.split("\n");
+  const questions = [];
   // Loop on the row Array (change row=0 if you also want to read 1st row)
   for (let row = 1; row < rowData.length; row++) {
 
-    let question = {};
+    const question :any = {};
     // Split by comma (,) to get column Array
-    let rowColData = rowData[row].split(",");
+    const rowColData = rowData[row].split(",");
     question.content = rowColData[0];
     question.type =
       rowColData[1] === "multi-select"
@@ -490,15 +472,15 @@ const buildQuestionFromCsv = (csvdata) => {
         : rowColData[1] == "multiple-choice"
           ? "Choice"
           : "";
-    let answers = rowColData.slice(2, 12).map((e) => {
+    let answers :any = rowColData.slice(2, 12).map((e) => {
       return {
         content: e,
         isCorrect: false,
       };
     });
 
-    answers = answers.filter((e) => e.content);
-    let correctList = rowColData[12].split(";");
+    answers = answers.filter((e :any) => e.content);
+    const correctList = rowColData[12].split(";");
     for (let i = 0; i < answers.length; i++) {
       answers[i].position = i + 1;
       if (correctList.includes("" + answers[i].position)) {
@@ -508,69 +490,22 @@ const buildQuestionFromCsv = (csvdata) => {
     question.description = rowColData[14];
     question.explanation = rowColData[13];
     question.responses = answers;
-    question.practiceTestId = props.item.id,
+    question.practiceTestId = props.item.id;
       questions.push(question);
   }
   console.log("all questions", questions);
   recordToImport.value = questions;
 }
-const importQuestion = () => {
-  isSaving.value = true;
-  createQuestions(recordToImport.value)
-    .then((response) => {
-      console.log("Response", response);
-      return response.json();
-    })
-    .then((data) => {
-      console.log("Question created", data);
-      message.value.toast(
-        "Success",
-        "Questions imported successfully",
-        "success"
-      );
-      isSaving.value = false;
-      //emits("refresh");
-      getPraticeTestLocal();
-      cancelImport();
-    })
-    .catch((error) => {
-      message.value.toast(
-        "Success",
-        "An error occurred when importing question. ",
-        "error"
-      );
-      console.error(error);
-      isSaving.value = false;
-    });
-};
-
-const getPraticeTestLocal = async () => {
-  const result = await getPracticeTestById(props.item.id);
-  if (result.jsonResponse && result.httpStatusCode == 200) {
-    console.log('Response', result.jsonResponse)
-    localItem.value = result.jsonResponse
-  } else {
-    //TODO Ask to user to contact the support
-  }
-  //getPracticeTestById(props.item.id);
-}
-
-const getDetails = () => {
-  showDetails.value = true;
-  if ((!questionsList.value || questionsList.value.length === 0) && (localItem.value.totalQuestions > 0)) {
-    getPraticeTestLocal();
-  }
-
-}
-/*** setup**/
 watch(
   () => props.item,
-  (newValue) => {
-    localItem.value = newValue;
+  (newVal) => {
+    localItem.value = newVal;
   }
 );
+
 localItem.value = props.item;
 </script>
+
 <style scoped>
 .curriculum_item {
   border: 0.01em solid gray;

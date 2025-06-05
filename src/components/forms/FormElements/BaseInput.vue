@@ -18,7 +18,7 @@
         v-if="maxlength"
         class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none"
       >
-        {{ localValue.length }}/{{ maxlength }}
+        {{ `${localValue}`.length }}/{{ maxlength }}
       </span>
     </div>
 
@@ -34,7 +34,7 @@ import { ref, watch } from 'vue';
 
 // Props definition
 const props = defineProps<{
-  modelValue: string;
+  modelValue: string|number;
   label?: string;
   placeholder?: string;
   maxlength?: number;
@@ -43,7 +43,7 @@ const props = defineProps<{
 
 // Emit definition
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void;
+  (e: 'update:modelValue', value: string|number): void;
 }>();
 
 // Local state
