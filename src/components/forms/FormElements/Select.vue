@@ -2,35 +2,27 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 
 
-const props = defineProps({
-  lb: String,
-  defaultValue: Array,
-  isRequired: {
-    type: Boolean,
-    default: false,
-  },
-  modelValue: {
-    type: [String, Number,null],
-    default: ''
-  },
-  options: {
-    type: Array,
-    required: true,
-    default: () => []  // Valeur par défaut vide si non définie
-  },
-  disabled: {
-    type: Boolean,
-    default: false
-  }, // Désactivation du champ
-});
+interface OptionType {
+  label: string;
+  value: string | number ;
+}
+
+const props = defineProps<{
+  lb?: string;
+  defaultValue?: any[];
+  isRequired?: boolean;
+  modelValue?: string | number | null;
+  options: OptionType[];
+  disabled?: boolean;
+}>();
 
 
 const isDropdownOpen = ref(false);
 
 
-const selectWrapper = ref(null);
+const selectWrapper = ref<any>(null);
 
-const selectedOption = ref(props.options.find((option:any) => option.value === props.modelValue) || null);
+const selectedOption = ref<any>(props.options.find((option:any) => option.value === props.modelValue) || null);
 
 // Synchroniser la sélection de l'option avec la prop modelValue
 watch(() => props.modelValue, (newVal) => {
@@ -103,7 +95,6 @@ onBeforeUnmount(() => {
     </div>
   </div>
 </template>
-
 <style scoped>
 .cursor-not-allowed {
   cursor: not-allowed;

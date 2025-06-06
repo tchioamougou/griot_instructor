@@ -67,7 +67,8 @@
             <div class="block_parameters gap-2">
               <div class="preview">
                 <label class="inline-flex items-center cursor-pointer">
-                  <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 me-2">{{ $t('FreePreview') }}</span>
+                  <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 me-2">{{ $t('FreePreview')
+                    }}</span>
                   <input type="checkbox" value="" class="sr-only peer" v-model="localItem.preview" id="preview"
                     :disabled="isSaving" @change="updateLectureLocal">
                   <div
@@ -199,7 +200,7 @@
         <div class="lectureAddContent border-t-1 py-3 px-3 border-black/25" v-if="addingContent">
           <div class="lectureAddContent_title">
             <span>{{ $t('addingContent_ob.description') }} <a href="#">{{ $t('addingContent_ob.description_url')
-                }}</a></span>
+            }}</a></span>
           </div>
           <div class="lectureAddContent_type">
             <input type="radio" id="Video" value="Video" v-model="documentType" class=""

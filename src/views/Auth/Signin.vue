@@ -158,7 +158,6 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: 'AuthSignin' });
 import CommonGridShape from '@/components/common/CommonGridShape.vue'
 import FullScreenLayout from '@/components/layout/FullScreenLayout.vue'
 import { useAuthStore } from '@/composables/user'
@@ -188,30 +187,6 @@ const error = ref('')
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
-
-const handleSubmit = async () => {
-  isLoading.value = true
-  try {
-    const res = await auth({
-      email: email.value,
-      password: password.value,
-    });
-
-    const { user, user_token } = res.data.data;
-
-    if (user && user_token) {
-      authStore.login(user, user_token.token);
-      router.push('/');
-    } else {
-      throw new Error('Données utilisateur manquantes');
-    }
-  } catch (err) {
-    error.value = 'Email ou mot de passe incorrect';
-    console.error(err);
-  } finally {
-    isLoading.value = false
-  }
-};
 
 const validateEmail = (value: string | undefined): boolean => {
   if (value) {

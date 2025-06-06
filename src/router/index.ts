@@ -75,14 +75,6 @@ const router = createRouter({
         title: 'Signin',
       },
     },
-    {
-      path: '/signup',
-      name: 'Signup',
-      component: () => import('../views/Auth/Signup.vue'),
-      meta: {
-        title: 'Signup',
-      },
-    },
 
 
     // manage instructor information in the course creation process
