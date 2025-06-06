@@ -436,7 +436,11 @@ export const completeEnrollment = (request:any) => {
         body: JSON.stringify(request),
     });
 };
-
+export const getEnrollmentsByInstructor = ( userId:string)=>{
+ return fetch(`${uriEnrollments}/instructor/${userId}`, {
+        method: "GET",
+    });
+}
 /** manage course progression**/
 export const getCoursesProgression = (id:string, type:string) => {
     return fetch(`${uriUser}/${id}/coursesProgression?type=${type}`, {

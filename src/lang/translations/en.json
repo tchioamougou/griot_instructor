@@ -2081,5 +2081,6 @@
         "payoutTaxes": "Payout & Tax Settings",
         "students": "Students",
         "accountSetting": "Account Setting"
-    }
+    },
+    "last_enrollement":"Last Enrollment"
 }
