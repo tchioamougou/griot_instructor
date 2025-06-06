@@ -5,7 +5,7 @@
       @click.prevent="toggleDropdown"
     >
       <span class="mr-3 overflow-hidden rounded-full h-11 w-11">
-        <img src="/images/user/owner.jpg" alt="User" />
+        <img :src="user.picture" alt="User" />
       </span>
 
       <span class="block mr-1 font-medium text-theme-sm"> {{ fullName }} </span>
@@ -57,7 +57,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { UserCircleIcon, ChevronDownIcon, LogoutIcon, SettingsIcon, InfoCircleIcon } from '@/icons'
 import { RouterLink } from 'vue-router'
 import { ref, onMounted, onUnmounted ,computed} from 'vue'
@@ -65,7 +65,7 @@ import { useAuthStore } from '@/composables/user'
 import { useRouter } from 'vue-router'
 import { useI18n } from "vue-i18n";
 const dropdownOpen = ref(false)
-const dropdownRef = ref(null)
+const dropdownRef = ref<any>(null)
 const { t } = useI18n();
 const menuItems = [
   { href: '/profile', icon: UserCircleIcon, text: t('Viewprofile') },
@@ -83,11 +83,13 @@ const fullName = computed(() => {
   const userData = authStore.user
   const user = JSON.parse(userData);
   return `${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim()
+});
+const user = computed(() => {
+  const userData = authStore.user
+  return JSON.parse(userData);
 })
 const Email = computed(() => {
-  const userData = authStore.user
-  const user = JSON.parse(userData);
-  return `${user?.email ?? ''}`
+  return `${user.value?.email ?? ''}`
 })
 
 const signOut = () => {
@@ -110,8 +112,8 @@ const closeDropdown = () => {
 //   closeDropdown()
 // }
 
-const handleClickOutside = (event) => {
-  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+const handleClickOutside = (event:any) => {
+  if (dropdownRef.value && !dropdownRef.value?.contains(event.target)) {
     closeDropdown()
   }
 }

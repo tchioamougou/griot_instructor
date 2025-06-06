@@ -250,7 +250,7 @@ const menuGroups: MenuGroup[] = [
       },
       {
         icon: CalenderIcon,
-        name: 'Course',
+        name: 'Courses',
         path: '/course',
       },
       {
@@ -267,7 +267,7 @@ const menuGroups: MenuGroup[] = [
         icon: ListIcon,
         subItems: [
           { name: 'Overview', path: '/stock' },
-          { name: 'Reviews', path: '/expense' },
+          { name: 'Reviews', path: '/reviews' },
           { name: 'Course engagement', path: '/booking' },
           { name: 'Coding exercise insights', path: '/booking' },
           { name: 'Course engagement', path: '/booking' },
@@ -284,15 +284,15 @@ const menuGroups: MenuGroup[] = [
         name: 'Payements',
         icon: PaymentIcon,
         subItems: [
-          { name: 'Revenue Report', path: '/blank' },
+          { name: 'Revenue Report', path: '/revenue-report' },
           { name: 'Payout Report', path: '/payout-report' },
-          { name: 'Payout & Tax Settings', path: '/alerts' },
+          { name: 'Payout & Tax Settings', path: '/payout-taxes' },
         ],
       },
       {
         name: 'Students',
         icon: UserCircleIcon,
-        path: '/user',
+        path: '/students',
       },
       {
         name: 'Account Setting',

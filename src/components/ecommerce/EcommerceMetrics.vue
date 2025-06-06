@@ -25,8 +25,8 @@
 
       <div class="flex items-end justify-between mt-5">
         <div>
-          <span class="text-sm text-gray-500 dark:text-gray-400">Customers</span>
-          <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">3,782</h4>
+          <span class="text-sm text-gray-500 dark:text-gray-400">{{$t('students')}}</span>
+          <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">{{instructor.totalStudents}}</h4>
         </div>
 
         <span
@@ -48,7 +48,7 @@
             />
           </svg>
 
-          11.01%
+          0%
         </span>
       </div>
     </div>
@@ -78,8 +78,8 @@
 
       <div class="flex items-end justify-between mt-5">
         <div>
-          <span class="text-sm text-gray-500 dark:text-gray-400">Orders</span>
-          <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">5,359</h4>
+          <span class="text-sm text-gray-500 dark:text-gray-400">{{$t('reviews')}}</span>
+          <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">{{ instructor.totalReviews }}</h4>
         </div>
 
         <span
@@ -101,9 +101,19 @@
             />
           </svg>
 
-          9.05%
+        {{instructor.rating}}
         </span>
       </div>
     </div>
   </div>
 </template>
+<script lang="ts" setup>
+const props = defineProps({
+  instructor: {
+    type: Object,
+    required: true
+  },
+})
+</script>
+<style scoped>
+</style>

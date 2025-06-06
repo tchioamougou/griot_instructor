@@ -82,12 +82,54 @@ const router = createRouter({
     {
       path: '/course',
       name: 'All Courses',
-      component: () => import('../views/courses/Courses.vue'),
+      component: () => import('@/views/courses/Courses.vue'),
       meta: {
         title: 'All Courses',
       },
     },
 
+    {
+      path: '/students',
+      name: 'All students',
+      component: () => import('@/views/performance/GStudents.vue'),
+      meta: {
+        title: 'All students',
+      },
+    },
+
+     {
+      path: '/reviews',
+      name: 'All Reviews',
+      component: () => import('@/views/performance/GReviewsPerformance.vue'),
+      meta: {
+        title: 'All students',
+      },
+    },
+      {
+      path: '/payout-report',
+      name: 'Payout Report',
+      component: () => import('@/views/reports/PayoutReport.vue'),
+      meta: {
+        title: 'All students',
+      },
+    },
+  
+      {
+      path: '/revenue-report',
+      name: 'Revenue Report',
+      component: () => import('@/views/reports/RevenueReport.vue'),
+      meta: {
+        title: 'All students',
+      },
+    },
+          {
+      path: '/payout-taxes',
+      name: 'Payout Taxes',
+      component: () => import('@/views/reports/GPayoutTax.vue'),
+      meta: {
+        title: 'Payout Taxes',
+      },
+    },
     /// Course Edit instruction 
 
       {

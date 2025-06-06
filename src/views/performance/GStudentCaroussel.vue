@@ -16,61 +16,62 @@
   </div>
 </template>
 
-<script>
-import GStudentItem from "./GStudentItem.vue";
-export default { name: "GStudentCarousel",
-  components: {GStudentItem,},
-  props:{
-    elements:{
-      type:Array,
-      required:true
-    }
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue';
+import GStudentItem from './GStudentItem.vue';
+
+// Define the shape of each element in the `elements` array
+interface ElementType {
+  // Replace this with actual structure if needed
+  [key: string]: any;
+}
+
+// Define props with type
+const props = defineProps<{
+  elements: ElementType[];
+}>();
+
+// Reactive state
+const items = ref<ElementType[]>([]);
+const sliderPosition = ref(0);
+const itemWidth = ref(250);
+const visibleItems = ref(5);
+const showPrev = ref(false);
+const showNext = ref(true);
+
+// Computed property for whether to show the next button initially
+const showNextInit = computed(() => {
+  return props.elements && props.elements.length > visibleItems.value;
+});
+
+// Method to move the slider
+function moveSlider(direction: number) {
+  const maxPosition = (props.elements.length - visibleItems.value) * itemWidth.value;
+  let newPosition = sliderPosition.value + direction * itemWidth.value;
+
+  console.log('newPosition', newPosition);
+  console.log('maxPosition', maxPosition);
+
+  newPosition = Math.max(0, Math.min(maxPosition, newPosition));
+  sliderPosition.value = newPosition;
+
+  console.log('sliderPosition', sliderPosition.value);
+
+  showPrev.value = newPosition > 0;
+  showNext.value = newPosition < maxPosition;
+}
+
+// Watch for prop changes to update local items
+watch(
+  () => props.elements,
+  (newVal) => {
+    items.value = newVal;
+    console.log('student', items.value);
   },
-  data() {
-    return {
-      items: [],
-      sliderPosition: 0,
-      itemWidth: 250,
-      visibleItems: 5,
-      showPrev:false,
-      showNext:true
-    };
-  },
-  methods: {
-    moveSlider(direction) {
-      const { elements, sliderPosition, itemWidth, visibleItems } = this;
-      const maxPosition = (elements.length - visibleItems) * itemWidth;
-      let newPosition = sliderPosition + direction * itemWidth;
-      console.log('newPosition',newPosition);
-      console.log('maxPosition',maxPosition);
-      newPosition = Math.max(0, Math.min(maxPosition, newPosition));
-      this.sliderPosition = newPosition;
-      console.log('sliderPosition',this.sliderPosition);
-      if(newPosition ==0){
-        this.showPrev= false;
-      }else{
-        this.showPrev =true;
-      }
-      if(newPosition >= maxPosition){
-        this.showNext= false;
-      }else{
-        this.showNext = true;
-      }
-    },
-  },
-  computed:{
-  showNextInit(){
-    return this.elements && this.elements.length > this.visibleItems;
-  }
-  },
-  watch:{
-  elements(value){
-    this.items = value;
-    console.log('student',this.items);
-  }
-  }
-};
+  { immediate: true }
+);
 </script>
+
 
 <style>
 .g-carousel-container_s {

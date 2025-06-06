@@ -375,3 +375,10 @@ export function formatDateT(dateString: string): string {
   const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
   return formattedDate;
 }
+/** function that takes a parameter as text and return the first character of the first word and the first character of the last word*/
+export function getFirstAndLastChars(text:string): string {
+  const words = text.split(" ");
+  const first = words[0][0] || "";
+  const last = words[words.length - 1][0] || "";
+  return first + last;
+}

@@ -7,9 +7,9 @@
     >
       <div class="flex justify-between">
         <div>
-          <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Monthly Target</h3>
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">{{ $t('Monthly Target') }}</h3>
           <p class="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-            Target you’ve set for each month
+            {{ $t('Target you’ve set for each month') }}
           </p>
         </div>
         <div>
@@ -44,8 +44,8 @@
           >+10%</span
         >
       </div>
-      <p class="mx-auto mt-1.5 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base">
-        You earn $3287 today, it's higher than last month. Keep up your good work!
+      <p class="mx-auto mt-1.5 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base" >
+        You earn {{'0 XAF '}} today, it's higher than last month. Keep up your good work!
       </p>
     </div>
 
@@ -135,18 +135,25 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import DropdownMenu from '../common/DropdownMenu.vue'
-const menuItems = [
-  { label: 'View More', onClick: () => console.log('View More clicked') },
-  { label: 'Delete', onClick: () => console.log('Delete clicked') },
-]
 import VueApexCharts from 'vue3-apexcharts'
 
 const props = defineProps({
+   instructor: {
+    type: Object,
+    required: true
+  },
   value: {
     type: Number,
     default: 75.55,
   },
-})
+  
+});
+
+
+const menuItems = [
+  { label: 'View More', onClick: () => console.log('View More clicked') },
+  { label: 'Delete', onClick: () => console.log('Delete clicked') },
+]
 
 const series = computed(() => [props.value])
 
