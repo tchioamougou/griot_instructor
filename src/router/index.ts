@@ -98,11 +98,29 @@ const router = createRouter({
     },
 
      {
-      path: '/reviews',
+      path: '/performance/reviews',
       name: 'All Reviews',
       component: () => import('@/views/performance/GReviewsPerformance.vue'),
       meta: {
         title: 'All students',
+      },
+    },
+    
+     {
+      path: '/performance/overview',
+      name: 'Overview',
+      component: () => import('@/views/performance/GOverview.vue'),
+      meta: {
+        title: 'Overview',
+      },
+    },
+    
+     {
+      path: '/performance/engagement',
+      name: 'Engagement',
+      component: () => import('@/views/performance/GEngagement.vue'),
+      meta: {
+        title: 'Engagement',
       },
     },
       {

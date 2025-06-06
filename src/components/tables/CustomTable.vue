@@ -51,7 +51,7 @@
     </div>
 
     <!-- Pagination Controls -->
-    <div class="flex justify-center items-center space-x-2 mt-4">
+    <div class="flex justify-center items-center space-x-2 mt-4" v-if="totalPages > 1">
       <button
         class="h-8 w-8 flex items-center justify-center border border-purple-400 rounded-full text-purple-600"
         :disabled="currentPage === 1"
@@ -90,7 +90,7 @@ import type { Component } from 'vue';
 interface Column {
   key: string;
   label: string;
-  type?: 'text' | 'status' | 'icon';
+  type?: any;
   icon?: Component;
 }
 

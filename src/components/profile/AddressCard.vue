@@ -160,16 +160,23 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
+<script setup lang="ts">
+import { ref,computed } from 'vue'
 import Modal from './Modal.vue'
+import { useAuthStore } from '@/composables/user'
 
+const authStore = useAuthStore()
+
+const user = computed (() => {
+  const userData = authStore.user
+  return JSON.parse(userData);
+})
 const isProfileAddressModal = ref(false)
 
 const saveProfile = () => {
   // Implement save profile logic here
   console.log('Profile saved')
-  isProfileInfoModal.value = false
+  isProfileAddressModal.value = false
 }
 </script>
 

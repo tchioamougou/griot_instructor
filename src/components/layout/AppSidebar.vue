@@ -40,13 +40,13 @@
         <router-link to="/" class="flex items-center gap-2 ">
 
 
-          <img v-if="isExpanded || isHovered || isMobileOpen" class="dark:hidden rounded-full w-10"
-            src="/src/assets/images/header/logo2.png" alt="Logo" />
+          <img v-if="isExpanded || isHovered || isMobileOpen" class="dark:hidden rounded-full w-20"
+            src="/src/assets/images/logo/GRIOT-withe-v1.png" alt="Logo" />
 
           <img v-if="isExpanded || isHovered || isMobileOpen" class="hidden dark:block rounded-full w-10"
-            src="/src/assets/images/header/logo2.png" alt="Logo" />
+            src="/src/assets/images/logo/GRIOT-withe-v1.png" alt="Logo" />
 
-          <img v-else class=" rounded-full w-10" src="/src/assets/images/header/logo2.png" alt="Logo" />
+          <img v-else class=" rounded-full w-10" src="/src/assets/images/logo/GRIOT-withe-v1.png" alt="Logo" />
           <span v-if="isExpanded || isHovered || isMobileOpen"
             class="inline-flex text-2xl text-gray-900 font-bold">Instructor</span>
         </router-link>
@@ -56,19 +56,7 @@
         <nav class="">
           <div class="flex flex-col gap-2">
             <div v-for="(menuGroup, groupIndex) in menuGroups" :key="groupIndex">
-              <!-- <h2
-        :class="[
-        'mb-4 text-xs uppercase flex leading-[20px] text-gray-400',
-        !isExpanded && !isHovered
-        ? 'lg:justify-center'
-        : 'justify-start',
-        ]"
-        >
-        <template v-if="isExpanded || isHovered || isMobileOpen">
-          {{ menuGroup.title }}
-        </template>
-<HorizontalDots v-else />
-</h2> -->
+            
               <ul class="flex flex-col gap-3 ">
                 <li v-for="(item, index) in menuGroup.items" :key="item.name">
                   <button v-if="item.subItems" @click="toggleSubmenu(groupIndex, index)" :class="[
@@ -88,7 +76,8 @@
                     ]">
                       <component :is="item.icon" />
                     </span>
-                    <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text  ">{{ item.name }}</span>
+                    <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text  ">  {{ $t(item.name) }}
+</span>
                     <ChevronDownIcon v-if="isExpanded || isHovered || isMobileOpen" :class="[
                       'ml-auto w-5 h-5 transition-transform duration-200',
                       {
@@ -113,7 +102,7 @@
                     ]">
                       <component :is="item.icon" />
                     </span>
-                    <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">{{ item.name }}</span>
+                    <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">{{ $t(item.name)  }}</span>
                   </router-link>
                   <transition @enter="startTransition" @after-enter="endTransition" @before-leave="startTransition"
                     @after-leave="endTransition">
@@ -133,41 +122,8 @@
                               ),
                             },
                           ]">
-                            {{ subItem.name }}
-                            <!-- <span class="flex items-center gap-1 ml-auto">
-        <span
-        v-if="subItem.new"
-        :class="[
-        'menu-dropdown-badge',
-        {
-        'menu-dropdown-badge-active': isActive(
-        subItem.path
-        ),
-        'menu-dropdown-badge-inactive': !isActive(
-        subItem.path
-        ),
-        },
-        ]"
-        >
-        new
-      </span>
-      <span
-      v-if="subItem.pro"
-      :class="[
-      'menu-dropdown-badge',
-      {
-      'menu-dropdown-badge-active': isActive(
-      subItem.path
-      ),
-      'menu-dropdown-badge-inactive': !isActive(
-      subItem.path
-      ),
-      },
-      ]"
-      >
-      pro
-    </span>
-  </span> -->
+                            {{ $t(subItem.name)  }}
+          
                           </router-link>
                         </li>
                       </ul>
@@ -241,80 +197,59 @@ interface MenuGroup {
 // === Menu Data ===
 const menuGroups: MenuGroup[] = [
   {
-    title: 'Menu',
+    title: 'Menu', // Optional to translate too if needed
     items: [
       {
         icon: GridIcon,
-        name: 'Dashboard',
+        name: 'menu.dashboard',  // Use translation key here
         path: '/',
       },
       {
         icon: CalenderIcon,
-        name: 'Courses',
+        name: 'menu.courses',
         path: '/course',
       },
       {
         icon: RoomIcon,
-        name: 'Communication',
+        name: 'menu.communication',
         path: '/profile',
         subItems: [
-          { name: 'Messages', path: '/all_room' },
-          { name: 'Q&A', path: '/type_room' },
+          { name: 'menu.messages', path: '/all_room' },
+          { name: 'menu.qna', path: '/type_room' },
         ],
       },
       {
-        name: 'Performance',
+        name: 'menu.performance',
         icon: ListIcon,
         subItems: [
-          { name: 'Overview', path: '/stock' },
-          { name: 'Reviews', path: '/reviews' },
-          { name: 'Course engagement', path: '/booking' },
-          { name: 'Coding exercise insights', path: '/booking' },
-          { name: 'Course engagement', path: '/booking' },
-          { name: 'Practice test insights', path: '/booking' },
-          { name: 'Traffic & conversion', path: '/booking' },
+          { name: 'menu.overview', path: '/performance/overview' },
+          { name: 'menu.reviews', path: '/performance/reviews' },
+          { name: 'menu.courseEngagement', path: '/performance/engagement' },
         ],
       },
       {
-        name: 'Tools',
-        icon: UserGroupIcon,
-        path: '/customers',
-      },
-      {
-        name: 'Payements',
+        name: 'menu.payments',
         icon: PaymentIcon,
         subItems: [
-          { name: 'Revenue Report', path: '/revenue-report' },
-          { name: 'Payout Report', path: '/payout-report' },
-          { name: 'Payout & Tax Settings', path: '/payout-taxes' },
+          { name: 'menu.revenueReport', path: '/revenue-report' },
+          { name: 'menu.payoutReport', path: '/payout-report' },
+          { name: 'menu.payoutTaxes', path: '/payout-taxes' },
         ],
       },
       {
-        name: 'Students',
+        name: 'menu.students',
         icon: UserCircleIcon,
         path: '/students',
       },
       {
-        name: 'Account Setting',
+        name: 'menu.accountSetting',
         icon: SettingsIcon,
         path: '/setting',
       },
     ],
   },
-  // {
-  //   title: 'Others',
-  //   items: [
-  //     {
-  //       icon: PlugInIcon,
-  //       name: 'Authentication',
-  //       subItems: [
-  //         { name: 'Signin', path: '/signin', pro: false },
-  //         { name: 'Signup', path: '/signup', pro: false },
-  //       ],
-  //     },
-  //   ],
-  // },
 ];
+
 
 
 

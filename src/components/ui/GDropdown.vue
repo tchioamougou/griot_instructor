@@ -6,8 +6,13 @@
     </label>
     <div :class="disabled?'hide':'g-dropdown-content'">
       <div class="g-dropdown-list">
-        <div class="g-dropdown-list_item" v-for="op in options" :key="op.value" @click="select($event,op)">
-          {{ op.label }}
+        <div
+          class="g-dropdown-list_item"
+          v-for="op in options"
+          :key="(op as any).value"
+          @click="select($event, op as any)"
+        >
+          {{ (op as any).label }}
         </div>
       </div>
     </div>

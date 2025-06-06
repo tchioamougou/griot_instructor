@@ -1967,8 +1967,119 @@
     "Favorites": "Favorites",
     "Add new answer": "Add new answer",
     "add_response": "+ Add more to your response",
-    "upload":"Upload",
-    "Monthly Target":"Monthly Target",
-    "Target you’ve set for each month":"Target you’ve set for each month",
-    "meet_people":"Meet people taking your courses"
+    "upload": "Upload",
+    "Monthly Target": "Monthly Target",
+    "Target you’ve set for each month": "Target you’ve set for each month",
+    "meet_people": "Meet people taking your courses",
+    "payout": {
+        "header": "Payout & Tax Settings",
+        "methodTitle": "Payout Method",
+        "tipTitle": "Choose your payout method below.",
+        "tipDescription1": "Connecting to a new payout method may take a few days. You won’t receive payments to the new linked account until its status is approved.",
+        "tipLearnMore": "Learn more about payout methods.",
+        "connect": "Connect",
+        "active": "Active",
+        "setActive": "Set as Active",
+        "change": "Change"
+    },
+    "tax": {
+        "statusTitle": "Withholding Tax Status",
+        "tipTitle": "Withholding Tax Status",
+        "tipDescription1": "Your tax documentation has been approved. Based on your current status, your IRS withholding tax rate is 30%. Your tax form will remain valid through 2025-12-31.",
+        "tipLearnMore": "Learn more about payout methods.",
+        "submitNewForm": "Submit a new form",
+        "documentsTitle": "Tax Documents"
+    },
+    "table": {
+        "document": "Document",
+        "date": "Date"
+    },
+    "revenue": {
+        "title": "Revenue Report",
+        "lifetimeEarnings": "Your Lifetime Earnings as of {date}",
+        "noStatistic": "No statistic for the moment",
+        "columns": {
+            "timePeriod": "Time Period",
+            "preTax": "Pre-tax Amount",
+            "tax": "Withholding Tax",
+            "net": "Net Earnings",
+            "expectedDate": "Expected Payment Date",
+            "status": "Payment Status"
+        }
+    },
+    "payout_report": {
+        "title": "Payout Report",
+        "historyTitle": "Payout History",
+        "tip": {
+            "title": "Stay informed about your payouts.",
+            "learnMore": "Learn more about payout methods.",
+            "notReceived": "In case you have not received your payout"
+        },
+        "columns": {
+            "created": "Created",
+            "status": "Status",
+            "method": "Payout Method",
+            "preTax": "Pre-tax Amount",
+            "tax": "Withholding Tax",
+            "net": "Net Earning",
+            "payslip": "Payslip"
+        }
+    },
+    "overview": {
+        "title": "Overview",
+        "subtitle": "Get top insights about your performance",
+        "allCourses": "All courses",
+        "totalRevenue": "Total revenue",
+        "thisMonth": "this month",
+        "totalEnrollments": "Total enrollments",
+        "instructorRating": "Instructor rating",
+        "ratingsThisMonth": "ratings this month",
+        "dateRange": "Date range",
+        "last12Months": "Last 12 months",
+        "last6Months": "Last 6 months",
+        "export": "Export",
+        "revenueReportLink": "Revenue Report"
+    },
+    "engagement": {
+        "title": "Instructor Engagement",
+        "subtitle": "Track how learners interact with your content",
+        "allCourses": "All courses",
+        "last30Days": "Last 30 days",
+        "last12Months": "Last 12 months",
+        "activeLearners": "Active learners",
+        "messagesSent": "Messages sent",
+        "questionsAnswered": "Questions answered",
+        "recentActivity": "Recent Engagement Activity"
+    },
+    "signIn": {
+        "title": "Sign In",
+        "subtitle": "Enter your email and password to sign in!",
+        "signInWithGoogle": "Sign in with Google",
+        "signInWithX": "Sign in with X",
+        "email": "Email",
+        "password": "Password",
+        "keepLoggedIn": "Keep me logged in",
+        "forgotPassword": "Forgot password?",
+        "dontHaveAccount": "Don't have an account?",
+        "signUp": "Sign Up",
+        "or": "Or",
+        "processing": "Processing..."
+    },
+    "menu": {
+        "dashboard": "Dashboard",
+        "courses": "Courses",
+        "communication": "Communication",
+        "messages": "Messages",
+        "qna": "Q&A",
+        "performance": "Performance",
+        "overview": "Overview",
+        "reviews": "Reviews",
+        "courseEngagement": "Course engagement",
+        "payments": "Payments",
+        "revenueReport": "Revenue Report",
+        "payoutReport": "Payout Report",
+        "payoutTaxes": "Payout & Tax Settings",
+        "students": "Students",
+        "accountSetting": "Account Setting"
+    }
 }

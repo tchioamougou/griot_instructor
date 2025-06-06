@@ -77,10 +77,10 @@ export default {
   },
   data:function(){
     return {
-      page:null,
+      page:0,
       startPage:0,
       endPage:0,
-      pageTab:[]
+      pageTab:[] as number[]
     }
   },
   methods:{
@@ -102,7 +102,7 @@ export default {
         return this.page + 1;
       }
     },
-    selectPage(page){
+    selectPage(page:number){
       this.$emit('update:modelValue',page);
       if(page === this.page){
         this.page = page;

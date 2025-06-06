@@ -1,50 +1,54 @@
 <template>
   <admin-layout>
-  <div class="container-md">
-    <p class="h3 mt-3 mb-5 g-heading-serif-xxl">Revenue Report</p>
+    <div class="container-md">
+      <p class="h3 mt-3 mb-5 g-heading-serif-xxl" v-t="'revenue.title'" />
 
-    <p class="h4 mt-3 mb-5 g-heading-serif-4xl">{{ getCurrencySymbolDefault() }} {{ totalEarn }}</p>
+      <p class="h4 mt-3 mb-5 g-heading-serif-4xl">
+        {{ getCurrencySymbolDefault() }} {{ totalEarn }}
+      </p>
 
-    <p>Your Lifetime Earnings as of {{ formatDateT(new Date()) }}</p>
-    <!-- Statistic per month-->
-    <div class="mt-4 g-border-1 shadow mb-5 p-4">
-      <template v-if="isLoading">
-        <spinner-cmp color="text-black" />
-      </template>
-      <template v-if="isError">
-        <g-error-occur />
-      </template>
-      <template v-if="!isLoading && !isError && records && records.length > 0">
-        <g-chart-live-data :gdata="records" />
-      </template>
-      <template v-else-if="!isLoading && !isError && (!records || records.length <= 0)">
-        <div class="text-center mb-3">No statistic for the moment</div>
-      </template>
+      <p>{{ $t('revenue.lifetimeEarnings', { date: formatDateT((new Date().toString())) }) }}</p>
+
+      <!-- Statistic per month -->
+      <div class="mt-4 g-border-1 shadow mb-5 p-4">
+        <template v-if="isLoading">
+          <spinner-cmp color="text-black" />
+        </template>
+        <template v-if="isError">
+          <g-error-occur />
+        </template>
+        <template v-if="!isLoading && !isError && records && records.length > 0">
+          <g-chart-live-data :gdata="records" />
+        </template>
+        <template v-else-if="!isLoading && !isError && (!records || records.length <= 0)">
+          <div class="text-center mb-3" v-t="'revenue.noStatistic'" />
+        </template>
+      </div>
+
+      <!-- Statistic data table -->
+      <div>
+        <template v-if="isLoading">
+          <spinner-cmp color="text-black" />
+        </template>
+        <template v-if="isError">
+          <g-error-occur />
+        </template>
+        <template v-if="!isLoading && !isError">
+          <CustomTable :columns="columns" :rows="records" :perPage="5" />
+        </template>
+      </div>
     </div>
-    <!-- Statistic data table-->
-    <div class=" ">
-      <template v-if="isLoading">
-        <spinner-cmp color="text-black" />
-      </template>
-      <template v-if="isError">
-        <g-error-occur />
-      </template>
-      <template v-if="!isLoading && !isError">
-           <CustomTable :columns="columns" :rows="records" :perPage="5" />
-</template>
-    </div>
-  </div>
   </admin-layout>
 </template>
 <script setup lang="ts">
 import { computed, defineAsyncComponent, ref } from "vue";
 import { convertDateStringToMonthYearFormat, ROLE_INSTRUCTOR, STUDENT_ID } from "@/utilities/utilityConstant";
-import { getAffiliateUserMonthStat } from "@/database/affiliationsService";
 import { formatDateT, getCurrencySymbolDefault } from "@/utilities/UtilityFunction";
 import { getUserMonthStat } from "@/services/griot_service";
 import { useAuthStore } from '@/composables/user'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
-
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 const authStore = useAuthStore()
 
 const user = computed(() => {
@@ -60,37 +64,14 @@ const GErrorOccur = defineAsyncComponent(() => import('@/components/ui/GErrorOcc
 const isError = ref(false);
 const isLoading = ref(false);
 const columns = [
-  {
-    label: "Time Period",
-    key: "month",
-    type: "text", // use "link" if you're rendering it as <a>
-  },
-  {
-    label: "Pre-tax Amount",
-    key: "totalValue",
-    type: "text",
-  },
-  {
-    label: "Withholding Tax",
-    key: "withholdingTax",
-    type: "text",
-  },
-  {
-    label: "Net Earnings",
-    key: "netEarnings",
-    type: "text",
-  },
-  {
-    label: "Expected Payment Date",
-    key: "expectedPaymentDate",
-    type: "text", // You could also use a dedicated "date" type if handled specially
-  },
-  {
-    label: "Payment Status",
-    key: "paymentstatus",
-    type: "status",
-  }
+  { label: t('revenue.columns.timePeriod'), key: "month", type: "text" },
+  { label: t('revenue.columns.preTax'), key: "totalValue", type: "text" },
+  { label: t('revenue.columns.tax'), key: "withholdingTax", type: "text" },
+  { label: t('revenue.columns.net'), key: "netEarnings", type: "text" },
+  { label: t('revenue.columns.expectedDate'), key: "expectedPaymentDate", type: "text" },
+  { label: t('revenue.columns.status'), key: "paymentstatus", type: "status" }
 ];
+
 
 const records = ref([]);
 const pageNumber = ref(1);
@@ -104,19 +85,19 @@ const isInstructor = computed(() => {
 const totalEarn = computed(() => {
     return user.value.totalEarns ?? 0;
 });
-const onChangeCurrentPage = (page) => {
+const onChangeCurrentPage = (page:number) => {
   pageNumber.value = page;
   init(false);
 }
 
-const getUserMonthStatLocal = (value) => {
+const getUserMonthStatLocal = (value:any) => {
   isLoading.value = value;
   const service = getUserMonthStat(user.value.id, pageNumber.value, pageSize.value);
   service.then((response) => {
     console.log('result oooo', response);
     return response.json();
   }).then((result) => {
-    records.value = result.records.map((e) => {
+    records.value = result.records.map((e:any,y:any) => {
       return { ...e, month: convertDateStringToMonthYearFormat(e.month) }
     });
     totalPage.value = result.totalPage
@@ -130,7 +111,7 @@ const getUserMonthStatLocal = (value) => {
   })
 }
 // setup
-const init = (value) => {
+const init = (value:any) => {
   getUserMonthStatLocal(value);
 }
 init(true);

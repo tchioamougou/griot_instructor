@@ -7,10 +7,10 @@
             <div>
               <div class="mb-5 sm:mb-8">
                 <h1 class="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-                  <strong>Sign In</strong>
+                  <strong>{{ $t('signIn.title') }}</strong>
                 </h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                  Enter your email and password to sign in!
+                  {{ $t('signIn.subtitle') }}
                 </p>
               </div>
               <div>
@@ -31,7 +31,7 @@
                         d="M10.1789 4.63331C11.8554 4.63331 12.9864 5.34303 13.6312 5.93612L16.1511 3.525C14.6035 2.11528 12.5895 1.25 10.1789 1.25C6.68676 1.25 3.67088 3.21387 2.20264 6.07218L5.08953 8.26943C5.81381 6.15972 7.81776 4.63331 10.1789 4.63331Z"
                         fill="#EB4335" />
                     </svg>
-                    Sign in with Google
+                   {{ $t('signIn.signInWithGoogle') }}
                   </button>
                   <button
                     class="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
@@ -41,7 +41,7 @@
                         d="M15.6705 1.875H18.4272L12.4047 8.75833L19.4897 18.125H13.9422L9.59717 12.4442L4.62554 18.125H1.86721L8.30887 10.7625L1.51221 1.875H7.20054L11.128 7.0675L15.6705 1.875ZM14.703 16.475H16.2305L6.37054 3.43833H4.73137L14.703 16.475Z" />
                     </svg>
 
-                    Sign in with X
+                   {{ $t('signIn.signInWithX') }}
                   </button>
                 </div>
                 <div class="relative py-3 sm:py-5">
@@ -60,7 +60,7 @@
                     <!-- Email -->
                     <div>
                       <label for="email" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                        Email<span class="text-error-500">*</span>
+                        {{ $t('signIn.email') }}<span class="text-error-500">*</span>
                       </label>
                       <input v-model="email" type="email" id="email" autocomplete="username" name="email"
                         placeholder="info@gmail.com"
@@ -69,7 +69,7 @@
                     <!-- Password -->
                     <div>
                       <label for="password" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                        Password<span class="text-error-500">*</span>
+                        {{ $t('signIn.password') }}<span class="text-error-500">*</span>
                       </label>
                       <div class="relative">
                         <input v-model="password" :type="showPassword ? 'text' : 'password'" id="password"
@@ -112,22 +112,20 @@
                               </span>
                             </div>
                           </div>
-                          Keep me logged in
-                        </label>
+{{ $t('signIn.keepLoggedIn') }}                        </label>
                       </div>
                       <router-link to="/reset-password"
-                        class="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400">Forgot
-                        password?</router-link>
+                        class="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400">{{ $t('signIn.forgotPassword') }}</router-link>
                     </div>
                     <!-- Button -->
                     <div>
                       <button type="submit"
                         class="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-purple-500 shadow-theme-xs hover:bg-purple-600">
 
-                        <span v-if="!isLoading">Sign In</span>
+                        <span v-if="!isLoading">{{ $t('signIn.title') }}</span>
                         <span v-else class="flex items-center gap-2">
                           <Spinner class="w-4 h-4" />
-                          Processing...
+                         {{ $t('signIn.processing') }}
                         </span>
                       </button>
                     </div>
@@ -135,9 +133,8 @@
                 </form>
                 <div class="mt-5">
                   <p class="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
-                    Don't have an account?
-                    <router-link to="/signup" class="text-brand-500 hover:text-brand-600 dark:text-brand-400">Sign
-                      Up</router-link>
+                   {{ $t('signIn.dontHaveAccount') }}
+                    <router-link to="https://afgriot.com/" class="text-brand-500 hover:text-brand-600 dark:text-brand-400">{{ $t('signIn.signUp') }}</router-link>
                   </p>
                 </div>
               </div>
