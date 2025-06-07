@@ -12,6 +12,7 @@
         :placeholder="placeholder"
         :maxlength="maxlength"
         :type="type??'text'"
+        :disabled="disabled"
         class="w-full border border-gray-300 rounded px-3 py-2 pr-16 focus:outline-none focus:ring focus:border-blue-500 text-sm"
       />
       <!-- Maxlength Counter inside the input border -->
@@ -40,7 +41,8 @@ const props = defineProps<{
   placeholder?: string;
   maxlength?: number;
   description?: string; // 👈 Add support for input description
-  type?:string
+  type?:string,
+  disabled?:boolean
 }>();
 
 // Emit definition

@@ -160,6 +160,12 @@ const router = createRouter({
         onlyInstructor: true,
       },
     },
+    {
+      path:'/setting',
+      name: 'Setting',
+      component: () => import('@/views/setting/SettingView.vue'),
+
+    },
   ],
 })
 router.beforeEach(async (to, from, next) => {

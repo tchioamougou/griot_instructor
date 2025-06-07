@@ -6,7 +6,7 @@
     <!-- <span class="font-semibold">{{ $t(selectLanguage.name) }}</span> -->
     <button @click="show = !show" type="button"
       class="relative rounded-md text-left text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      aria-haspopup="listbox" :aria-expanded="show.toString()" aria-labelledby="language-select">
+      aria-haspopup="listbox" :aria-expanded="show" aria-labelledby="language-select">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
         stroke="currentColor" class="w-5 h-5 transition-transform duration-200" :class="{'rotate-180': show}">
         <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -23,7 +23,7 @@
       role="option" @click="setLanguage(language)">
       <div class="flex items-center gap-2">
         <img :src="language.icon" alt="Language icon" class="h-5 w-5 rounded-full" />
-        <span class="ml-2 block truncate font-medium">{{ language.name }}</span>
+        <span class="ml-2 block truncate font-medium">{{$t( language.name) }}</span>
       </div>
       <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-indigo-600"
         v-if="selectLanguage.code === language.code">
@@ -37,14 +37,14 @@
 
 </template>
 
-<script setup>
-import { computed, ref, defineEmits } from 'vue'
+<script setup lang="ts">
+import { computed, ref } from 'vue'
 import sw from '@/assets/images/header/united-kingdom_551844.png'
 import cm from '@/assets/images/header/Flag_of_France.png'
 import { useI18n } from 'vue-i18n'
 import { useLanguageStore } from '@/lang/language'
 const t = useI18n({ useScope: 'global' })
-const emit = defineEmits();
+const emit = defineEmits(['changeLang']);
 
 
 
@@ -52,12 +52,12 @@ const emit = defineEmits();
 const languages = [
   {
     code: 'en',
-    name: 'English',
+    name: 'english',
     icon: sw,
   },
   {
     code: 'fr',
-    name: 'French',
+    name: 'french',
     icon: cm,
   },
 ]
@@ -66,9 +66,9 @@ const useLanguage = useLanguageStore()
 const selectLanguage = computed(() => {
   return languages.filter((e) => e.code === useLanguage.locale)[0]
 })
-const setLanguage = (lg) => {
+const setLanguage = (lg:any) => {
   console.log('setLanguage', lg)
-  show.value = !show
+  show.value = !show.value
   if (lg.code !== t.locale.value) {
     t.locale.value = lg.code
     emit('changeLang', lg.code);
