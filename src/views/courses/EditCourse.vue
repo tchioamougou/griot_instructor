@@ -1,30 +1,59 @@
 <template>
-  <CourseHeader :course="course" :save-enabled="true" :show-save-button="true" @save="handleSave()" @back="backToCourse" />
+  <CourseHeader :course="course" :save-enabled="true" :show-save-button="!excludedComponents.includes(selectedItem)" @save="handleSave()"
+    @back="backToCourse" @settings="goToSetting" />
   <div class="container mx-auto px-16 py-0 ">
     <div class="flex flex-col md:flex-row min-h-screen">
-    <!-- Sidebar Navigation -->
-    <aside class="w-full md:w-64 border-r bg-white p-4">
-      <div class="space-y-6">
-        <div v-for="(menu, index) in tabs" :key="index">
-          <h2 class="text-sm font-semibold uppercase text-gray-600 mb-2">{{ menu.label }}</h2>
-          <div class="space-y-1">
-            <button v-for="item in menu.items" :key="item.value" @click="handleItem(item.value)"
-              :class="['w-full text-left px-2 py-1 rounded text-sm', selectedItem === item.value ? 'bg-purple-200 font-semibold' : 'hover:bg-purple-100']">
-              {{ item.label }}
-            </button>
+      <!-- Sidebar Navigation -->
+      <aside class="w-full md:w-64 border-r bg-white p-4">
+        <div class="space-y-6">
+          <div v-for="(menu, index) in tabs" :key="index">
+            <h2 class="text-sm font-semibold uppercase text-gray-600 mb-2">{{ menu.label }}</h2>
+            <div class="space-y-1">
+              <button v-for="item in menu.items" :key="item.value" @click="handleItem(item.value)"
+                :class="['w-full text-left px-2 py-1 rounded text-sm', selectedItem === item.value ? 'bg-purple-200 font-semibold' : 'hover:bg-purple-100']">
+
+                <input type="checkbox" disabled :checked="(item.value == 'IntendedLearners' &&
+                  course.intendedLearnersStep) ||
+                  (item.value == 'CourseLandingPage' &&
+                    course.courseLandingPageStep) ||
+                  (item.value == 'CourseMessages' && course.courseMessagesStep) ||
+                  (item.value == 'Pricing' && course.pricingStep) ||
+                  ((item.value === 'Curriculum' ||
+                    item.value === 'PracticeTest') &&
+                    course.curriculumStep) ||
+                  (item.value == 'FilmEdit' && course.courseFilmEditStep) ||
+                  (item.value == 'CourseStructure' &&
+                    course.courseStructureStep) ||
+                  (item.value == 'SetupTestVideo' && course.courseSetupTestStep) ||
+                  (item.value == 'Promotions')
+                  " v-if="course.status === 'Draft'" />
+
+                {{ item.label }}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      <button class="mt-6 bg-purple-700 text-white w-full py-2 rounded" v-if="canSubmit">{{$t('submit_for_review')}}</button>
-    </aside>
+        <div v-if="
+          course.status &&
+          course.status !== COURSE_STATUS.pending &&
+          course.status !== COURSE_STATUS.published
+        ">
 
-    <!-- Main Content Area -->
-    <main class="flex-1 p-6 bg-gray-50 overflow-y-auto">
-      <template v-if="course && course.id">
-              <component :is="getSectionComponent" :course="course" ref="component" @refresh="refresh" />
-      </template>
-    </main>
-  </div>
+          <Button class="mt-6 bg-purple-700 text-white w-full py-2 rounded" :disabled="canSubmit || isSaving"
+            @click="submitForReview" :title="$t(course.status === 'Draft'
+              ? 'submit_course'
+              : 'course_submitted')
+              ">{{ $t('submit_for_review') }}</Button>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="flex-1 p-6 bg-gray-50 overflow-y-auto">
+        <template v-if="course && course.id">
+          <component :is="getSectionComponent" :course="course" ref="component" @refresh="refresh" />
+        </template>
+      </main>
+    </div>
   </div>
 </template>
 
@@ -62,6 +91,20 @@ const CourseCaptions = defineAsyncComponent(() => import('./CourseCaptions.vue')
 const CourseLandingPage = defineAsyncComponent(() => import('./CourseLandingPage.vue'));
 const SpinnerCmp = defineAsyncComponent(() => import('@/components/spinner/Spinner.vue'));
 const PracticeTest = defineAsyncComponent(() => import('./practices/PracticeTest.vue'));
+import Button from '@/components/ui/Button.vue';
+
+const excludedComponents = [
+"CourseStructure",
+"SetupTestVideo",
+"FilmEdit",
+"Curriculum",
+"Captions",
+"Accessibility",
+"Pricing",
+"Promotions",
+"Settings",
+"PracticeTest",
+];
 
 // i18n
 const { t } = useI18n();
@@ -139,7 +182,7 @@ const getCourseLocal = () => {
     .then(response => response.json())
     .then(data => {
       course.value = data;
-
+console.log('course.value', course.value);
       if (course.value.type === COURSE_TYPE.practiceTest) {
         items.value = course.value.status === COURSE_STATUS.unpublished
           ? EDIT_COURSE_ITEMS.practiceTest.draft
@@ -229,12 +272,12 @@ const tabs = computed(() => {
     })),
   }));
 });
-const handleItem =(key:string)=>{
-    showItem({ apiName: key });
+const handleItem = (key: string) => {
+  showItem({ apiName: key });
 
-} 
+}
 
-const  getSectionComponent = computed(()=>{
+const getSectionComponent = computed(() => {
   const components: Record<string, any> = {
     'IntendedLearners': IntendedLearners,
     'CourseStructure': CourseStructure,
@@ -247,6 +290,8 @@ const  getSectionComponent = computed(()=>{
     'Pricing': CoursePricing,
     'Promotions': CoursePromotions,
     'CourseMessages': CourseMessage,
+    'Settings': CourseSetting,
+    'PracticeTest': PracticeTest,
   }
   return components[selectedItem.value] || IntendedLearners
 })
@@ -254,7 +299,7 @@ const  getSectionComponent = computed(()=>{
 const handleSave = () => {
   if (selectedItem.value === "IntendedLearners") {
     emitter.emit("save-intended-learners");
-  }else if(selectedItem.value === "CourseMessages") {
+  } else if (selectedItem.value === "CourseMessages") {
     emitter.emit("save-course-messages");
   } else if (selectedItem.value === "CourseStructure") {
     emitter.emit("save-course-structure");
@@ -294,5 +339,49 @@ const handleSave = () => {
   main {
     order: 1;
   }
+}
+
+/* manage input check box*/
+
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: 2px solid #0a0809;
+  border-radius: 0px;
+  width: 16px;
+  height: 16px;
+  outline: none;
+  position: relative;
+  transition: border-color 0.3s ease-in-out;
+  margin-right: 0.5em;
+}
+
+input[type="checkbox"]:checked:before {
+  content: "\2713";
+  width: 16px;
+  height: 16px;
+  background-color: black;
+  position: absolute;
+  color: white;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding-bottom: 0px;
+  display: block;
+  font-size: 16px;
+  line-height: 16px;
+  text-align: center;
+}
+
+input[type="checkbox"]:focus {
+  border-color: black;
+}
+
+input[type="checkbox"]:checked:focus {}
+
+input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 1;
 }
 </style>

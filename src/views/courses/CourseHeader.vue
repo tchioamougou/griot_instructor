@@ -4,21 +4,20 @@
         <!-- Left Section -->
         <div class="flex flex-wrap items-center space-x-3">
             <button @click="emit('back')" class="text-sm text-gray-400 hover:text-white whitespace-nowrap">
-                &lt; Back to courses
+                &lt; {{$t('back_to_courses')}}
             </button>
 
             <div class="flex items-center space-x-2">
                 <h1 class="text-base sm:text-lg font-semibold whitespace-nowrap">
                     <span class="font-bold">{{ course.title }}</span>
-                    <span class="font-medium"> ({{ course.year }})</span>
                 </h1>
-                <span v-if="course.isLive" class="text-xs bg-gray-700 text-white px-2 py-0.5 rounded">
-                    LIVE
+                <span  class="text-xs bg-gray-700 text-white px-2 py-0.5 rounded" v-if="course.status">
+                    {{$t(course.status)}}
                 </span>
             </div>
 
-            <span class="text-sm text-gray-300 whitespace-nowrap">
-                {{ course.videoLength }} of video content published
+            <span class="text-sm text-gray-300 whitespace-nowrap" v-if="course.totalDurations">
+                {{ formatMinutes(course.totalDurations) }} {{$t('of_video_content')}}
             </span>
         </div>
 
@@ -27,11 +26,11 @@
             <button v-if="showSaveButton" :disabled="!saveEnabled" @click="onSaveClick"
                 class="text-sm px-3 py-1 rounded transition-all duration-150"
                 :class="saveEnabled ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-800 text-gray-500 cursor-not-allowed'">
-                Save
+                {{ $t('save') }}
             </button>
 
             <!-- Settings Button -->
-            <button class="p-1 rounded hover:bg-gray-800" aria-label="Settings">
+            <button class="p-1 rounded hover:bg-gray-800" aria-label="Settings" @click="emit('settings')">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 20 20"
                     fill="currentColor">
                     <path fill-rule="evenodd"
@@ -44,7 +43,7 @@
 </template>
 
 <script lang="ts" setup>
-
+import {formatMinutes} from '@/utilities/UtilityFunction'
 
 const props = defineProps<{
     course:  Record<string, any>
@@ -54,7 +53,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (e: 'save'): void,
-    (e: "back"): void
+    (e: "back"): void,
+    (e: "settings"): void
 }>()
 
 function onSaveClick() {

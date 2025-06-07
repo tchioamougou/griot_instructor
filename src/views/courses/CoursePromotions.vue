@@ -17,9 +17,9 @@
           <BaseInput type="text" :disabled="true" show-right-message :model-value="referralLink" button="Copy"
             :is-copy="true" />
         </div>
-        <div class="block">
-          <div class="title">{{ $t('coupons') }}</div>
-          <div class="content">
+        <div class="block" >
+          <div class="text-md font-bold mb-2">{{ $t('coupons') }}</div>
+          <div class="content border rounded-md border-black/25">
             <div class="coupon_bloc" v-if="!creatingCoupon">
               <template v-if="isLoadingActive">
                 <div class="control_spinner">
@@ -31,25 +31,25 @@
                 <div class="description">
                   <span class="message">
                     {{ $t('coupons_per_month', { restOfCoupon: restOfCoupon }) }}
-                  </span><button @click="initCreateCoupon" class="g-add-more-button" :disabled="!canCreateCoupon">
-                    +
+                  </span><Button @click="initCreateCoupon" size="sm" :disabled="!canCreateCoupon">
+                    + {{ $t('add_coupon') }}
                   </button>
                 </div>
               </template>
             </div>
-            <div class="g-create_coupon" v-if="creatingCoupon">
+            <div class="g-create_coupon " v-if="creatingCoupon">
               <div class="title_bloc">
-                <span class="title">{{ $t('create_new_coupon') }}</span><span class="icon" @click="cancel"><i
+                <span class="title">{{ $t('create_new_coupon') }}</span><span class="icon text-red-400 cursor-pointer" @click="cancel"><i
                     class="bi bi-x-lg"></i></span>
               </div>
-              <div class="description">
+              <div class="description text-sm">
                 {{ $t('create_new_coupon_msg', { restOfCoupon: restOfCoupon, currentMonth: 'June' }) }}
               </div>
               <div class="type">
-                <div class="title">{{ $t('pick_coupon_type_msg') }}</div>
+                <div class="font-bold text-sm">{{ $t('pick_coupon_type_msg') }}</div>
                 <div class="row">
                   <div class="col-md-4 col-sm-12" v-for="(cp, i) in couponCategories" :key="i">
-                    <div class="coupon_card">
+                    <div class="coupon_card border rounded-md border-black/25">
                       <div class="input">
                         <input type="radio" :id="cp.type" name="couponType" v-model="couponType" :value="cp.type" />
                       </div>
@@ -66,23 +66,23 @@
               <div class="value">
                 <BaseInput :label="$t('set_price')" type="number" :description="$t('set_price_description')"
                   show-description v-if="couponType == 'CustomPrice'" v-model="customPrice" />
-                <CustomInput :label="$t('percentage')" type="number" :description="$t('percentage_description')"
-                  show-description v-if="couponType == 'CustomRate'" v-model:number="customRate" />
+                <BaseInput :label="$t('percentage')" type="number" :description="$t('percentage_description')"
+                  show-description v-if="couponType == 'CustomRate'" v-model="customRate" :maxlength="2"/>
               </div>
               <div class="StartDate">
                 <BaseInput :label="$t('start_date')" type="datetime-local" v-model="startDate" />
               </div>
               <div class="endDate">
-                <span class="label">{{ $t('end_date') }}</span>
+                <span class="text-sm font-medium text-gray-700 mb-1">{{ $t('end_date') }}</span>
                 <span class="value">{{ endDate }}</span>
               </div>
-              <div class="editCoupon">
+              <div class="editCoupon mt-4">
                 <BaseInput v-model="couponCode" :label="$t('edit_coupon_code')" type="text"
                   :description="$t('edit_coupon_code_description')" show-description />
               </div>
-              <div class="actions">
-                <button class="cancel" @click="cancel">{{ $t('cancel_btn') }}</button>
-                <button class="save" @click="createCouponStripe" :disabled="isSaving">
+              <div class="flex justify-end gap-4">
+                <Button size="sm" class="cancel" @click="cancel">{{ $t('cancel_btn') }}</button>
+                <Button size="sm" @click="createCouponStripe" :disabled="isSaving">
                   <spinner-cmp v-if="isSaving" />{{ $t('save') }}
                 </button>
               </div>
@@ -90,8 +90,8 @@
           </div>
         </div>
         <div class="block">
-          <div class="title">{{ $t('active_coupon') }}</div>
-          <div class="content">
+          <div class="text-md font-bold mb-2">{{ $t('active_coupon') }}</div>
+          <div class="content border rounded-md border-black/25">
             <template v-if="isLoadingActive">
               <div class="control_spinner">
                 <spinner-cmp color="text-black" />
@@ -108,8 +108,8 @@
           </div>
         </div>
         <div class="block">
-          <div class="title">{{ $t('expired_coupon') }}</div>
-          <div class="content">
+          <div class="text-md font-bold mb-2">{{ $t('expired_coupon') }}</div>
+          <div class="content border rounded-md border-black/25">
             <template v-if="isLoadingExpired">
               <div class="control_spinner">
                 <spinner-cmp color="text-black" />
@@ -148,11 +148,11 @@ import {
   createNewPromotions,
   updatePromotions,
 } from "@/stripe/Products";
-import { createPromotions, deletePromotion, UpdatePromotion } from "@/services/griot_service";
+import { coursesStep, createPromotions, deletePromotion, UpdatePromotion } from "@/services/griot_service";
 import BaseInput from "@/components/forms/FormElements/BaseInput.vue";
-import CustomInput from "@/components/forms/FormElements/CustomInput.vue";
 import GConfirmation from "@/components/ui/GConfirmation.vue";
 import ItemLayout from "./items/ItemLayout.vue";
+import Button from "@/components/ui/Button.vue";
 
 
 const emits = defineEmits<{
@@ -412,6 +412,18 @@ columnsExpired.value[columnsExpired.value.length - 1] = {
     },
   ],
 };
+if (!props.course.courseFilmEditStep) {
+  coursesStep(props.course.id, "Promotions")
+    .then((response) => {
+      return response.json();
+    })
+    .then((result) => {
+      emits("refresh");
+    })
+    .catch((error) => {
+      console.log("error==>coursesStep", error);
+    });
+}
 </script>
 
 <style scoped>
@@ -448,7 +460,7 @@ columnsExpired.value[columnsExpired.value.length - 1] = {
 }
 
 .g-create_coupon .title_bloc .title {
-  font-weight: 900;
+  font-weight: 600;
   font-size: 1em;
 }
 
@@ -466,7 +478,6 @@ columnsExpired.value[columnsExpired.value.length - 1] = {
   display: flex;
   flex-direction: row;
   padding: 1em 1em;
-  border: 0.1em solid rgb(128, 128, 128, 0.2);
   margin: 1em 0;
   font-family: sans-serif;
   cursor: pointer;
@@ -542,7 +553,6 @@ button.cancel {
 }
 
 .block .content {
-  border: 0.1em solid rgb(128, 128, 128, 0.1);
   padding: 1em;
 }
 

@@ -19,7 +19,7 @@
         </div>
         <div class="mt-8">
 
-          <div v-if="hasError" class="text-danger mt-2 g-text-bold">
+          <div v-if="hasError" class="text-red-500 mb-2 g-text-bold">
             {{ $t("lan.required_field_message") }}
           </div>
           <!--  Course Title-->
@@ -32,13 +32,13 @@
             :max="200" required show-description :is-error="hasError && !localCourseInfo.subTitle" :maxlength="120"
             :description="$t('lan.course_subtitle_description')" />
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <BaseSelect v-model="localCourseInfo.language" label="Language" :options="languages" placeholder="Select Language" />
-            <BaseSelect v-model="localCourseInfo.level" :label="$t('lan.course_level')" :options="levels" placeholder="Select Level" />
+            <BaseSelect v-model="localCourseInfo.language" :label="$t('Language')" :options="languages" :placeholder="$t('select_language')"/>
+            <BaseSelect v-model="localCourseInfo.level" :label="$t('lan.course_level')" :options="levels"  :placeholder="$t('select_level')"/>
             <div>
               <BaseSelect v-model="courseCategory" :label="$t('category')" :options="categoriesOptions"
-                placeholder="Select Category" />
+                :placeholder="$t('select_category')" />
               <BaseSelect v-model="courseSubCategory" :label="$t('subCatgory')" :options="courseSubCategoryOptions"
-                placeholder="Select Subcategory" />
+                :placeholder="$t('select_subcategory')" />
             </div>
           </div>
 
@@ -128,8 +128,6 @@ import { useToast } from 'vue-toastification'
 
 const toast = useToast();
 // Props
-
-
 const props = defineProps<{
   course: Record<string, any>;
 }>();
@@ -147,19 +145,19 @@ const loading = ref(false);
 const alert = ref<null | string>(null);
 const isSaving = ref(false);
 const courseCategory = ref<string>("");
-const courseSubCategory = ref<string>('');
+const courseSubCategory = ref<string>("");
 const categoriesOptions = ref<Array<Record<string, any>>>([]);
 const courseSubCategoryOptions = ref<Array<Record<string, any>>>([]);
 const hasError = ref(false);
 const languages = ref([
-  { value: "French", label: "French" },
-  { value: "Italy", label: "Italy" },
-  { value: "English", label: "English" },
-  { value: "Swahili", label: "Swahili" },
+  { value: "French", label: t("french") },
+  { value: "Italy", label: t("italy") },
+  { value: "English", label: t("english") },
+  { value: "Swahili", label: t("swahili") },
 ]);
 
 const levels = ref([
-  { value: "All level", label: t("All level") },
+  { value: "All level", label: t("All Level") },
   { value: "Beginner", label: t("Beginner") },
   { value: "Intermediate", label: t("Intermediate") },
   { value: "Expert", label: t("Expert") },
@@ -167,8 +165,8 @@ const levels = ref([
 // Methods
 const initInfo = (course: Record<string, any>) => {
   localCourseInfo.value = { ...course };
-  courseSubCategory.value = course.subCategory ?? null;
-  courseCategory.value = course.categories ?? null;
+  courseSubCategory.value = course.subCategory ?? "";
+  courseCategory.value = course.categories ?? "";
 };
 
 watch(courseCategory, (value) => {
@@ -176,7 +174,7 @@ watch(courseCategory, (value) => {
   courseSubCategoryOptions.value = cat?.subItems?.map((e: any) => ({
     value: e.id,
     ...e,
-    label: e.title,
+    label: t(e.title),
   })) || [];
 });
 
@@ -234,9 +232,9 @@ const retrieveCategory = async () => {
     categoriesOptions.value = categories.map((e: any) => ({
       value: e.id,
       ...e,
-      label: e.title,
+      label: t(e.title),
     }));
-
+console.log("categoriesOptions", categories);
     if (localCourseInfo.value.subCategory && localCourseInfo.value.categories) {
       const cat = categoriesOptions.value.find(
         (e) => e.id === localCourseInfo.value.categories
@@ -244,7 +242,7 @@ const retrieveCategory = async () => {
       courseSubCategoryOptions.value = cat?.subItems?.map((e: any) => ({
         value: e.id,
         ...e,
-        name: e.title,
+        label: t(e.title),
       })) || [];
     }
   } catch (error) {
@@ -256,10 +254,10 @@ const videoDetail = (value: { downloadURL: string }) => {
   localCourseInfo.value.promotionalVideo = value.downloadURL;
 };
 onMounted(() => {
-  emitter.on("save-course-messages", save);
+  emitter.on("save-course-landing-page", save);
 });
 onBeforeUnmount(() => {
-  emitter.off("save-course-messages", save);
+  emitter.off("save-course-landing-page", save);
 });
 // Initialize
 initInfo(props.course);

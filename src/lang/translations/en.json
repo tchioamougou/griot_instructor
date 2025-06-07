@@ -414,7 +414,7 @@
     "add_to_cart": "Add to cart",
     "Lectures": "Lectures",
     "what_you_ll_learn": "What you'll learn",
-    "back_to_courses": "Back to Course",
+    "back_to_courses": "Back to Courses",
     "submit_for_review": "Submit for review",
     "submit_course": "Submit course for approval",
     "course_submitted": "course already submitted",
@@ -2082,5 +2082,17 @@
         "students": "Students",
         "accountSetting": "Account Setting"
     },
-    "last_enrollement":"Last Enrollment"
+    "last_enrollement": "Last Enrollment",
+    "of_video_content": "of video content published",
+    "select_language": "Select Language",
+    "select_level": "Select Level",
+    "select_category": "Select Category",
+    "select_topic": "Select Topic",
+    "select_subcategory": "Select Subcategory",
+    "italy": "Italy",
+    "english": "English",
+    "swahili": "Swahili",
+    "add_coupon": "Add Coupon",
+    "an_error_import_question":"An error occurred when importing question.",
+    "question_imported":"Questions imported successfully"
 }

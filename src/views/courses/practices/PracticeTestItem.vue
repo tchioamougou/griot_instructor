@@ -1,20 +1,20 @@
 <template>
   <template v-if="localItem">
-    <div class="curriculum_item">
-      <div class="g-item" v-if="!editPracticeTest" >
+    <div class="curriculum_item rounded-sm border-black/25 border">
+      <div class="g-item" v-if="!editPracticeTest">
         <div class="block_left">
           <i class="bi bi-check-circle-fill me-2"></i>
           <!--@click="confirmDelete"-->
-          <span>{{ $t('createNewCourse_practiceTest') }} {{ position }} : {{ item.title }} </span>
+          <span>{{ t('createNewCourse_practiceTest') }} {{ position }} : {{ item.title }} </span>
           <span :class="itClass">
             <span @click="editItem" class="ms-2"><i class="bi bi-pencil-fill"></i></span>
-            <span class="ms-2" ><i class="bi bi-x-circle"></i></span>
+            <span class="ms-2"><i class="bi bi-x-circle"></i></span>
           </span>
         </div>
         <div class="block_right">
           <spinner-cmp v-if="isLoading" color="text-black" />
           <div class="button" v-if="addingQuestion || batchAction">
-            <span>{{ $t('add_question') }}</span> <i class="bi bi-x-lg" @click="cancel"></i>
+            <span>{{ t('add_question') }}</span> <i class="bi bi-x-lg" @click="cancel"></i>
           </div>
           <span>
             <i class="bi bi-chevron-down" v-if="!showDetails" @click="getDetails"></i>
@@ -23,26 +23,26 @@
         </div>
       </div>
       <div class="edit_pt" v-if="editPracticeTest">
-        <div class="cancel">
+        <div class="cancel cursor-pointer text-red-400">
           <i class="bi bi-x-lg" @click="cancel"></i>
         </div>
         <div class="new_pt">
           <div class="new_pt_content">
-            <div class="new_pt_content_label"><span>{{ $t('createNewCourse_practiceTest') }} :</span></div>
+            <div class="new_pt_content_label"><span>{{ t('createNewCourse_practiceTest') }} :</span></div>
             <div class="new_pt_content_input">
               <div class="new_pt_content_div">
                 <g-input :max="80" show-rest v-model="localItem.title" :is-error="hasError"
-                  :message-error="$t('field_blank_error')" :label="$t('title')" />
-                <g-input v-model="localItem.description" :label="$t('Description')" />
-                <g-input v-model="localItem.duration" :is-error="hasError" :label="$t('duration')" type="number" />
-                <g-input v-model="localItem.minimumScore" :is-error="hasError" :label="$t('minimun_percentage')"
+                  :message-error="t('field_blank_error')" :label="t('title')" />
+                <g-input v-model="localItem.description" :label="t('Description')" />
+                <g-input v-model="localItem.duration" :is-error="hasError" :label="t('duration')" type="number" />
+                <g-input v-model="localItem.minimumScore" :is-error="hasError" :label="t('minimun_percentage')"
                   type="number" />
               </div>
               <div class="new_pt_content_action">
                 <div class="actions">
-                  <button class="cancel" @click="cancel">{{ $t('cancel_btn') }}</button>
+                  <button class="cancel" @click="cancel">{{ t('cancel_btn') }}</button>
                   <button class="save" @click="updatePracticeLocal" :disabled="canEdit">
-                    <spinner-cmp v-if="isSaving" />{{ $t("edit_Pratice_test") }}
+                    <spinner-cmp v-if="isSaving" />{{ t("edit_Pratice_test") }}
                   </button>
                 </div>
               </div>
@@ -53,17 +53,17 @@
       <div class="g_pt-content" v-if="showDetails">
         <template v-if="!addingQuestion && !batchAction">
           <div class="g_pt-content--question-type">
-            <div class="g_pt-content--question-type-item" @click="selectType('Choice')">
+            <div class="g_pt-content--question-type-item cursor-pointer" @click="selectType('Choice')">
               <div class="icon"><i class="bi bi-question-circle"></i></div>
-              <div class="type">{{ $t('multiple_choice') }}</div>
+              <div class="type">{{ t('multiple_choice') }}</div>
             </div>
-            <div class="g_pt-content--question-type-item" @click="selectType('Select')">
+            <div class="g_pt-content--question-type-item cursor-pointer" @click="selectType('Select')">
               <div class="icon"><i class="bi bi-question-circle"></i></div>
-              <div class="type">{{ $t('muliple_select') }}</div>
+              <div class="type">{{ t('muliple_select') }}</div>
             </div>
-            <div class="g_pt-content--question-type-item" @click="batchUpload">
+            <div class="g_pt-content--question-type-item cursor-pointer" @click="batchUpload">
               <div class="icon"><i class="bi bi-question-circle"></i></div>
-              <div class="type">{{ $t('batch_questio_upload') }}</div>
+              <div class="type">{{ t('batch_questio_upload') }}</div>
             </div>
           </div>
           <div class="g_pt-content--question-list">
@@ -75,25 +75,25 @@
         </template>
         <template v-if="batchAction">
           <div class="batchBlock">
-            <div class="title">{{ $t('bulk_upload_title') }}</div>
+            <div class="title">{{ t('bulk_upload_title') }}</div>
             <div class="description">
-              {{ $t('bulk_upload_text_1') }}<a href="#">{{ $t('bulk_upload_text_csv') }}</a>,<a href="#">{{
-                $t('bulk_upload_text_txt') }}</a>,<a href="#">{{ $t('bulk_upload_text_json') }}</a>,
-              {{ $t('bulk_upload_text_2') }}
+              {{ t('bulk_upload_text_1') }}<a href="#">{{ t('bulk_upload_text_csv') }}</a>,<a href="#">{{
+                t('bulk_upload_text_txt') }}</a>,<a href="#">{{ t('bulk_upload_text_json') }}</a>,
+              {{ t('bulk_upload_text_2') }}
             </div>
             <div class="nb">
-              {{ $t('bulk_upload_nb') }}
+              {{ t('bulk_upload_nb') }}
             </div>
             <div class="upload">
-              <g-input-file :file-name="$t('No file selected')" :button-name="$t('upload_file')"
-                @upload-file="readCSVFile" allow=".csv,.txt,.json" />
+              <g-input-file :file-name="t('No file selected')" :button-name="t('upload_file')"
+                @upload-file="readCSVFile" allow=".csv,.txt,.json" api-name="fille_upload" />
             </div>
-            <div>{{ $t("number_record_to_import") }} {{ recordToImport.length }}</div>
-            <div class="create-footer">
-              <button class="cancel" @click="cancelImport">{{ $t('cancel_btn') }}</button>
-              <button class="save g-button" :disabled="!canSave || isSaving" @click="importQuestion">
-                <spinner-cmp v-if="isSaving" />{{ $t('save') }}
-              </button>
+            <div>{{ t("number_record_to_import") }} {{ recordToImport.length }}</div>
+            <div class="flex justify-end gap-2">
+              <Button size="sm" variant="neutral" class="cancel" @click="cancelImport">{{ t('cancel_btn') }}</Button>
+              <Button size="sm" :disabled="!canSave || isSaving" @click="importQuestion">
+                <spinner-cmp v-if="isSaving" />{{ t('save') }}
+              </Button>
             </div>
           </div>
         </template>
@@ -104,9 +104,8 @@
       </div>
     </div>
   </template>
-  <g-toast ref="message" :duration="10000" direction="top-right" />
-  <g-confirmation :id="'item_' + item.id" ref="confirmation" @accepted="accepted" :message="$t('confirm_delete_item')"
-    @cancel="refuse" :title="$t('please_confirm')" />
+  <g-confirmation :id="'item_' + item.id" ref="confirmation" @accepted="accepted" :message="t('confirm_delete_item')"
+    @cancel="refuse" :title="t('please_confirm')" :accept-label="t('yes')"/>
 </template>
 <script setup lang="ts">
 import { computed, defineAsyncComponent, ref, watch } from "vue";
@@ -118,45 +117,48 @@ import {
   updatePractice,
 } from "@/services/griot_service";
 import { useI18n } from "vue-i18n";
-
+import Button from "@/components/ui/Button.vue";
+import { useToast } from 'vue-toastification'
 // Async components
 const SpinnerCmp = defineAsyncComponent(() => import("@/components/spinner/Spinner.vue"));
 const GConfirmation = defineAsyncComponent(() => import("@/components/ui/GConfirmation.vue"));
 const QuestionEdit = defineAsyncComponent(() => import("@/views/courses/questions/QuestionEdit.vue"));
 const QuestionTile = defineAsyncComponent(() => import("@/views/courses/questions/QuestionTile.vue"));
 const GInput = defineAsyncComponent(() => import("@/components/forms/FormElements/BaseInput.vue"));
+const GInputFile =  defineAsyncComponent(() => import("@/components/forms/FormElements/GInputFile.vue"));
 
+
+const toast = useToast();
 const { t } = useI18n();
 
 
-const props = defineProps < {
+const props = defineProps<{
   item: Record<string, any>;
   position: number;
-} > ();
+}>();
 
-const emits = defineEmits < {
+const emits = defineEmits<{
   (e: "refresh"): void;
-(e: "delete", id: string): void;
-}> ();
+  (e: "delete", id: string): void;
+}>();
 
 // UI State
 const itClass = ref("g-hide");
-const localItem = ref < Record<string, any> | null > (null);
+const localItem = ref<Record<string, any> | null>(null);
 const isSaving = ref(false);
 const editPracticeTest = ref(false);
 const addingResources = ref(false);
 const showDetails = ref(false);
 const hasError = ref(false);
-const action = ref < string > ('');
-const message = ref < any > (null); // Replace with actual toast instance type
-const confirmation = ref < any > (null); // Replace with actual confirmation dialog instance type
-const questionToDelete = ref < Record<string, any> > ();
-const questionType = ref < string > ('');
+const action = ref<string>('');
+const confirmation = ref<any>(null); // Replace with actual confirmation dialog instance type
+const questionToDelete = ref<Record<string, any>>();
+const questionType = ref<string>('');
 const addingQuestion = ref(false);
 const batchAction = ref(false);
-const currentEditQuestion = ref < Record<string, any> > ();
+const currentEditQuestion = ref<Record<string, any>>();
 const isLoading = ref(false);
-const recordToImport = ref < Record<string, any>[] > ([]);
+const recordToImport = ref<Record<string, any>[]>([]);
 
 // Computed
 const questionsList = computed(() => localItem.value?.questions ?? []);
@@ -185,12 +187,12 @@ const updatePracticeLocal = () => {
     .then((response) => response.json())
     .then(() => {
       isSaving.value = false;
-      message.value.toast(t("section"), t("section_updated"), "success");
+      toast.success(t("section_updated"));
       editPracticeTest.value = false;
     })
     .catch(() => {
       isSaving.value = false;
-      message.value.toast(t("section"), t("error_occur"), "error");
+     toast.error(t("error_occur"));
     });
 };
 
@@ -209,7 +211,7 @@ const deleteQuestionLocal = () => {
   deleteQuestion(questionToDelete.value.id!)
     .then((response) => {
       if (response.status === 200 && localItem.value) {
-        localItem.value.questions = localItem.value.questions.filter((q:any) => q.id !== questionToDelete.value?.id);
+        localItem.value.questions = localItem.value.questions.filter((q: any) => q.id !== questionToDelete.value?.id);
       }
       confirmation.value.hideSpinner();
       confirmation.value.hide();
@@ -288,13 +290,13 @@ const importQuestion = () => {
   createQuestions(recordToImport.value)
     .then((response) => response.json())
     .then(() => {
-      message.value.toast("Success", "Questions imported successfully", "success");
+      toast.success(t("question_imported"));
       isSaving.value = false;
       getPracticeTestLocal();
       cancelImport();
     })
     .catch((error) => {
-      message.value.toast("Error", "An error occurred when importing question.", "error");
+      toast.error(t("an_error_import_question"));
       console.error(error);
       isSaving.value = false;
     });
@@ -322,16 +324,16 @@ const readCSVFile = (file: File) => {
     }
   };
 };
-const buildQuestionsFromJson = (jsonString:string) => {
+const buildQuestionsFromJson = (jsonString: string) => {
   const mp = { 0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f" }
- 
+
   try {
     const fullQuestion = JSON.parse(jsonString);
     console.log('e', fullQuestion)
-    const questions = fullQuestion.map((e:any, i:number) => {
-      const ques:any = {
+    const questions = fullQuestion.map((e: any, i: number) => {
+      const ques: any = {
         explanation: e.explanation ?? " ",
-        responses: e.response?.map((ans:any, index:number) => {
+        responses: e.response?.map((ans: any, index: number) => {
           return {
             content: ans.content,
             isCorrect: ans.isCorrect ? true : false
@@ -342,7 +344,7 @@ const buildQuestionsFromJson = (jsonString:string) => {
         description: "",
         practiceTestId: props.item.id,
       }
-      const totaltrue = ques.responses?.filter((e:any )=> e.isCorrect)?.length;
+      const totaltrue = ques.responses?.filter((e: any) => e.isCorrect)?.length;
       if (totaltrue && totaltrue > 1) {
         ques.type = "select";
       } else { ques.type = "Choice" }
@@ -355,7 +357,7 @@ const buildQuestionsFromJson = (jsonString:string) => {
   };
 }
 // Question builders (keep as is — already typed inline)
-const buildQuestions = (text:string) => {
+const buildQuestions = (text: string) => {
   const questions = text.split(/\d+ of \d+/);
   const questionsJSON = [];
   for (let i = 0; i < questions.length; i++) {
@@ -385,7 +387,7 @@ const buildQuestions = (text:string) => {
 
     }
 
-    const result :any = {
+    const result: any = {
       type: "Choice",
       explanation: explanation,
       responses: options,
@@ -393,76 +395,25 @@ const buildQuestions = (text:string) => {
       description: "",
       practiceTestId: props.item.id,
     };
-    const totaltrue = result.responses?.filter((e:any) => e.isCorrect)?.length;
+    const totaltrue = result.responses?.filter((e: any) => e.isCorrect)?.length;
     if (totaltrue && totaltrue > 1) {
       result.type = "select";
     }
-    questionsJSON.push(result);
+    if (result.responses.length > 0) {
+      questionsJSON.push(result);
+    }
 
   }
   console.log("text", questionsJSON);
   recordToImport.value = questionsJSON;
 };
-/*
-const buildQuestions = (text) => {
-  const questions = text.split(/\d+ of \d+/);
-  let position = 0;
-  let json = questions
-    .filter((e) => e)
-    .map((e) => {
-      position++;
-      const line = e.split(/\n/);
-      let result = {
-        type: "Choice",
-        explanation: "",
-        responses: [],
-        content: "",
-        description: "",
-        practiceTestId: props.item.id,
-      };
-      line.forEach((l) => {
-        let va = null;
-        if (l.startsWith("A.")) {
-          va = l.replace("A.", "");
-        } else if (l.startsWith("B.")) {
-          va = l.replace("B.", "");
-        } else if (l.startsWith("C.")) {
-          va = l.replace("C.", "");
-        } else if (l.startsWith("D.")) {
-          va = l.replace("D.", "");
-        } else if (l.startsWith("E.")) {
-          va = l.replace("E.", "");
-        } else if (l.startsWith("F.")) {
-          va = l.replace("F.", "");
-        } else if (l.startsWith(". ")) {
-          result.content += l.replace(". ", "") + (l + "\n");
-        } else if (l) {
-          result.content += l + "\n";
-        }
-        if (va) {
-          const correct = va.includes("istrue");
-          result.responses.push({
-            content: va.replace("istrue", ""),
-            isCorrect: correct,
-          });
-        }
-      });
-      const totaltrue = result.responses?.filter(e => e.isCorrect)?.length;
-      if (totaltrue && totaltrue > 1) {
-        result.type = "select";
-      }
-      return result;
-    });
-  console.log("text", json);
-  recordToImport.value = json;
-};*/
-const buildQuestionFromCsv = (csvdata:string) => {
+const buildQuestionFromCsv = (csvdata: string) => {
   const rowData = csvdata.split("\n");
   const questions = [];
   // Loop on the row Array (change row=0 if you also want to read 1st row)
   for (let row = 1; row < rowData.length; row++) {
 
-    const question :any = {};
+    const question: any = {};
     // Split by comma (,) to get column Array
     const rowColData = rowData[row].split(",");
     question.content = rowColData[0];
@@ -472,14 +423,14 @@ const buildQuestionFromCsv = (csvdata:string) => {
         : rowColData[1] == "multiple-choice"
           ? "Choice"
           : "";
-    let answers :any = rowColData.slice(2, 12).map((e) => {
+    let answers: any = rowColData.slice(2, 12).map((e) => {
       return {
         content: e,
         isCorrect: false,
       };
     });
 
-    answers = answers.filter((e :any) => e.content);
+    answers = answers.filter((e: any) => e.content);
     const correctList = rowColData[12].split(";");
     for (let i = 0; i < answers.length; i++) {
       answers[i].position = i + 1;
@@ -491,7 +442,7 @@ const buildQuestionFromCsv = (csvdata:string) => {
     question.explanation = rowColData[13];
     question.responses = answers;
     question.practiceTestId = props.item.id;
-      questions.push(question);
+    questions.push(question);
   }
   console.log("all questions", questions);
   recordToImport.value = questions;
@@ -508,7 +459,6 @@ localItem.value = props.item;
 
 <style scoped>
 .curriculum_item {
-  border: 0.01em solid gray;
   border-bottom: none;
   margin-bottom: 1em;
   background-color: white;
@@ -518,7 +468,6 @@ localItem.value = props.item;
   display: flex;
   justify-content: space-between;
   font-family: sans-serif;
-  border-bottom: 0.01em solid gray;
   margin: 0.5em;
 }
 
@@ -557,7 +506,6 @@ localItem.value = props.item;
 
 .lecture_content .block_materials {
   font-family: sans-serif;
-  border-bottom: 0.01em solid gray;
   margin: 0.5em;
 }
 
@@ -609,7 +557,6 @@ localItem.value = props.item;
 
 .lecture_content .lecture_description {
   font-family: sans-serif;
-  border-bottom: 0.01em solid gray;
   margin: 0.5em;
 }
 

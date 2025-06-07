@@ -1,36 +1,29 @@
 <template>
-  <div class="card g-box-shadow">
-    <div class="card-body">
-      <h5 class="g-title g-header">{{ $t('Setting') }}</h5>
+  <ItemLayout :title="$t('Setting')">
+    <template #main>
       <div class="g-container">
         <!-- course Status -->
         <div>
-          <p class="h2">{{$t('course_status')}}</p>
-          <p>
-            {{ $t('course_on_status',{status:$t(course.status === "Published" ? "published" : "unpublished")}) }}
+          <p class="text-lg font-bold mb-2">{{ $t('course_status') }}</p>
+          <p class="mb-2">
+            {{ $t('course_on_status', { status: $t(course.status === "Published" ? "published" : "unpublished") }) }}
           </p>
           <p>
             <span>
-              <button class="g-setting-button"
-                :disabled="course.status !== 'Published'"
-                :title="$t('unplublishCourse')"
-              >
+              <Button class="g-setting-button" :disabled="course.status !== 'Published'"
+                :title="$t('unplublishCourse')">
                 {{ $t('unpublished') }}
-              </button>
+              </Button>
             </span>
-            <span
-              >{{$t('unpublished_message')}}
+            <span>{{ $t('unpublished_message') }}
             </span>
           </p>
-          <p>
+          <p class="mt-2">
             <span>
-              <button class="g-setting-button"
-                @click="confirmAction"
-                :disabled="course.status === 'Published'"
-                :title="$t('delete_course')"
-              >
+              <Button class="g-setting-button" @click="confirmAction" :disabled="course.status === 'Published'"
+                :title="$t('delete_course')">
                 {{ $t('delete') }}
-              </button>
+              </Button>
             </span>
             <span>
               {{ $t('course_delete_message') }}
@@ -38,24 +31,18 @@
           </p>
         </div>
       </div>
-    </div>
-  </div>
-  <g-toast ref="message" :duration="5000" direction="top-center" />
-  <g-confirmation
-    id="adminCourse"
-    ref="confirmation"
-    @accepted="accepted"
-    :message="$t('delete_course_message')"
-    @cancel="refuse"
-    :title="$t('please_confirm')"
-    :accept-label="$t('delete')"
-  />
+    </template>
+  </ItemLayout>
+  <g-confirmation id="adminCourse" ref="confirmation" @accepted="accepted" :message="$t('delete_course_message')"
+    @cancel="refuse" :title="$t('please_confirm')" :accept-label="$t('delete')" />
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
 import GConfirmation from "@/components/ui/GConfirmation.vue";
 import { deleteCourse } from "@/services/griot_service";
 import router from "../../router";
+import ItemLayout from "./items/ItemLayout.vue";
+import Button from "@/components/ui/Button.vue";
 
 const props = defineProps({
   course: {
@@ -63,7 +50,6 @@ const props = defineProps({
     required: true,
   },
 });
-const message = ref(null);
 const confirmation = ref<InstanceType<typeof GConfirmation> | null>(null);
 const confirmAction = () => {
   confirmation.value?.show();
@@ -93,20 +79,22 @@ const deleteCourseLocal = () => {
 </script>
 
 <style scoped>
-.g-setting-button{
- padding: 0.25em 0.5em;
+.g-setting-button {
+  padding: 0.25em 0.5em;
   width: 8em;
   margin-right: 1em;
   background-color: darkred;
 
-color: white;
+  color: white;
   font-weight: bold;
   border: none;
 }
-button.g-setting-button:disabled{
-  background-color: rgb(139, 0, 0,0.2);
+
+button.g-setting-button:disabled {
+  background-color: rgb(139, 0, 0, 0.2);
 }
-button.g-setting-button:hover{
-  background-color: rgb(139, 0, 0,0.2);
+
+button.g-setting-button:hover {
+  background-color: rgb(139, 0, 0, 0.2);
 }
 </style>

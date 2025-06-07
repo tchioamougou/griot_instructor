@@ -107,12 +107,10 @@ const props = defineProps<{
   course: Record<string, any> 
 }>();
 
-const loading = ref(false);
 const isSaving = ref(false);
 const currentSection = ref<Partial<Record<string,any>>>({});
 const addingSection = ref(false);
 const hasError = ref(false);
-const message = ref<string | null>(null);
 
 const cancel = () => {
   addingSection.value = false;
