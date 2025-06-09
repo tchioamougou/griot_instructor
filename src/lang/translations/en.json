@@ -2231,5 +2231,20 @@
   "tomorrow_pm" : "Tomorrow, 10:00 AM",
   "jul" : "Jul 15, 1:00 PM",
   "your_notification_set":"your notification privacy is updated successfully",
-  "your_notification_set_error":"An error occur. Please try again later, if the error persist contact Griot support"
+  "your_notification_set_error":"An error occur. Please try again later, if the error persist contact Griot support",
+  "Not answered":"Not answered",
+  "Has a comment":"Has a comment",
+  "Rating":"Rating",
+  "Sort by":"Sort by",
+  "Export CSV":"Export CSV",
+  "All":"All",
+  "1 star":"1 star",
+  "2 star":"2 star",
+  "3 star":"3 star",
+  "4 star":"4 star",
+  "5 star":"5 star",
+  "NewestFirst":"Newest first",
+  "OldestFirst":"Oldest first"
+
+
 }

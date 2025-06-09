@@ -123,6 +123,22 @@ const router = createRouter({
         title: 'Engagement',
       },
     },
+     {
+      path: '/communitcation/question',
+      name: 'Questions',
+      component: () => import('@/views/communications/GQAndAView.vue'),
+      meta: {
+        title: 'Questions',
+      },
+    },
+    {
+      path: '/communitcation/messages',
+      name: 'Messages',
+      component: () => import('@/views/communications/GMessage.vue'),
+      meta: {
+        title: 'Messages',
+      },
+    },
       {
       path: '/payout-report',
       name: 'Payout Report',

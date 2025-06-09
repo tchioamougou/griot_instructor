@@ -3,7 +3,7 @@
     <div class="g-review-performance">
       <div class="header">
         <div class="header_title">
-          <div class="title">Reviews</div>
+          <div class="title">{{ $t('Reviews') }}</div>
           <div class="input">
             <g-dropdown :options="reviewOptions" label-class="large" :disabled="isLoading" @selected="findReview" />
           </div>
@@ -12,24 +12,24 @@
           <div class="header_filter_action_input">
             <div class="me-5">
               <input type="checkbox" id="NotAnswered" v-model="hasReply" />
-              <label for="NotAnswered">Not answered</label>
+              <label for="NotAnswered">{{ $t('Not answered') }}</label>
             </div>
             <div class="me-5">
               <input type="checkbox" id="comment" v-model="hasComment" />
-              <label for="comment">Has a comment</label>
+              <label for="comment">{{ $t("Has a comment") }}</label>
             </div>
             <div class="me-5">
-              Rating :
+              {{ $t("Rating") }} :
               <g-dropdown :options="ratingOptions" v-model="ratingFilter" @selected="selectRatingFilter" />
             </div>
             <div class="me-5">
-              Sort by:
+              {{ $t('Sort by') }}:
               <g-dropdown :options="sortOptions" v-model="sortBy" @selected="SelectSortBy" />
             </div>
             <div class="me-5"></div>
           </div>
           <div class="header_filter_action_icon">
-            <button class="message">Export CSV</button>
+            <Button class="message">{{ $t('Export CSV') }}</button>
           </div>
         </div>
       </div>
@@ -40,26 +40,51 @@
         <template v-for="(rev, index) in reviews" :key="index">
           <g-review-item :review-object="rev" />
         </template>
-        <g-pagination :current-page="currentPage" :page-size="5" :total-elements="reviews.length" :total-page="0"
-          v-model="currentPage" />
       </div>
     </div>
   </admin-layout>
 </template>
 <script setup lang="ts">
-import AdminLayout from '@/components/layout/AdminLayout.vue'
-import { getInstructorCourses, getReviews } from "@/services/griot_service";
-import { computed, ref, watch } from "vue";
-import { useAuthStore } from '@/composables/user'
+import { useI18n } from 'vue-i18n';
+import { computed, ref, watch } from 'vue';
 
-const authStore = useAuthStore()
+import AdminLayout from '@/components/layout/AdminLayout.vue';
+import { getInstructorCourses, getReviews } from '@/services/griot_service';
+import { useAuthStore } from '@/composables/user';
 
+import GDropdown from '@/components/ui/GDropdown.vue';
+import GSpinner from '@/components/spinner/Spinner.vue';
+import GReviewItem from './GReviewItem.vue';
+
+import { getFirstAndLastChars, getTimeAgo } from '@/utilities/UtilityFunction';
+import Button from '@/components/ui/Button.vue';
+
+// i18n
+const { t } = useI18n();
+
+// Auth
+const authStore = useAuthStore();
 const user = computed(() => {
-  const userData = authStore.user
+  const userData = authStore.user;
   return JSON.parse(userData);
-})
+});
+
+// Review data and filters
 const reviews = ref([]);
-const reviewOptions = ref([{ label: "All course", value: "AllCourse" }]);
+const reviewOptions = ref([{ label: t('overview.allCourses'), value: 'AllCourse' }]);
+const ratingOptions = [
+  { label: t("All"), value: "all" },
+  { label: t("1 star"), value: "1" },
+  { label: t("2 star"), value: "2" },
+  { label: t("3 star"), value: "3" },
+  { label: t("4 star"), value: "4" },
+  { label: t("5 star"), value: "5" },
+];
+const sortOptions = [
+  { label: t("Newest first"), value: "NewestFirst" },
+  { label: t("Oldest first"), value: "OldestFirst" },
+];
+
 const isLoading = ref(false);
 const allCourseId = ref([]);
 const pageNumber = ref(1);
@@ -69,65 +94,64 @@ const hasReply = ref(false);
 const ratingFilter = ref<any>(0);
 const sortBy = ref<any>(null);
 const request = ref<any>(null);
+
+// Get instructor courses
 const getInstructorCoursesLocal = () => {
   isLoading.value = true;
   getInstructorCourses(user.value.id)
-    .then((response) => {
-      return response.json();
-    })
+    .then((response) => response.json())
     .then((result) => {
       reviewOptions.value = reviewOptions.value.concat(
-        result.map((e: any) => {
-          return { label: e.title, value: e.id };
-        })
+        result.map((e: any) => ({
+          label: e.title,
+          value: e.id
+        }))
       );
-      allCourseId.value = result.map((e: any) => {
-        return e.id;
-      });
+      allCourseId.value = result.map((e: any) => e.id);
       request.value = allCourseId.value;
       getReviewsLocal(allCourseId.value);
       isLoading.value = false;
     })
-    .catch((error) => {
+    .catch(() => {
       isLoading.value = false;
     });
 };
+
+// Fetch reviews
 const getReviewsLocal = (request: any) => {
-  console.log("result is comming", request);
   isLoading.value = true;
   getReviews(
     request,
-    hasComment.value ? true : false,
-    hasReply.value ? true : false,
+    hasComment.value,
+    hasReply.value,
     sortBy.value,
     ratingFilter.value === "all" ? 0 : ratingFilter.value,
     pageNumber.value,
     pageSize.value
   )
-    .then((response) => {
-      console.log("result is comming", response);
-      return response.json();
-    })
+    .then((response) => response.json())
     .then((result) => {
       reviews.value = result.records;
       isLoading.value = false;
-      console.log("result is comming", result);
     })
     .catch((error) => {
       isLoading.value = false;
-      console.log("error is comming", error);
+      console.error("Error fetching reviews", error);
     });
 };
+
+// Interaction methods
 const SelectSortBy = (value: any) => {
   sortBy.value = value;
   getReviewsLocal(request.value);
 };
+
 const selectRatingFilter = (value: any) => {
   ratingFilter.value = value !== "all" ? value : 0;
   getReviewsLocal(request.value);
 };
+
 const findReview = (val: any) => {
-  console.log(val);
   if (val === "AllCourse") {
     getReviewsLocal(allCourseId.value);
     request.value = allCourseId.value;
@@ -136,80 +160,20 @@ const findReview = (val: any) => {
     getReviewsLocal([val]);
   }
 };
-watch(
-  () => hasReply.value,
-  (val) => {
-    getReviewsLocal(request.value);
-  }
-);
-watch(
-  () => hasComment.value,
-  (val) => {
-    getReviewsLocal(request.value);
-  }
-);
 
-/** start*/
+// Utilities
+const avatarText = computed(() => getFirstAndLastChars("Griot User"));
+const duration = computed(() => getTimeAgo(1686178800));
+const getDate = (seconds: any) => getTimeAgo(seconds);
+
+// Watchers
+watch(() => hasReply.value, () => getReviewsLocal(request.value));
+watch(() => hasComment.value, () => getReviewsLocal(request.value));
+
+// Lifecycle
 getInstructorCoursesLocal();
 </script>
-<script lang="ts">
-import GDropdown from "@/components/ui/GDropdown.vue";
-import {
-  getFirstAndLastChars,
-  getTimeAgo,
-} from "@/utilities/UtilityFunction";
-import GPagination from "@/components/ui/GPagination.vue";
 
-import GSpinner from "@/components/spinner/Spinner.vue";
-import GReviewItem from "./GReviewItem.vue";
-export default {
-  name: "GReviewsPerformance",
-  components: {
-    GReviewItem,
-    GSpinner,
-    GPagination,
-    GDropdown,
-  },
-  data: function () {
-    return {
-      ratingOptions: [
-        { label: "All", value: "all" },
-        { label: "1 star", value: "1" },
-        { label: "2 star", value: "2" },
-        { label: "3 star", value: "3" },
-        { label: "4 star", value: "4" },
-        { label: "5 star", value: "5" },
-      ],
-      sortOptions: [
-        { label: "Newest first", value: "NewestFirst" },
-        { label: "Oldest first", value: "OldestFirst" },
-      ],
-      reviews: [],
-      currentPage: 1,
-      styleConfig: {
-        fullStarColor: "#ed8a19",
-        emptyStarColor: "#737373",
-        starWidth: 16,
-        starHeight: 16,
-      },
-    };
-  },
-  computed: {
-    avatarText() {
-      return getFirstAndLastChars("Griot User");
-    },
-    duration() {
-      return getTimeAgo(1686178800);
-    },
-  },
-
-  methods: {
-    getDate(seconds: any) {
-      return getTimeAgo(seconds);
-    },
-  },
-};
-</script>
 
 <style scoped>
 .header {}
@@ -222,7 +186,7 @@ export default {
 .header_title .title {
   font-weight: 900;
   font-family: sans-serif;
-  font-size: 1.7em;
+  font-size: 1.6em;
   margin-right: 1em;
 }
 

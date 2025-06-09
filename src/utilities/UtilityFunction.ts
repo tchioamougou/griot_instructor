@@ -397,3 +397,23 @@ export function formatMinutes(minutes:number): string {
     }
   }
 }
+
+
+export function formatDateTime(dateTimeString: string):string {
+  const dateTime = new Date(dateTimeString);
+  const today = new Date();
+  const isToday = today.toLocaleDateString() === dateTime.toLocaleDateString();
+
+  let formattedDateTime = `${dateTime.getDate()}-${dateTime.getMonth() + 1}-${dateTime.getFullYear()}`;
+  if (isToday) {
+    formattedDateTime = `${dateTime.getHours() < 10 ? '0' : ''}${dateTime.getHours()}:${dateTime.getMinutes()} ${dateTime.getHours() < 12 ? 'AM' : 'PM'}`;
+  }
+
+  return formattedDateTime;
+}
+
+
+export function formatTimeFromDateTime(dateTimeString:string):string {
+  const dateTime = new Date(dateTimeString);
+  return `${dateTime.getHours() < 10 ? '0' : ''}${dateTime.getHours()}:${dateTime.getMinutes()} ${dateTime.getHours() < 12 ? 'AM' : 'PM'}`;
+}

@@ -214,8 +214,8 @@ const menuGroups: MenuGroup[] = [
         name: 'menu.communication',
         path: '/profile',
         subItems: [
-          { name: 'menu.messages', path: '/all_room' },
-          { name: 'menu.qna', path: '/type_room' },
+          { name: 'menu.messages', path: '/communitcation/messages' },
+          { name: 'menu.qna', path: '/communitcation/question' },
         ],
       },
       {
