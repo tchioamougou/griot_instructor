@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import GDropdownL from "@/components/ui/GDropdownL.vue";
 import { computed, defineAsyncComponent, ref, watch } from "vue";
@@ -17,6 +16,7 @@ import {
 } from "@/utilities/UtilityFunction";
 import { useAuthStore } from '@/composables/user'
 import Button from "@/components/ui/Button.vue";
+import { useI18n } from "vue-i18n";
 
 
 const authStore = useAuthStore()
@@ -39,9 +39,9 @@ const showSendMessage = ref<boolean>(false);
 const typing = ref<boolean>(false);
 const isLoadingMessage = ref<boolean>(false);
 const isSaving = ref<boolean>(false);
-const chats = ref<Record<string,any>[]>([]);
-const messages = ref<Record<string,any>[] | null>([]);
-const currentChat = ref<Record<string,any> | undefined>();
+const chats = ref<Record<string, any>[]>([]);
+const messages = ref<Record<string, any>[] | null>([]);
+const currentChat = ref<Record<string, any> | undefined>();
 const pageNumber = ref<number>(1);
 const pageSize = ref<number>(10);
 const replyMessage = ref<string | null>(null);
@@ -49,7 +49,7 @@ const selectedFilter = ref<string>("");
 const sortBy = ref<string | null>(null);
 const contentMessage = ref<HTMLElement | null>(null);
 const scrollContainer = ref<HTMLElement | null>(null);
-
+const { t } = useI18n();
 const optionsMessage = [
   { icon: 'bi-pin-angle', name: "Pin", label: "Pin" },
   { icon: 'bi-person-x', name: "Mute", label: "Mute" },
@@ -58,11 +58,11 @@ const optionsMessage = [
 ];
 
 const filterOptions = [
-  { icon: 'bi-pin-angle', name: "All", label: "All" },
-  { icon: 'bi-person-x', name: "Mute", label: "Unread" },
-  { icon: 'bi-eye-slash', name: "Hide", label: "Read" },
-  { icon: 'bi-pin-angle', name: "Pin", label: "Not answered" },
-  { icon: 'bi-pin-angle', name: "Pin", label: "Answered" }
+  { icon: 'bi-pin-angle', name: "all", label: t("All") },
+  { icon: 'bi-person-x', name: "unread", label: t("Unread") },
+  { icon: 'bi-eye-slash', name: "read", label: t("Read") },
+  { icon: 'bi-pin-angle', name: "not_answered", label: t("Not answered") },
+  { icon: 'bi-pin-angle', name: "answered", label: t("Answered") }
 ];
 
 const sendMessage = (): void => {
@@ -77,7 +77,7 @@ const getMessagesLocal = (load: boolean): void => {
   isLoadingMessage.value = load;
   getMessages(currentChat.value!.id, pageNumber.value, pageSize.value)
     .then((response) => response.json())
-    .then((result: Record<string,any>[]) => {
+    .then((result: Record<string, any>[]) => {
       messages.value = result;
       isLoadingMessage.value = false;
     })
@@ -95,25 +95,25 @@ const extractContentLocal = (content: string): string => {
   return extractContent(content, true);
 };
 
-const viewMessage = (message: Record<string,any>): void => {
+const viewMessage = (message: Record<string, any>): void => {
   if (message.status === "Unread") {
     getReadMessage(message.id)
       .then((response) => response.json())
-      .then((result: Record<string,any>) => {
+      .then((result: Record<string, any>) => {
         chats.value = chats.value.map((e) => (e.id === result.id ? result : e));
       })
       .catch((error) => {
         console.error("viewMessage error:", error);
       });
   }
-  selectM(message as unknown as Record<string,any>); // Assuming it’s treated as a chat object here
+  selectM(message as unknown as Record<string, any>); // Assuming it’s treated as a chat object here
 };
 
 const getChatLocal = (load: boolean): void => {
   isLoading.value = load;
   getChats(user.value.id, selectedFilter.value ?? "", "")
     .then((response) => response.json())
-    .then((result: Record<string,any>[]) => {
+    .then((result: Record<string, any>[]) => {
       chats.value = result;
       messages.value = null;
       currentChat.value = undefined;
@@ -133,7 +133,7 @@ const formatDate = (dt: string): string => {
   return formatDateT(dt);
 };
 
-const selectM = (chat: Record<string,any>): void => {
+const selectM = (chat: Record<string, any>): void => {
   chatsRefs.value?.forEach((e: HTMLElement) => {
     if (e.id === chat.id) {
       e.classList.add("g-active");
@@ -163,7 +163,7 @@ const addResponse = (): void => {
   };
   postMessage(message)
     .then((response) => response.json())
-    .then((result: Record<string,any>) => {
+    .then((result: Record<string, any>) => {
       isSaving.value = false;
       typing.value = false;
       chats.value = chats.value.map((e) => (e.id === result.id ? result : e));
@@ -176,7 +176,7 @@ const addResponse = (): void => {
     });
 };
 
-const chatTitle = (chat: Record<string,any>): string => {
+const chatTitle = (chat: Record<string, any>): string => {
   return chat.lastPostedUser === user.value.id
     ? "You"
     : chat.you.id === user.value.id
@@ -233,7 +233,7 @@ getChatLocal(true);
             <div class="flex justify-between items-center">
               <slot name="header"></slot>
               <div class="flex items-center space-x-2">
-                <Button size ="sm" class="bg-violet-600 text-white rounded-full">
+                <Button size="sm" class="bg-violet-600 text-white rounded-full">
                   <i class="bi bi-pencil-square text-sm"></i>
                 </Button>
                 <g-dropdown-l :options="filterOptions" />
@@ -241,7 +241,7 @@ getChatLocal(true);
             </div>
             <div class="mt-4 mb-4">
               <input type="search" placeholder="Search people, group and messages"
-                     class="w-full px-4 py-2 rounded border border-gray-300 text-base focus:outline-none focus:ring focus:border-blue-300">
+                class="w-full px-4 py-2 rounded border border-gray-300 text-base focus:outline-none focus:ring focus:border-blue-300">
             </div>
           </div>
           <div class="overflow-y-auto h-[calc(100vh-9rem)]">
@@ -250,7 +250,7 @@ getChatLocal(true);
             </div>
             <ul v-if="chats && chats.length > 0" class="divide-y">
               <li v-for="ch in chats" :key="ch.id" @click="viewMessage(ch)" ref="chatsRefs"
-                  class="flex justify-between items-center px-4 py-4 hover:bg-gray-50 cursor-pointer">
+                class="flex justify-between items-center px-4 py-4 hover:bg-gray-50 cursor-pointer">
                 <div class="flex w-3/4 space-x-3">
                   <img src="../../assets/images/home/cameroun.png" class="w-10 h-10 rounded-full">
                   <div :class="[ch.status === 'Unread' && ch.lastPostedUser !== user.id ? 'font-bold' : '', 'w-full']">
@@ -265,7 +265,7 @@ getChatLocal(true);
                 <small class="text-gray-500 whitespace-nowrap">{{ duration(ch.lastPostDate) }}</small>
               </li>
             </ul>
-            <div v-else class="text-center py-6">No messages</div>
+            <div v-else class="text-center py-6">{{ $t('no_message') }}</div>
           </div>
         </div>
 
@@ -279,7 +279,7 @@ getChatLocal(true);
                 <img src="../../assets/images/home/tanzanie.png" class="w-10 h-10 rounded-full">
                 <div>
                   <h4 class="font-semibold">{{ conversationTitle }}</h4>
-                  <p class="text-sm text-gray-500">Online</p>
+                  <p class="text-sm text-gray-500">{{ $t("Online") }}</p>
                 </div>
               </div>
               <div class="flex items-center space-x-4">
@@ -296,7 +296,7 @@ getChatLocal(true);
               <template v-else-if="messages && messages.length > 0">
                 <template v-for="(me, i) in messages" :key="i">
                   <div v-if="i == 0 || formatDate(me.createdDate) !== formatDate(messages[i - 1].createdDate)"
-                       class="text-center text-xs text-gray-400">{{ formatDate(me.createdDate) }}</div>
+                    class="text-center text-xs text-gray-400">{{ formatDate(me.createdDate) }}</div>
 
                   <!-- Message left -->
                   <div v-if="me.owner.id !== user.id" class="flex space-x-3 max-w-lg">
@@ -323,15 +323,15 @@ getChatLocal(true);
                   </div>
                 </template>
               </template>
-              <div v-else class="text-center">No messages</div>
+              <div v-else class="text-center">{{ $t('no_message') }}</div>
             </div>
 
             <!-- Footer -->
             <div class="bg-white px-4 py-3 border-t">
               <form class="flex items-center space-x-3">
                 <textarea v-model="replyMessage" rows="1"
-                          class="flex-1 border rounded p-2 resize-none focus:outline-none"
-                          placeholder="Type a New Message"></textarea>
+                  class="flex-1 border rounded p-2 resize-none focus:outline-none"
+                  placeholder="Type a New Message"></textarea>
                 <button type="button" @click="addResponse" class="text-primary text-xl">
                   <i class="bi bi-send"></i>
                 </button>

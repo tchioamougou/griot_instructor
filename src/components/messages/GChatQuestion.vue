@@ -18,7 +18,9 @@ import GDropdown from '@/components/ui/GDropdown.vue';
 import { getInstructorCourses } from "@/services/griot_service";
 import Button from "../ui/Button.vue";
 import GRichTextEditor from "@/components/forms/FormElements/GRichTextEditor.vue";
-const courseOptions = ref<any>([{ label: 'All course', value: 'AllCourse' }]);
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
+const courseOptions = ref<any>([{ label: t('allCourses'), value: 'AllCourse' }]);
 const request = ref<any>([]);
 
 // Dummy method to be implemented
@@ -73,11 +75,11 @@ const optionsMessage = [
 ];
 
 const filterOptions = [
-  { icon: 'bi-pin-angle', name: "All", label: "All" },
-  { icon: 'bi-person-x', name: "Mute", label: "Unread" },
-  { icon: 'bi-eye-slash', name: "Hide", label: "Read" },
-  { icon: 'bi-pin-angle', name: "Pin", label: "Not answered" },
-  { icon: 'bi-pin-angle', name: "Pin", label: "Answered" }
+  { icon: 'bi-pin-angle', name: "all", label: t("All") },
+  { icon: 'bi-person-x', name: "unread", label: t("Unread") },
+  { icon: 'bi-eye-slash', name: "read", label: t("Read") },
+  { icon: 'bi-pin-angle', name: "not_answered", label: t("Not answered") },
+  { icon: 'bi-pin-angle', name: "answered", label: t("Answered") }
 ];
 
 
@@ -266,7 +268,7 @@ getInstructorCoursesLocal();
                 <small class="text-gray-500 whitespace-nowrap">{{ duration(ch.lastModifyDate) }}</small>
               </li>
             </ul>
-            <div v-else class="text-center py-6">{{ $t('No questions') }}</div>
+            <div v-else class="text-center py-6">{{ $t('no_question') }}</div>
           </div>
         </div>
 
@@ -306,7 +308,7 @@ getInstructorCoursesLocal();
                 <div class="flex items-center justify-center my-6">
                   <div class="flex-grow h-px bg-gray-300"></div>
                   <span class="px-4 text-xs font-semibold tracking-wider text-blue-900 uppercase whitespace-nowrap">
-                    {{ question.answers?.length }} {{ $t('Answers') }}
+                    {{ question.answers?.length }} {{ $t('answers') }}
                   </span>
                   <div class="flex-grow h-px bg-gray-300"></div>
                 </div>
@@ -341,7 +343,7 @@ getInstructorCoursesLocal();
                   </div>
                 </template>
               </template>
-              <div v-else class="text-center">{{ $t('No questions') }}</div>
+              <div v-else class="text-center">{{ $t('no_question') }}</div>
             </div>
 
             <!-- Footer -->

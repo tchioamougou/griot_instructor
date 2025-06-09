@@ -1,24 +1,24 @@
 <template>
-  <div class="review-item">
+  <div class="review-item border border-black/25 rounded-md">
     <div class="g-message-item">
       <div class="image_bloc">
         <button class="avatar-button" id="UserAvatarText" type="button">
           <img :src="review.student?.picture" v-if="review.student?.picture" width="40" height="40" class="avatar-img"
             alt="user picture" :title="review.student.name" />
-         <!-- <span class="avatar-text" v-else>{{ avatarText }}</span> -->
+          <!-- <span class="avatar-text" v-else>{{ avatarText }}</span> -->
           <span class="avatar-text" v-else>{{ review.student.name.charAt(0).toUpperCase() }}</span>
         </button>
       </div>
       <div class="message_bloc">
         <div class="message_summary" :title="review.student.name">
-          <span class="name">{{ review.student.name }}</span>
-          <span class="time">Posted {{ getDate(review.createdDate) }}</span>
+          <span class="name text-purple-400">{{ review.student.name }}</span>
+          <span class="time">{{ $t('posted') }} {{ getDate(review.createdDate) }}</span>
         </div>
         <div class="course_summary">
           <div class="courseName">
             {{ review.course.title }}
           </div>
-          <div class="courseLink">View course detail</div>
+          <div class="courseLink text-purple-400 text-sm">{{ $t('view_course_details') }}</div>
         </div>
       </div>
       <div class="icon_bloc">
@@ -62,19 +62,19 @@
       </div>
     </div>
     <div class="review_respond">
-      <button v-if="!typing" @click="typing = true">
-        <span v-if="review.instructorResponse">Edit response</span>
-        <span v-else>Respond</span>
+      <Button size="sm" v-if="!typing" @click="typing = true">
+        <span v-if="review.instructorResponse">{{ $t('edit_response') }}</span>
+        <span v-else>{{ $t('respond') }}</span>
       </button>
       <div class="typing" v-if="typing">
         <div class="text">
-          <textarea placeholder="Respond to the review" v-model="message" />
+          <GRichTextEditor placeholder="Respond to the review" v-model="message" />
         </div>
-        <div class="action">
-          <button class="post" :disabled="isSaving || !message" @click="saveResponse">
-            <spinner-cmp v-if="isSaving" /> Post response
+        <div class="flex justify-end gap-3 ">
+          <Button  size="sm" :disabled="isSaving || !message" @click="saveResponse">
+            <spinner-cmp v-if="isSaving" /> {{ $t('post_resonse') }}
           </button>
-          <button class="cancel" @click="typing = false">cancel</button>
+          <Button variant="neutral" size="sm" class="cancel" @click="typing = false">{{ $t('Cancel') }}</button>
         </div>
       </div>
     </div>
@@ -88,6 +88,10 @@ import {
 import { reviewReply } from "@/services/griot_service";
 import StarsRating from "@/components/ui/RatingStar.vue";
 import SpinnerCmp from "@/components/spinner/Spinner.vue";
+import Button from "@/components/ui/Button.vue";
+import { useI18n } from 'vue-i18n';
+import GRichTextEditor from "@/components/forms/FormElements/GRichTextEditor.vue";
+const { t } = useI18n();
 const props = defineProps({
   reviewObject: {
     type: Object,
@@ -97,7 +101,7 @@ const props = defineProps({
 const review = ref<any>(null);
 const typing = ref(false);
 const isSaving = ref(false);
-const message = ref(null);
+const message = ref('');
 const styleConfig = {
   fullStarColor: "#ed8a19",
   emptyStarColor: "#737373",
@@ -105,20 +109,20 @@ const styleConfig = {
   starHeight: 16,
 };
 const evaluations = [
-  { question: "Are you learning valuable information?", response: "" },
-  { question: "Are the explanations of concepts clear?", response: "" },
-  { question: "Is the instructor's delivery engaging?", response: "" },
+  { question: t("ev1"), response: "" },
+  { question: t("ev2"), response: "" },
+  { question: t("ev3"), response: "" },
   {
     question:
-      "Are there enough opportunities to apply what you are learning?",
+      t("ev4"),
     response: "",
   },
   {
-    question: "Is the course delivering on your expectations?",
+    question: t("ev5"),
     response: "",
   },
   {
-    question: "Is the instructor knowledgeable about the topic?",
+    question: t("ev6"),
     response: "",
   },
 ];
@@ -129,7 +133,7 @@ const duration = computed(() => {
   }
   return '';
 });
-const getDate = (dt:string) => {
+const getDate = (dt: string) => {
   return getTimeAgoFromDateTime(dt);
 };
 const saveResponse = () => {
@@ -164,7 +168,6 @@ evaluations[5].response = review.value.evaluations_5;
 
 <style scoped>
 .review-item {
-  border: 0.1em rgb(5, 38, 58, 0.1) solid;
   padding: 1em 2em;
   margin: 2.5em 0;
   font-family: sans-serif;
@@ -202,7 +205,6 @@ evaluations[5].response = review.value.evaluations_5;
 .message_bloc .message_summary .name {
   font-weight: 900;
   font-size: 0.95em;
-  color: blue;
   cursor: pointer;
   text-transform: capitalize;
 }
@@ -267,7 +269,6 @@ evaluations[5].response = review.value.evaluations_5;
 
 .course_summary .courseLink {
   font-weight: 700;
-  color: #0606ec;
   cursor: pointer;
 }
 
@@ -311,9 +312,7 @@ button.post:disabled {
   margin: 0.5em;
 }
 
-.review_respond {
-  margin-top: 0.5em;
-}
+
 
 .time {
   color: gray;
@@ -338,16 +337,17 @@ button.post:disabled {
   flex-direction: column;
 }
 
-.instructor_content .title {
-  font-weight: 700;
-  font-size: 0.95em;
-  margin-bottom: 0.2em;
-}
-
-.instructor_content .name {
-  color: blue;
-  font-weight: 400;
-  text-transform: capitalize;
-  font-size: 0.9em;
+.avatar-text {
+  align-items: center;
+  color: #fff;
+  display: block;
+  background-color: var(--g-c-blue-dark);
+  font-size: 0.8rem;
+  border-radius: 50%;
+  justify-content: center;
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-top: 5px;
+   padding-bottom: 5px;
 }
 </style>
