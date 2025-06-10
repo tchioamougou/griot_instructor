@@ -418,12 +418,24 @@ export function formatTimeFromDateTime(dateTimeString:string):string {
   return `${dateTime.getHours() < 10 ? '0' : ''}${dateTime.getHours()}:${dateTime.getMinutes()} ${dateTime.getHours() < 12 ? 'AM' : 'PM'}`;
 }
 
-export function formatMonthYear(input:string) {
-  const [year, month] = input.split('-');
+export function formatMonthYear(input: string) {
+  const parts = input.split('-');
   const months = [
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   ];
-  const monthIndex = parseInt(month, 10) - 1;
-  return `${months[monthIndex]}'${year}`;
+
+  if (parts.length === 3) {
+    // Format: yyyy-mm-dd → return "dd Mon"
+    const [year, month, day] = parts;
+    const monthIndex = parseInt(month, 10) - 1;
+    return `${parseInt(day, 10)}' ${months[monthIndex]}`;
+  } else if (parts.length === 2) {
+    // Format: yyyy-mm → return "Mon'yyyy"
+    const [year, month] = parts;
+    const monthIndex = parseInt(month, 10) - 1;
+    return `${months[monthIndex]}'${year}`;
+  } else {
+    return input;
+  }
 }

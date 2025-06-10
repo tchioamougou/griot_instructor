@@ -2271,8 +2271,18 @@
     "monthlySales": {
         "message": "You earn {amount} today, it's higher than last month. Keep up your good work!"
     },
-    "view_more":"View More",
-    "student_demo":"Students Demographic",
-    "students_base":"Number of students based on country"
-
+    "view_more": "View More",
+    "student_demo": "Students Demographic",
+    "students_base": "Number of students based on country",
+    "totalStudents": "Total students",
+    "week": "Week",
+    "30days": "Days",
+    "your_month": "You’ve set for each month",
+    "Unknown":"Unknown",
+    "amount":"Amount",
+    "status":"Status",
+    "quanity":"Quanity",
+    "paid":"Paid",
+    "course":"Cours",
+    "see_all":"See all"
 }

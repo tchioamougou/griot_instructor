@@ -2260,15 +2260,25 @@
   "ev4": "Y a-t-il suffisamment d’occasions d’appliquer ce que vous apprenez ?",
   "ev5": "Le cours répond-il à vos attentes ?",
   "ev6": "L’instructeur maîtrise-t-il le sujet ?",
-      "Today": "Aujourd'hui",
-    "Revenue": "Revenu",
-    "Monthly Sales": "Ventes mensuelles",
-    "stay_on_top": "Restez au courant de vos objectifs de ventes mensuelles — voyez ce qui fonctionne et ce qui vous attend.",
-    "monthlySales": {
-        "message": "Vous avez gagné {amount} aujourd'hui, c'est plus que le mois dernier. Continuez votre bon travail !"
-    },
-    "view_more": "Voir plus",
-    "student_demo": "Démographie des étudiants",
-    "students_base": "Nombre d'étudiants par pays"
-
+  "Today": "Aujourd'hui",
+  "Revenue": "Revenu",
+  "Monthly Sales": "Ventes mensuelles",
+  "stay_on_top": "Restez au courant de vos objectifs de ventes mensuelles — voyez ce qui fonctionne et ce qui vous attend.",
+  "monthlySales": {
+    "message": "Vous avez gagné {amount} aujourd'hui, c'est plus que le mois dernier. Continuez votre bon travail !"
+  },
+  "view_more": "Voir plus",
+  "student_demo": "Démographie des étudiants",
+  "students_base": "Nombre d'étudiants par pays",
+    "totalStudents": "Total d'étudiants",
+  "week": "Semaine",
+  "30days": "30 jours",
+  "your_month": "Vous avez défini pour chaque mois",
+  "Unknown": "Inconnu",
+  "amount": "Montant",
+  "status": "Statut",
+  "quanity": "Quantité",
+  "paid": "Payé",
+  "course": "Cours",
+  "see_all": "Voir tout"
 }

@@ -5,7 +5,7 @@
       <div class="w-full">
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">{{ $t('Statistics') }}</h3>
         <p class="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-          {{ $t('You’ve set for each month') }}
+          {{ $t('your_month') }}
         </p>
       </div>
 
@@ -41,15 +41,15 @@ import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 const options = [
   { value: 'monthly', label: 'Monthly' },
-  { value: '30days', label: 'Quarterly' },
-  { value: 'week', label: 'Annually' },
+  { value: '30days', label: t('30days') },
+  { value: 'week', label: t('week') },
 ]
 const authStore = useAuthStore()
 const user = computed(() => {
   const userData = authStore.user
   return JSON.parse(userData);
 })
-const selected = ref('optionOne')
+const selected = ref('monthly')
 // Example usage in a setup function or method
 const stats = ref<any>([])
 const selectOption =(val:string)=>{
