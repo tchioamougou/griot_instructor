@@ -5,10 +5,10 @@
     <div class="flex justify-between">
       <div>
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Customers Demographic
+          {{$t('student_demo')}}
         </h3>
         <p class="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-          Number of customer based on country
+         {{$t('students_base')}}
         </p>
       </div>
     </div>
@@ -22,15 +22,15 @@
       ></div>
     </div>
     <div class="space-y-5">
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between" v-for="(sta,i) in countryStat" :key="i">
         <div class="flex items-center gap-3">
           <div class="items-center w-full rounded-full max-w-8">
             <img src="/images/country/country-01.svg" alt="usa" />
           </div>
           <div>
-            <p class="font-semibold text-gray-800 text-theme-sm dark:text-white/90">USA</p>
+            <p class="font-semibold text-gray-800 text-theme-sm dark:text-white/90">{{ sta.country }}</p>
             <span class="block text-gray-500 text-theme-xs dark:text-gray-400">
-              2,379 Customers
+             {{ sta.studentCount }} {{ $t('students') }}
             </span>
           </div>
         </div>
@@ -38,44 +38,43 @@
         <div class="flex w-full max-w-[140px] items-center gap-3">
           <div class="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800">
             <div
-              class="absolute left-0 top-0 flex h-full w-[79%] items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"
+            :class="'w-['+sta.percentage+'%]'"
+              class="absolute left-0 top-0 flex h-full  items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"
             ></div>
           </div>
-          <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">79%</p>
+          <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{sta.percentage}}%</p>
         </div>
       </div>
 
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="items-center w-full rounded-full max-w-8">
-            <img src="/images/country/country-02.svg" alt="france" />
-          </div>
-          <div>
-            <p class="font-semibold text-gray-800 text-theme-sm dark:text-white/90">France</p>
-            <span class="block text-gray-500 text-theme-xs dark:text-gray-400">
-              589 Customers
-            </span>
-          </div>
-        </div>
-
-        <div class="flex w-full max-w-[140px] items-center gap-3">
-          <div class="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800">
-            <div
-              class="absolute left-0 top-0 flex h-full w-[23%] items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"
-            ></div>
-          </div>
-          <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">23%</p>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import jsVectorMap from 'jsvectormap'
 import 'jsvectormap/dist/maps/world'
+import { useAuthStore } from '@/composables/user'
 
+import { useI18n } from "vue-i18n";
+import { getInstructorStatDemographics } from '@/services/griot_service';
+const authStore = useAuthStore()
+const user = computed(() => {
+  const userData = authStore.user
+  return JSON.parse(userData);
+})
+const countryStat = ref<any>([])
+const fetchRevenue = async (instructorId: string,val:string="monthly") => {
+  try {
+    const response = await getInstructorStatDemographics(instructorId);
+    const data = await response.json();
+    countryStat.value = data;
+    console.log("Revenue data:", data);
+    // Do something with data
+  } catch (error) {
+    console.error("Failed to fetch revenue:", error);
+  }
+};
 const mapOneRef = ref<HTMLElement | null>(null)
 const mapInstance = ref<any>(null)
 
@@ -96,18 +95,7 @@ const initMap = () => {
         },
       },
       markers: [
-        {
-          name: 'Egypt',
-          coords: [26.8206, 30.8025],
-        },
-        {
-          name: 'United States',
-          coords: [55.3781, 3.436],
-        },
-        {
-          name: 'United States',
-          coords: [37.0902, -95.7129],
-        },
+     
       ],
       markerStyle: {
         initial: {
@@ -132,7 +120,7 @@ const initMap = () => {
     })
   }
 }
-
+fetchRevenue(user.value.id)
 onMounted(() => {
   initMap()
 })

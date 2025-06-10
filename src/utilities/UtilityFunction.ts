@@ -417,3 +417,13 @@ export function formatTimeFromDateTime(dateTimeString:string):string {
   const dateTime = new Date(dateTimeString);
   return `${dateTime.getHours() < 10 ? '0' : ''}${dateTime.getHours()}:${dateTime.getMinutes()} ${dateTime.getHours() < 12 ? 'AM' : 'PM'}`;
 }
+
+export function formatMonthYear(input:string) {
+  const [year, month] = input.split('-');
+  const months = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+  const monthIndex = parseInt(month, 10) - 1;
+  return `${months[monthIndex]}'${year}`;
+}

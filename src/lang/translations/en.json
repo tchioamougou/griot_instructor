@@ -2263,5 +2263,16 @@
     "ev3": "Is the instructor's delivery engaging?",
     "ev4": "Are there enough opportunities to apply what you are learning?",
     "ev5": "Is the course delivering on your expectations?",
-    "ev6": "Is the instructor knowledgeable about the topic?"
+    "ev6": "Is the instructor knowledgeable about the topic?",
+    "Today": "Today",
+    "Revenue": "Revenue",
+    "Monthly Sales": "Monthly Sales",
+    "stay_on_top": "Stay on top of your monthly sales goals—see what’s working and what’s next.",
+    "monthlySales": {
+        "message": "You earn {amount} today, it's higher than last month. Keep up your good work!"
+    },
+    "view_more":"View More",
+    "student_demo":"Students Demographic",
+    "students_base":"Number of students based on country"
+
 }

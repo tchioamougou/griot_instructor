@@ -796,7 +796,6 @@ export const questionCourseAnswerPost = async (request: any) => {
   return handleResponse(response)
 }
 
-
 export const getCoursesQuestionsPostAnwser = async (request: any) => {
   const response = await fetch(`${uriCourseQuestion}/answers`, {
     headers: {
@@ -807,4 +806,31 @@ export const getCoursesQuestionsPostAnwser = async (request: any) => {
     body: JSON.stringify(request),
   })
   return handleResponse(response)
+}
+
+/*** this section is used to manage information about Instructor
+ * @author Styves Amougou
+ * @date 10-06-2025
+ * ***/
+export const getInstructorStats = (id: string, period: string) => {
+  return fetch(`${uriInstructors}/${id}/stats?period=${period}`, {
+    method: 'GET',
+  })
+}
+
+export const getInstructorStatRevenue = (id: string) => {
+  return fetch(`${uriInstructors}/${id}/revenue`, {
+    method: 'GET',
+  })
+}
+
+export const getInstructorStatDemographics = (id: string) => {
+  return fetch(`${uriInstructors}/${id}/demographics`, {
+    method: 'GET',
+  })
+}
+export const getInstructorStatPeriod = (id: string, period: string = 'monthly') => {
+  return fetch(`${uriInstructors}/${id}/period_stats?period=${period}`, {
+    method: 'GET',
+  })
 }
