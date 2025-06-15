@@ -384,16 +384,19 @@ export function getFirstAndLastChars(text:string): string {
 }
 
 
-export function formatMinutes(minutes:number): string {
+export function formatMinutes(seconds: number, short: boolean = false): string {
+  const minutes = Math.floor(seconds / 60);
   if (minutes < 60) {
-    return `${minutes} min`;
+    return short ? `${minutes}m` : `${minutes} min`;
   } else {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
     if (remainingMinutes === 0) {
-      return `${hours} h`;
+      return short ? `${hours}h` : `${hours} h`;
     } else {
-      return `${hours} h ${remainingMinutes} min`;
+      return short
+        ? `${hours}h${remainingMinutes}m`
+        : `${hours} h ${remainingMinutes} min`;
     }
   }
 }
