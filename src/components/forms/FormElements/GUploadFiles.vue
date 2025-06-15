@@ -18,7 +18,7 @@
     />
 
     <!-- Progress Bar -->
-    <div v-if="progress > 0 && progress < 100" class="w-full bg-gray-100 rounded h-2 overflow-hidden">
+    <div v-if="(progress >= 0 && progress <= 100) && showProgration" class="w-full bg-gray-100 rounded h-2 overflow-hidden">
       <div class="bg-blue-500 h-full transition-all duration-200" :style="{ width: progress + '%' }"></div>
     </div>
 
@@ -30,13 +30,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  getStorage,
-  uploadBytesResumable,
-  getDownloadURL,
-  ref as storageReference,
-} from "firebase/storage";
 import { ref, computed } from "vue";
+import { v4 as uuidv4 } from "uuid";
 import { ALLOW_FILE, IMAGE_RESOLUTION } from "@/utilities/utilityConstant";
 
 // Props
@@ -61,14 +56,13 @@ const emit = defineEmits<{
   (e: "selected", val: any): void;
 }>();
 
-// Constants
+// State
 const allow = ALLOW_FILE;
 const progress = ref(0);
 const messageError = ref<string | null>(null);
-const uploadTask = ref<any>(null);
 const fileName = ref(props.placeholder);
-const profileImage = ref<string>("");
-
+const videoUrl = ref('');
+const showProgration = ref(false);
 let duration: number | undefined;
 let filesize: number | undefined;
 
@@ -76,8 +70,8 @@ const acceptType = computed(() => {
   return props.type === "Video"
     ? allow.video
     : props.type === "Image"
-      ? allow.image
-      : allow.documents;
+    ? allow.image
+    : allow.documents;
 });
 
 const updateValue = (url: string) => {
@@ -88,37 +82,46 @@ const launchSelected = (value: any) => {
   emit("selected", value);
 };
 
-const loadOnFireStore = (file: File, filename: string) => {
-  const storage = getStorage();
-  const storageRef = storageReference(storage, filename);
-  uploadTask.value = uploadBytesResumable(storageRef, file);
+// Upload with SSE tracking
+const uploadWithProgress = async (file: File, filename: string, path:string) => {
+  const id = uuidv4();
+  showProgration.value = true;
+  // Listen to SSE for progress
+  const eventSource = new EventSource(`${ import.meta.env.VITE_APP_STORAGE_URL}/progress/${id}`);
+  eventSource.onmessage = (event) => {
+    progress.value = parseInt(event.data);
+     console.log("value", event.data)
+  };
 
-  uploadTask.value.on(
-    "state_changed",
-    (snapshot: any) => {
-      progress.value = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    },
-    (error: any) => {
-      console.error("Upload error:", error.code);
-      messageError.value = "Upload failed: " + error.code;
-    },
-    () => {
-      getDownloadURL(uploadTask.value.snapshot.ref).then((downloadURL: string) => {
-        profileImage.value = downloadURL;
-        const value = {
-          downloadURL,
-          filesize,
-          duration,
-          fileName: fileName.value,
-        };
-        if (props.type === "Video" || props.type === "Document") {
-          launchSelected(value);
-        } else {
-          updateValue(downloadURL);
-        }
-      });
+  eventSource.addEventListener("done", (event) => {
+    videoUrl.value = event.data;
+    progress.value = 100;
+    showProgration.value = false;
+    eventSource.close();
+
+    const value = {
+      downloadURL: event.data,
+      filesize,
+      duration,
+      fileName: fileName.value,
+    };
+    console.log("value", value)
+    if (props.type === "Video" || props.type === "Document") {
+      launchSelected(value);
+    } else {
+      updateValue(event.data);
     }
-  );
+  });
+
+  // Send the file to the backend
+  const formData = new FormData();
+  formData.append("video", file);
+  formData.append("path", path);
+
+  await fetch(`${import.meta.env.VITE_APP_STORAGE_URL}/upload/${id}`, {
+    method: "POST",
+    body: formData,
+  });
 };
 
 const handleChange = (e: Event) => {
@@ -132,14 +135,19 @@ const handleChange = (e: Event) => {
   filesize = file.size;
 
   let filename = "";
-  if (props.fileName && props.repository) {
-    filename = `${props.repository}/${props.fileName}__iv`;
-  } else if (props.source === "Profile") {
+  let path  =''
+   if (props.source === "Profile") {
     filename = `${props.repository}/${props.user?.id}__p`;
+    path = `images/profiles/${props.user?.id}`
   } else if (props.source === "CourseImage") {
     filename = `${props.repository}/${props.course?.id}__ci`;
-  } else {
+    path = `images/courses/${props.course?.id}`
+  } else if (props.type === "Video") {
+    path = `video/courses/${props.course?.id}`
     filename = `Video/${props.course?.id}__pv`;
+  }else{
+    path='default';
+    filename="default"
   }
 
   if (props.type === "Video") {
@@ -148,26 +156,25 @@ const handleChange = (e: Event) => {
     video.addEventListener("loadedmetadata", function () {
       duration = Math.floor(video.duration);
       video.remove();
-      loadOnFireStore(file, filename);
+      uploadWithProgress(file, filename,path);
     });
   } else if (props.type === "Image") {
     const image = new Image();
     image.onload = function () {
       if (image.width >= IMAGE_RESOLUTION.width && image.height >= IMAGE_RESOLUTION.height) {
-        loadOnFireStore(file, filename);
+        uploadWithProgress(file, filename,path);
       } else {
         messageError.value = "The resolution of the image is not good.";
       }
     };
     image.src = URL.createObjectURL(file);
   } else {
-    loadOnFireStore(file, filename);
+    uploadWithProgress(file, filename,path);
   }
 };
 </script>
 
 <style scoped>
-/* Remove default browser input styling */
 input[type="file"] {
   display: none;
 }

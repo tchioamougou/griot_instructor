@@ -38,7 +38,7 @@
         </div>
         <div class="p-4 bg-gray-50">
           <div v-for="it in section.lectures" :key="it.id">
-            <g-item :item="it" @refresh="refresh" />
+            <g-item :item="it" @refresh="refresh" :course="course" />
           </div>
 
           <div class="mt-2">
@@ -98,6 +98,10 @@ const toast = useToast();
 const { t } = useI18n();
 const props = defineProps({
   section: {
+    type: Object,
+    required: true,
+  },
+   course: {
     type: Object,
     required: true,
   },

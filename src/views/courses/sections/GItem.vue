@@ -183,7 +183,7 @@
             <div v-show="activeTab === 'SourceCode'" class="ml-4">
               <g-upload-files :apiName="'downloadable' + item.id" repository="Resources"
                 :placeholder="$t('No file selected')" :button-name="$t('Select File')" v-model="newResource.file"
-                allow-file="*" type="Document" source="videoCourse" @selected="getDownloadableFile" />
+                allow-file="*" type="Document" source="videoCourse" @selected="getDownloadableFile" :course="course" />
               <div class="flex justify-end gap-4">
                 <Button size="sm" variant="neutral" class="px-4 py-2 bg-gray-200 rounded" @click="cancel">
                   {{ $t('cancel_btn') }}
@@ -214,7 +214,7 @@
             <div class="lectureAddContent_video_file">
               <g-upload-files repository="Videos_Course" :file-name="item.id" source="videoCourse"
                 :allow-file="ALLOW_FILE.video" :apiName="item.id" :placeholder="$t('No file selected')"
-                :button-name="$t('select_Video')" type="Video" @selected="onGetVideoDetails"
+                :button-name="$t('select_Video')" type="Video" @selected="onGetVideoDetails" :course="course"
                 v-model="localItem.contentLink" />
             </div>
             <div class="nb">
@@ -227,7 +227,7 @@
           </div>
           <div class="actions">
             <Button variant="neutral" @click="addingContent = false">{{ $t('cancel_btn') }}</Button>
-            <Button class="save" :disabled="isSaving" @click="updateLectureContent">
+            <Button class="save" :disabled="isSaving || (!localItem.contentLink && !localItem.article) || (localItem.contentLink!= item.contentLink) || (localItem.article!= item.article) " @click="updateLectureContent">
               <Spinner v-if="isSaving" />
               {{ $t('save') }}
             </Button>
@@ -314,6 +314,7 @@ const emits = defineEmits<{
 }>();
 const props = defineProps<{
   item: Record<string, any>;
+  course:Record<string, any>;
 }>();
 
 const confirmation = ref<InstanceType<typeof GConfirmation> | null>(null);

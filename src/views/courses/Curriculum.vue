@@ -26,7 +26,7 @@
         <!-- Course details -->
         <div style="position: relative" class="mt-10 ">
           <template v-for="section in sortedSections" :key="section.position">
-            <g-section :section="section" @refresh="refresh" />
+            <g-section :section="section" @refresh="refresh" :course="course" />
           </template>
           <div class="g-add-more-button mt-6">
             <button @click="addSection()" v-if="!addingSection" class="border-1 text-sm hover:bg-gray-200 rounded px-2 py-1 border-purple-400 "> + {{ $t('section') }}</Button>
