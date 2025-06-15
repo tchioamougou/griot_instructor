@@ -68,7 +68,7 @@ const deleteCourseLocal = () => {
       if (response.status == 200) {
         confirmation.value?.hideSpinner();
         confirmation.value?.hide();
-        router.push("/instructor/courses");
+        router.push("/course");
       }
     })
     .catch((error) => {
