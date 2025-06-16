@@ -266,7 +266,7 @@ const backToCourse = () => {
 
 // Liste des onglets
 const tabs = computed(() => {
-  console.log('itemsList.value', itemsList.value);
+  //console.log('itemsList.value', itemsList.value);
   return itemsList.value?.map((item: any) => ({
     label: t(item.value),
     value: item.value,
