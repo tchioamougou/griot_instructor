@@ -1,7 +1,7 @@
 <template>
-  <CourseHeader :course="course" :save-enabled="true" :show-save-button="!excludedComponents.includes(selectedItem)" @save="handleSave()"
-    @back="backToCourse" @settings="goToSetting" />
-  <div class="container mx-auto px-16 py-0 ">
+  <CourseHeader :course="course" :save-enabled="true" :show-save-button="!excludedComponents.includes(selectedItem)"
+    @save="handleSave()" @back="backToCourse" @settings="goToSetting" />
+  <div class="lg:container mx-auto lg:px-16 py-0 ">
     <div class="flex flex-col md:flex-row min-h-screen">
       <!-- Sidebar Navigation -->
       <aside class="w-full md:w-64 border-r bg-white p-4">
@@ -48,13 +48,14 @@
       </aside>
 
       <!-- Main Content Area -->
-      <main class="flex-1 p-6 bg-gray-50 overflow-y-auto">
+      <main class="lg:flex-1 p-6 bg-gray-50 overflow-y-auto w-full">
         <template v-if="course && course.id">
           <component :is="getSectionComponent" :course="course" ref="component" @refresh="refresh" />
         </template>
       </main>
     </div>
   </div>
+  <SpinnerOverPage v-if="isLoading"></SpinnerOverPage>
 </template>
 
 <script setup lang="ts">
@@ -90,20 +91,21 @@ const CourseSetupAndTest = defineAsyncComponent(() => import('./CourseSetupAndTe
 const CourseCaptions = defineAsyncComponent(() => import('./CourseCaptions.vue'));
 const CourseLandingPage = defineAsyncComponent(() => import('./CourseLandingPage.vue'));
 const SpinnerCmp = defineAsyncComponent(() => import('@/components/spinner/Spinner.vue'));
+const SpinnerOverPage = defineAsyncComponent(() => import('@/components/spinner/SpinnerOverPage.vue'));
 const PracticeTest = defineAsyncComponent(() => import('./practices/PracticeTest.vue'));
 import Button from '@/components/ui/Button.vue';
 
 const excludedComponents = [
-"CourseStructure",
-"SetupTestVideo",
-"FilmEdit",
-"Curriculum",
-"Captions",
-"Accessibility",
-"Pricing",
-"Promotions",
-"Settings",
-"PracticeTest",
+  "CourseStructure",
+  "SetupTestVideo",
+  "FilmEdit",
+  "Curriculum",
+  "Captions",
+  "Accessibility",
+  "Pricing",
+  "Promotions",
+  "Settings",
+  "PracticeTest",
 ];
 
 // i18n
@@ -160,6 +162,7 @@ const getParameters = () => {
     selectedItem.value = navigationParams.item as string;
     courseId.value = navigationParams.courseId as string;
     isLoading.value = true;
+    console.log('Ienter here agains')
     getCourseLocal();
   }
 };
@@ -178,11 +181,11 @@ const refresh = () => {
 
 const getCourseLocal = () => {
   if (!courseId.value || !selectedItem.value) return;
+  isLoading.value = true;
   getCourseById(courseId.value, selectedItem.value)
     .then(response => response.json())
     .then(data => {
       course.value = data;
-console.log('course.value', course.value);
       if (course.value.type === COURSE_TYPE.practiceTest) {
         items.value = course.value.status === COURSE_STATUS.unpublished
           ? EDIT_COURSE_ITEMS.practiceTest.draft
@@ -211,11 +214,14 @@ const showItem = (item: any) => {
     }
   });
   selectedItem.value = item.apiName;
+  console.log('selectedItem.value', selectedItem.value);
   router.push({
     name: 'editCourse',
     params: { courseId: courseId.value, item: selectedItem.value },
   });
-  //refresh();
+  if (selectedItem.value == "Curriculum" && course.value.sections.length < 1) {
+    refresh();
+  }
 };
 
 const submitForReview = () => {

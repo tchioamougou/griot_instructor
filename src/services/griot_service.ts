@@ -262,6 +262,17 @@ export const createLectures = (lectures: any) => {
     body: JSON.stringify(lectures),
   })
 }
+/** this function is used to update Lectures positions in databases*/
+export const updateLecturesPositions = (lectures: any) => {
+  return fetch(`${uriLecture}/positions`, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(lectures),
+  })
+}
 /** this function is used to update Lectures in databases*/
 export const updateLecture = (id: string, lecture: any) => {
   return fetch(`${uriLecture}/${id}`, {

@@ -2284,5 +2284,8 @@
     "quanity":"Quanity",
     "paid":"Paid",
     "course":"Cours",
-    "see_all":"See all"
+    "see_all":"See all",
+    "curriculum item":"Curriculum item",
+    "Submitted":"Submitted",
+    "Published":"Published"
 }

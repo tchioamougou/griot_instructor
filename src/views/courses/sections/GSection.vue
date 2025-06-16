@@ -37,14 +37,27 @@
           </div>
         </div>
         <div class="p-4 bg-gray-50">
-          <div v-for="it in section.lectures" :key="it.id">
+          <!-- <div v-for="it in section.lectures" :key="it.id">
             <g-item :item="it" @refresh="refresh" :course="course" />
-          </div>
+          </div>-->
+          <!-- use vuejs draggable to change course position -->
+
+          <draggable v-model="lectures" item-key="id" ghost-class="drag-ghost" handle=".drag-handle" @end="dragEnd">
+            <template #item="{ element }">
+              <div class="relative">
+                <div class="drag-handle cursor-move ">
+                  <GItem :item="element" @refresh="refresh" :course="course" />
+                </div>
+
+              </div>
+            </template>
+          </draggable>
 
           <div class="mt-2">
 
             <button @click="addItem" v-if="!addingItem"
-              class="border-1 text-sm hover:bg-gray-200 rounded px-2 py-1 border-purple-400 "> + {{ $t('curriculum item') }}</Button>
+              class="border-1 text-sm hover:bg-gray-200 rounded px-2 py-1 border-purple-400 ">
+              + {{ $t('curriculum item') }}</Button>
             <span v-else class="text-red-600 cursor-pointer" @click="cancel">
               <i class="bi bi-x"></i>
             </span>
@@ -59,16 +72,17 @@
             </div>
             <div v-if="step === 2" class="border p-4 mt-4">
               <div class="mb-4">
-                <BaseInput v-model="newItem.title" :maxlength="80" show-rest :placeholder="$t('title_placeholder')" :label="$t('title') "
-                  :is-error="hasError && !newItem.title" :message-error="$t('field_blank_error')"  />
+                <BaseInput v-model="newItem.title" :maxlength="80" show-rest :placeholder="$t('title_placeholder')"
+                  :label="$t('title')" :is-error="hasError && !newItem.title"
+                  :message-error="$t('field_blank_error')" />
                 <BaseInput v-model="newItem.description" :maxlength="80" show-rest :label="$t('Description')"
                   :placeholder="$t('description_placeholder')" :is-error="hasError && !newItem.description"
                   :message-error="$t('field_blank_error')" />
               </div>
               <div class="flex justify-end space-x-2">
-                <Button size="sm" variant="neutral"  @click="cancel">{{ $t('cancel_btn') }}</button>
+                <Button size="sm" variant="neutral" @click="cancel">{{ $t('cancel_btn') }}</button>
                 <Button size="sm" :disabled="isSaving" @click="saveNewItem">
-                  <Spinner v-if="isSaving" />
+                  <spinner-cmp  v-if="isSaving" />
                   {{ $t('add') }} {{ $t(newItem.type) }}
                 </button>
               </div>
@@ -85,13 +99,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { createLectures, deleteSection, updateSection } from '@/services/griot_service.ts';
+import { createLectures, deleteSection, updateSection, updateLecturesPositions } from '@/services/griot_service.ts';
 import BaseInput from '@/components/forms/FormElements/BaseInput.vue';
 import GItem from './GItem.vue';
 import Button from '@/components/ui/Button.vue';
-import Spinner from '@/components/spinner/Spinner.vue';
+import SpinnerCmp from '@/components/spinner/Spinner.vue';
 import GConfirmation from '@/components/ui/GConfirmation.vue';
 import { useToast } from 'vue-toastification'
+import draggable from 'vuedraggable'
 
 
 const toast = useToast();
@@ -101,7 +116,7 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-   course: {
+  course: {
     type: Object,
     required: true,
   },
@@ -114,12 +129,12 @@ const hasError = ref(false);
 const addingItem = ref(false);
 const step = ref(1);
 const btClass = ref('hidden');
-const message = ref();
 const confirmation = ref();
 const action = ref('');
+const lectures = ref([]);
 
 let newItem: any = {};
-const itemTypes = ['Lecture',"Practice Test","Quiz"]; // 'Coding Exercise',', , 'Assigment'// "Quiz"
+const itemTypes = ['Lecture', "Practice Test", "Quiz"]; // 'Coding Exercise',', , 'Assigment'// "Quiz"
 
 const updateSectionLocal = () => {
   if (!currentSection.value.title || !currentSection.value.learningObjectives) {
@@ -133,11 +148,11 @@ const updateSectionLocal = () => {
       isSaving.value = false;
       emits('refresh');
       cancel();
-      toast.success( t('section_updated'));
+      toast.success(t('section_updated'));
     })
     .catch(err => {
       console.error(err);
-      toast.error(t('error_occur'), );
+      toast.error(t('error_occur'),);
       isSaving.value = false;
     });
 };
@@ -200,15 +215,35 @@ const saveNewItem = () => {
       isSaving.value = false;
       emits('refresh');
       cancel();
-      toast.success('Section Created Lecture');
+      toast.success(t('toast_success'));
     })
     .catch(err => {
       console.error(err);
       isSaving.value = false;
     });
 };
-
+onMounted(() => {
+  lectures.value = props.section.lectures ?? []
+})
 const refresh = () => emits('refresh');
+const updatePositions = async () => {
+  const results: any = [];
+  lectures.value.forEach((lecture: any, index) => {
+    const position = index + 1;
+    if (lecture.position != position) {
+      results.push({ position: position, id: lecture.id });
+    }
+    lecture.position = index + 1
+  });
+  if (results.length > 0) {
+   await updateLecturesPositions(results);
+  }
+}
+
+const dragEnd = () => {
+  updatePositions();
+  refresh();
+}
 </script>
 
 <style scoped>
@@ -384,5 +419,12 @@ const refresh = () => emits('refresh');
 
 .new_section_content_input {
   width: 90%;
+}
+
+.drag-ghost {
+  background-color: #f3f4f6;
+  /* équivalent Tailwind bg-gray-100 */
+  border: 2px dashed #a855f7;
+  /* équivalent border-2 border-dashed border-purple-500 */
 }
 </style>
