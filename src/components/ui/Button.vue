@@ -46,7 +46,7 @@ const sizeClasses = {
 }
 
 const variantClasses = {
-  primary: 'bg-purple-800 text-white shadow-theme-xs hover:bg-purple-600 disabled:bg-purple-300',
+  primary: 'bg-primary text-white shadow-theme-xs hover:bg-primary/25 disabled:bg-purple-300',
   danger:  'bg-red-800 text-white shadow-theme-xs hover:bg-red-600 disabled:bg-red-300',
   neutral:' border-none bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/[0.03] dark:hover:text-gray-300',
   outline:

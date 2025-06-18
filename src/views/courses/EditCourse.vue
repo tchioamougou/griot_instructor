@@ -353,10 +353,10 @@ input[type="checkbox"] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  border: 2px solid #0a0809;
+  border: 1px solid #0a0809;
   border-radius: 0px;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   outline: none;
   position: relative;
   transition: border-color 0.3s ease-in-out;
@@ -367,9 +367,9 @@ input[type="checkbox"]:checked:before {
   content: "\2713";
   width: 16px;
   height: 16px;
-  background-color: black;
+  background-color: white;
   position: absolute;
-  color: white;
+  color: black;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -377,6 +377,7 @@ input[type="checkbox"]:checked:before {
   display: block;
   font-size: 16px;
   line-height: 16px;
+  border: #0a0809 solid 0.2px;
   text-align: center;
 }
 

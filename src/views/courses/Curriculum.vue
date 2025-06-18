@@ -29,7 +29,7 @@
             <g-section :section="section" @refresh="refresh" :course="course" />
           </template>
           <div class="g-add-more-button mt-6">
-            <button @click="addSection()" v-if="!addingSection" class="border-1 text-sm hover:bg-gray-200 rounded px-2 py-1 border-purple-400 "> + {{ $t('section') }}</Button>
+            <button @click="addSection()" v-if="!addingSection" class="border-1 text-sm text-primary hover:bg-gray-200 rounded px-2 py-1 border-primary "> + {{ $t('section') }}</Button>
             <div
               class="new_section_btn_cancel"
               v-if="addingSection"

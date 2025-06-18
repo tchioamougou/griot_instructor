@@ -1,19 +1,19 @@
 <template>
   <template v-if="localItem">
-    <div class="border-1  px-0 py-1 rounded border-black/25 mb-10 g-item-container">
-      <div class="g-item" @mouseover="onHover" v-if="!editLecture" @mouseleave="onLeave">
-        <div class="block_left text-md">
+    <div class="border-1 px-0 py-1 rounded border-black/25 mb-5">
+      <div class="flex justify-between py-2 px-3" @mouseover="onHover" v-if="!editLecture" @mouseleave="onLeave">
+        <div class=" justify-center content-center text-sm">
           <i class="bi bi-check-circle-fill me-2" v-if="isCompleted"></i>
-          <span><span v-if="!isCompleted"><i class="bi bi-exclamation-triangle-fill text-warning"></i>{{
+          <span><span v-if="!isCompleted"><i class="bi bi-exclamation-triangle-fill text-amber-300 me-1"></i>{{
             $t('unpublished') }}</span>
-            {{ $t(item.type) }} {{ item.position }} : {{ item.title }}
+            : {{ $t(item.type) }} {{ item.position }} : {{ item.title }}
           </span>
-          <span>
+          <span :class="btClass">
             <span @click="startEditLecture" class="ms-2"><i class="bi bi-pencil-fill"></i></span>
             <span class="ms-2" @click="confirmDelete"><i class="bi bi-x-circle"></i></span>
           </span>
         </div>
-        <div class="block_right"
+        <div class="block_right" 
           v-if="canAddContent && !addingContent && !editLecture && !addingResources && !addingQuestion && !typingDescription">
           <Button variant="primary" size="sm" v-if="isLecture" @click="initAddContent">
             <span v-if="item.documentType"> {{ $t('update_content') }} </span>
@@ -306,7 +306,7 @@ import { useToast } from 'vue-toastification'
 import Button from '@/components/ui/Button.vue';
 import Spinner from '@/components/spinner/Spinner.vue';
 import GConfirmation from '@/components/ui/GConfirmation.vue';
-
+const btClass = ref('hidden');
 const toast = useToast();
 const { t } = useI18n();
 const emits = defineEmits<{
@@ -376,11 +376,11 @@ const initAddQuestion = () => {
 };
 
 const onHover = () => {
-  return 'g-show';
+  btClass.value = 'inline';
 };
 
 const onLeave = () => {
-  return 'g-hide';
+  btClass.value = 'hidden';
 };
 const handelTypingDescription = () => {
   typingDescription.value = true;
@@ -771,13 +771,6 @@ const refuse = () => {
   display: inline;
 }
 
-.g-item {
-  width: 100%;
-  cursor: pointer;
-  padding: 1em 1em;
-  display: flex;
-  justify-content: space-between;
-}
 
 .g-add-content-btn {
   border: 1px var(--vt-c-black) solid;

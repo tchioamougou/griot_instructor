@@ -53,6 +53,7 @@ layer(base);
   --color-brand-800: #252dae;
   --color-brand-900: #262e89;
   --color-brand-950: #161950;
+  --color-primary:#754ffe;
 
   --color-blue-light-25: #f5fbff;
   --color-blue-light-50: #f0f9ff;
@@ -402,7 +403,7 @@ layer(base);
 }
 
 @utility menu-item-active {
-  @apply bg-orange-50 text-purple-400 dark:bg-orange-500/[0.12] dark:text-purple-400 rounded-full;
+  @apply bg-orange-50 text-primary dark:bg-orange-500/[0.12] dark:text-purple-400 rounded-full;
 }
 
 @utility menu-item-inactive {
@@ -414,7 +415,7 @@ layer(base);
 }
 
 @utility menu-item-icon-active {
-  @apply text-purple-400 dark:text-purple-400;
+  @apply text-primary dark:text-purple-400;
 }
 
 @utility menu-item-icon-inactive {
@@ -426,7 +427,7 @@ layer(base);
 }
 
 @utility menu-item-arrow-active {
-  @apply rotate-180 text-purple-400 dark:text-brand-400;
+  @apply rotate-180 text-primary dark:text-brand-400;
 }
 
 @utility menu-item-arrow-inactive {

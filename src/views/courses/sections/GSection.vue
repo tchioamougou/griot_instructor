@@ -14,8 +14,8 @@
             v-model="currentSection.learningObjectives" :is-error="hasError && !currentSection.learningObjectives"
             :message-error="$t('field_blank_error')" />
           <div class="flex justify-end space-x-2">
-            <button class="px-4 py-2 border rounded" @click="cancel">{{ $t('cancel_btn') }}</button>
-            <button class="px-4 py-2 bg-blue-700 text-white rounded disabled:opacity-50" :disabled="isSaving"
+            <Button size="sm" variant="outline" @click="cancel">{{ $t('cancel_btn') }}</button>
+            <Button size="sm" :disabled="isSaving"
               @click="updateSectionLocal">
               <spinner-cmp v-if="isSaving" />
               {{ $t('edit_section') }}
@@ -56,16 +56,16 @@
           <div class="mt-2">
 
             <button @click="addItem" v-if="!addingItem"
-              class="border-1 text-sm hover:bg-gray-200 rounded px-2 py-1 border-purple-400 ">
+              class="border text-sm hover:bg-gray-200 rounded text-primary px-2 py-1 border-primary ">
               + {{ $t('curriculum item') }}</Button>
             <span v-else class="text-red-600 cursor-pointer" @click="cancel">
               <i class="bi bi-x"></i>
             </span>
           </div>
 
-          <div v-if="addingItem" class="mt-4">
-            <div v-if="step === 1" class="border p-4 space-x-4">
-              <span v-for="type in itemTypes" :key="type" class="text-blue-700 font-semibold cursor-pointer"
+          <div v-if="addingItem" class="">
+            <div v-if="step === 1" class="border border-black/25 border-dashed p-2 space-x-4 text-sm">
+              <span v-for="type in itemTypes" :key="type" class="text-primary font-semibold cursor-pointer"
                 @click="selectItemType(type)">
                 + {{ $t(type) }}
               </span>
@@ -107,6 +107,7 @@ import SpinnerCmp from '@/components/spinner/Spinner.vue';
 import GConfirmation from '@/components/ui/GConfirmation.vue';
 import { useToast } from 'vue-toastification'
 import draggable from 'vuedraggable'
+import { watch } from 'vue';
 
 
 const toast = useToast();
@@ -244,6 +245,14 @@ const dragEnd = () => {
   updatePositions();
   refresh();
 }
+
+watch(
+  () => props.section,
+  (newVal) => {
+    lectures.value = newVal.lectures ?? [];
+  },
+  { immediate: true, deep: true }
+);
 </script>
 
 <style scoped>
