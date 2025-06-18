@@ -78,6 +78,7 @@ const getMessagesLocal = (load: boolean): void => {
   getMessages(currentChat.value!.id, pageNumber.value, pageSize.value)
     .then((response) => response.json())
     .then((result: Record<string, any>[]) => {
+      console.log(result,result)
       messages.value = result;
       isLoadingMessage.value = false;
     })
@@ -114,6 +115,7 @@ const getChatLocal = (load: boolean): void => {
   getChats(user.value.id, selectedFilter.value ?? "", "")
     .then((response) => response.json())
     .then((result: Record<string, any>[]) => {
+      console.log('result',result)
       chats.value = result;
       messages.value = null;
       currentChat.value = undefined;
@@ -183,7 +185,11 @@ const chatTitle = (chat: Record<string, any>): string => {
       ? chat.him.name
       : chat.you.name;
 };
-
+const chatPicture = (chat: Record<string, any>): string => {
+  return chat.you.id === user.value.id
+      ? chat.him.picture
+      : chat.you.picture;
+};
 const conversationTitle = computed<string>(() => {
   if (currentChat.value && (currentChat.value.you || currentChat.value.him)) {
     return currentChat.value.you.id === user.value.id
@@ -192,6 +198,15 @@ const conversationTitle = computed<string>(() => {
   }
   return 'Griot user';
 });
+const conversationImage = computed<string>(() => {
+  if (currentChat.value && (currentChat.value.you || currentChat.value.him)) {
+    return currentChat.value.you.id === user.value.id
+      ? currentChat.value.him.picture
+      : currentChat.value.you.picture;
+  }
+  return 'Griot user';
+});
+
 
 const applyFilter = (): void => {
   getChatLocal(false);
@@ -224,11 +239,10 @@ getChatLocal(true);
 </script>
 
 <template>
-  <div class="w-full">
-    <section class="w-full px-0">
+ <section class="w-full px-0">
       <div class="flex flex-col xl:flex-row">
         <!-- Sidebar -->
-        <div class="xl:w-1/4 w-full h-screen border-r border-t bg-white">
+        <div class="xl:w-1/4 w-full h-[80vh] border-r border-t bg-white">
           <div class="sticky top-0 bg-white z-10 px-4 pt-3 pb-4">
             <div class="flex justify-between items-center">
               <slot name="header"></slot>
@@ -252,7 +266,7 @@ getChatLocal(true);
               <li v-for="ch in chats" :key="ch.id" @click="viewMessage(ch)" ref="chatsRefs"
                 class="flex justify-between items-center px-4 py-4 hover:bg-gray-50 cursor-pointer">
                 <div class="flex w-3/4 space-x-3">
-                  <img src="../../assets/images/home/cameroun.png" class="w-10 h-10 rounded-full">
+                  <img :src="chatPicture(ch)" class="w-10 h-10 rounded-full">
                   <div :class="[ch.status === 'Unread' && ch.lastPostedUser !== user.id ? 'font-bold' : '', 'w-full']">
                     <h5 class="truncate">
                       {{ chatTitle(ch) }}
@@ -270,21 +284,17 @@ getChatLocal(true);
         </div>
 
         <!-- Chat Body -->
-        <div class="xl:w-3/4 w-full h-screen overflow-hidden">
+        <div class="lg:w-3/4 xl:w-3/4  h-[80vh] overflow-hidden" v-if="currentChat">
           <div class="flex flex-col h-full">
             <!-- Header -->
             <div class="bg-white px-4 py-3 sticky top-0 border-b z-10 flex justify-between items-center">
               <div class="flex items-center space-x-2">
                 <button class="block xl:hidden"><i class="fe fe-arrow-left"></i></button>
-                <img src="../../assets/images/home/tanzanie.png" class="w-10 h-10 rounded-full">
+                <img .src="conversationImage" class="w-10 h-10 rounded-full">
                 <div>
                   <h4 class="font-semibold">{{ conversationTitle }}</h4>
                   <p class="text-sm text-gray-500">{{ $t("Online") }}</p>
                 </div>
-              </div>
-              <div class="flex items-center space-x-4">
-                <a href="#" title="Voice Call"><i class="bi bi-telephone-outbound text-xl"></i></a>
-                <a href="#" title="Video Call"><i class="bi bi-camera-video text-xl"></i></a>
               </div>
             </div>
 
@@ -300,7 +310,7 @@ getChatLocal(true);
 
                   <!-- Message left -->
                   <div v-if="me.owner.id !== user.id" class="flex space-x-3 max-w-lg">
-                    <img src="../../assets/images/home/Instructor.svg" class="w-10 h-10 rounded-full">
+                    <img :src="me.owner.picture" class="w-10 h-10 rounded-full">
                     <div>
                       <small>{{ me.owner.name }}, {{ duration(me.createdDate) }}</small>
                       <div class="bg-white shadow rounded mt-2 p-3">
@@ -317,7 +327,7 @@ getChatLocal(true);
                         <div class="bg-white shadow rounded p-3">
                           <p class="text-gray-800 text-left" v-html="me.content"></p>
                         </div>
-                        <img src="../../assets/images/home/cameroun.png" class="w-10 h-10 rounded-full ml-2">
+                        <img :src="me.owner.picture" class="w-10 h-10 rounded-full ml-2">
                       </div>
                     </div>
                   </div>
@@ -336,49 +346,13 @@ getChatLocal(true);
                   <i class="bi bi-send"></i>
                 </button>
               </form>
-              <div class="mt-3 flex space-x-3 text-xl text-gray-600">
-                <a href="#"><i class="bi bi-emoji-smile"></i></a>
-                <a href="#"><i class="bi bi-paperclip"></i></a>
-                <a href="#"><i class="bi bi-mic"></i></a>
-              </div>
             </div>
 
           </div>
         </div>
       </div>
     </section>
-  </div>
 </template>
 
 <style scoped>
-@import url(@/assets/css/chat.css);
-
-a {
-  text-decoration: none;
-}
-
-.btn-icon {
-  align-items: center;
-  display: inline-flex;
-  flex-shrink: 0;
-  font-size: .92969rem;
-  font-weight: 400;
-  height: 3.5rem;
-  justify-content: center;
-  padding: 0;
-  position: relative;
-  width: 3.5rem
-}
-
-.g-active {
-  background-color: var(--griot-gray-100);
-}
-
-.date {
-  text-align: center;
-  font-family: sans-serif;
-  font-weight: 900;
-  font-size: 0.9em;
-  margin: 1em 0em;
-}
 </style>
