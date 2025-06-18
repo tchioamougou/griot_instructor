@@ -5,12 +5,11 @@
         <div class=" justify-center content-center text-sm">
           <i class="bi bi-check-circle-fill me-2" v-if="isCompleted"></i>
           <span><span v-if="!isCompleted"><i class="bi bi-exclamation-triangle-fill text-amber-300 me-1"></i>{{
-            $t('unpublished') }}</span>
-            : {{ $t(item.type) }} {{ item.position }} : {{ item.title }}
+            $t('unpublished') }} : </span>{{ $t(item.type) }} {{ item.position }} : <i class="bi bi-play-circle  me-1" v-if="item.documentType==='Video'"></i> <i class="bi bi-file-earmark-text  me-1" v-if="item.documentType==='Article'"></i> {{ item.title }}
           </span>
           <span :class="btClass">
-            <span @click="startEditLecture" class="ms-2"><i class="bi bi-pencil-fill"></i></span>
-            <span class="ms-2" @click="confirmDelete"><i class="bi bi-x-circle"></i></span>
+            <span @click="startEditLecture" class="ms-2 cursor-pointer"><i class="bi bi-pencil-fill text-sm"></i></span>
+            <span class="ms-2 cursor-pointer" @click="confirmDelete"><i class="bi bi-x-circle text-sm"></i></span>
           </span>
         </div>
         <div class="block_right" 
@@ -22,7 +21,7 @@
           <Button size="sm" v-if="isQuiz" @click="initAddQuestion">
             <span>+ {{ $t('Questions') }}</span>
           </Button>
-          <span class="ms-4">
+          <span class="ms-4 cursor-pointer">
             <i class="bi bi-chevron-down" v-if="!showDetails" @click="showDetails = true"></i>
             <i class="bi bi-chevron-up" v-else @click="showDetails = false"></i>
           </span>
@@ -53,14 +52,13 @@
           <div class="lecture_details border-t-1 border-black/25 py-3" v-if="item.documentType">
             <div class="block_preview">
               <div class="image">
-                <img src="@/assets/images/home/create-account.svg" height="100" width="100" />
+                <img src="@/assets/images/placeholder.png" height="50" width="80" class="h-20" />
               </div>
               <div class="details">
-                <div class="title text-sm">{{ item.title }}</div>
-                <div class="">{{ getFileSizeLocal(item.size) }}</div>
+                <div class="font-semibold text-sm">{{ item.title }}</div>
                 <div class="time">{{ duration }}</div>
-                <div class="edit">
-                  <i class="bi bi-pencil-fill text-sm"></i> {{ $t('edit_content') }}
+                <div class="text-primary text-sm font-semibold">
+                  <i class="bi bi-pencil-fill text-sm text-primary"></i> {{ $t('edit_content') }}
                 </div>
               </div>
             </div>
@@ -90,7 +88,7 @@
             </div>
           </div>
 
-          <div class="block_materials border-t-1 py-2 border-b-1  border-black/25 " v-if="localItem.resources">
+          <div class="block_materials border-t-1 py-2 border-b-1  border-black/25 " v-if="localItem.resources && localItem.resources.length >0">
             <div class="title text-sm">{{ $t('downloadable_materials') }}</div>
             <div class="resourceList">
               <div class="resourceList_item" v-for="(re, i) in localItem.resources" :key="i">
@@ -106,11 +104,11 @@
               </div>
             </div>
           </div>
-          <div class="block_action">
-            <Button @click="handelTypingDescription" v-if="!typingDescription" variant="neutral" size="sm">
+          <div class="flex flex-col w-2/12 ms-3 gap-2">
+            <Button @click="handelTypingDescription" v-if="!typingDescription" variant="outline" size="sm">
               + {{ $t('Description') }}
             </Button>
-            <Button @click="addNewResource" variant="neutral" size="sm">+ {{ $t('Resources') }}</Button>
+            <Button @click="addNewResource" variant="outline" size="sm">+ {{ $t('Resources') }}</Button>
           </div>
         </div>
         <div class="lecture_description border-t-1 py-3 px-3 border-black/25" v-if="typingDescription">
@@ -127,7 +125,7 @@
           </div>
         </div>
         <!-- adding resources-->
-        <div class="lectures_addResource px-3 border-1 py-3" v-if="addingResources">
+        <div class="lectures_addResource px-3  py-3" v-if="addingResources">
           <!-- Tab Navigation -->
           <ul class="flex gap-2 mb-4 border-b border-gray-300">
             <li>
@@ -172,7 +170,7 @@
                 <Button size="sm" variant="neutral" class="px-4 py-2 bg-gray-200 rounded" @click="cancel">
                   {{ $t('cancel_btn') }}
                 </Button>
-                <Button size="sm" class="g-button px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
+                <Button size="sm" variant="primary" class="text-white rounded disabled:opacity-50"
                   :disabled="isSaving || !newResource.url || !newResource.name" @click="saveNewResources">
                   <spinner-cmp v-if="isSaving" />
                   {{ $t('link') }}
@@ -180,7 +178,7 @@
               </div>
             </div>
 
-            <div v-show="activeTab === 'SourceCode'" class="ml-4">
+            <div v-show="activeTab === 'SourceCode'">
               <g-upload-files :apiName="'downloadable' + item.id" repository="Resources"
                 :placeholder="$t('No file selected')" :button-name="$t('Select File')" v-model="newResource.file"
                 allow-file="*" type="Document" source="videoCourse" @selected="getDownloadableFile" :course="course" />
@@ -530,7 +528,7 @@ const selectTab = (type: string) => {
 
 const tabClass = (type: string) =>
   `px-4 py-2 rounded-t font-medium ${activeTab.value === type
-    ? 'bg-purple-500 text-white'
+    ? 'bg-primary text-white'
     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
   }`;
 
@@ -687,7 +685,6 @@ const refuse = () => {
   padding: 0.5em;
 }
 
-.lecture_content {}
 
 .lecture_content .block_materials {
   font-family: sans-serif;
@@ -719,23 +716,8 @@ const refuse = () => {
   cursor: pointer;
 }
 
-.lecture_content .block_action {
-  font-family: sans-serif;
-  margin: 0.5em;
-  display: flex;
-  flex-direction: column;
-  justify-content: left;
-}
 
-.lecture_content .block_action button {
-  width: 200px;
-  margin-bottom: 1em;
-  font-weight: 700;
-}
 
-.lecture_content .block_action button:hover {
-  background-color: rgb(128, 128, 128, 0.1);
-}
 
 .lecture_content .lecture_description {
   font-family: sans-serif;
@@ -930,7 +912,7 @@ input[type="radio"]:checked:before {
   content: "";
   width: 10px;
   height: 10px;
-  background-color: purple;
+  background-color: var(--color-primary);
 
   position: absolute;
   color: white;
@@ -945,8 +927,8 @@ input[type="radio"]:checked:before {
 }
 
 input[type="checkbox"]:checked:focus {
-  background-color: purple;
-  border-color: purple;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 input[type="radio"]:disabled {
