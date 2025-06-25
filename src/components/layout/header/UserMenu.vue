@@ -5,7 +5,7 @@
       @click.prevent="toggleDropdown"
     >
       <span class="mr-3 overflow-hidden rounded-full h-11 w-11">
-        <img :src="user.picture" alt="User" />
+        <img :src="user.picture" alt="User" class="h-full w-full" />
       </span>
 
       <span class="block mr-1 font-medium text-theme-sm"> {{ fullName }} </span>

@@ -182,6 +182,12 @@ const router = createRouter({
       component: () => import('@/views/setting/SettingView.vue'),
 
     },
+       {
+      path:'/edit_profile',
+      name: 'edit_profile',
+      component: () => import('@/views/setting/SettingView.vue'),
+
+    },
   ],
 })
 router.beforeEach(async (to, from, next) => {
