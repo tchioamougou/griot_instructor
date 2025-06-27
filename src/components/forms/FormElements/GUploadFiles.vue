@@ -115,7 +115,7 @@ const uploadWithProgress = async (file: File, filename: string, path:string) => 
 
   // Send the file to the backend
   const formData = new FormData();
-  formData.append("video", file);
+  formData.append("file", file);
   formData.append("path", path);
 
   await fetch(`${import.meta.env.VITE_APP_STORAGE_URL}/upload/${id}`, {

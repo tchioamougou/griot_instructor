@@ -207,6 +207,10 @@
             <input type="radio" id="Article" value="Article" v-model="documentType" class=""
               :disabled="localItem.documentType != ''" />
             <label for="Article">{{ $t('Article') }}</label>
+
+            <input type="radio" id="webPage" value="webPage" v-model="documentType" class=""
+              :disabled="localItem.documentType != ''" />
+            <label for="webPage">{{ $t('webPage') }}</label>
           </div>
           <div v-if="documentType == 'Video'" class="lectureAddContent_video">
             <div class="lectureAddContent_video_file">
@@ -223,7 +227,10 @@
             <g-rich-text-editor v-model="localItem.article" :label="$t('Article')" :content="item.article"
               :justify-content="true" :show-image="true" api-name="lecture" />
           </div>
-          <div class="actions">
+           <div v-if="documentType == 'webPage'" class="mt-4">
+            <HtmlEditor @selected="onGetVideoDetails" :course="course" :item="item" />
+          </div>
+          <div class="actions" v-if="documentType">
             <Button variant="neutral" @click="addingContent = false">{{ $t('cancel_btn') }}</Button>
             <Button class="save" :disabled="isSaving || (!localItem.contentLink && !localItem.article) || (localItem.contentLink!= item.contentLink) || (localItem.article!= item.article) " @click="updateLectureContent">
               <Spinner v-if="isSaving" />
@@ -304,6 +311,7 @@ import { useToast } from 'vue-toastification'
 import Button from '@/components/ui/Button.vue';
 import Spinner from '@/components/spinner/Spinner.vue';
 import GConfirmation from '@/components/ui/GConfirmation.vue';
+import HtmlEditor from '@/components/code/HtmlEditor.vue';
 const btClass = ref('hidden');
 const toast = useToast();
 const { t } = useI18n();
@@ -440,7 +448,7 @@ const startEditLecture = () => {
 const onGetVideoDetails = (value: { downloadURL: string; duration: number; filesize: number }) => {
   if (localItem.value) {
     localItem.value.contentLink = value.downloadURL;
-    localItem.value.duration = value.duration;
+    localItem.value.duration = value.duration??0;
     localItem.value.size = value.filesize;
   }
 };
