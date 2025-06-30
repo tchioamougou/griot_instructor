@@ -5,14 +5,16 @@
         <div class=" justify-center content-center text-sm">
           <i class="bi bi-check-circle-fill me-2" v-if="isCompleted"></i>
           <span><span v-if="!isCompleted"><i class="bi bi-exclamation-triangle-fill text-amber-300 me-1"></i>{{
-            $t('unpublished') }} : </span>{{ $t(item.type) }} {{ item.position }} : <i class="bi bi-play-circle  me-1" v-if="item.documentType==='Video'"></i> <i class="bi bi-file-earmark-text  me-1" v-if="item.documentType==='Article'"></i> {{ item.title }}
+            $t('unpublished') }} : </span>{{ $t(item.type) }} {{ item.position }} : <i class="bi bi-play-circle  me-1"
+              v-if="item.documentType === 'Video'"></i> <i class="bi bi-file-earmark-text  me-1"
+              v-if="item.documentType === 'Article'"></i> {{ item.title }}
           </span>
           <span :class="btClass">
             <span @click="startEditLecture" class="ms-2 cursor-pointer"><i class="bi bi-pencil-fill text-sm"></i></span>
             <span class="ms-2 cursor-pointer" @click="confirmDelete"><i class="bi bi-x-circle text-sm"></i></span>
           </span>
         </div>
-        <div class="block_right" 
+        <div class="block_right"
           v-if="canAddContent && !addingContent && !editLecture && !addingResources && !addingQuestion && !typingDescription">
           <Button variant="primary" size="sm" v-if="isLecture" @click="initAddContent">
             <span v-if="item.documentType"> {{ $t('update_content') }} </span>
@@ -66,7 +68,7 @@
               <div class="preview">
                 <label class="inline-flex items-center cursor-pointer">
                   <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 me-2">{{ $t('FreePreview')
-                    }}</span>
+                  }}</span>
                   <input type="checkbox" value="" class="sr-only peer" v-model="localItem.preview" id="preview"
                     :disabled="isSaving" @change="updateLectureLocal">
                   <div
@@ -88,7 +90,8 @@
             </div>
           </div>
 
-          <div class="block_materials border-t-1 py-2 border-b-1  border-black/25 " v-if="localItem.resources && localItem.resources.length >0">
+          <div class="block_materials border-t-1 py-2 border-b-1  border-black/25 "
+            v-if="localItem.resources && localItem.resources.length > 0">
             <div class="title text-sm">{{ $t('downloadable_materials') }}</div>
             <div class="resourceList">
               <div class="resourceList_item" v-for="(re, i) in localItem.resources" :key="i">
@@ -198,7 +201,7 @@
         <div class="lectureAddContent border-t-1 py-3 px-3 border-black/25" v-if="addingContent">
           <div class="lectureAddContent_title">
             <span>{{ $t('addingContent_ob.description') }} <a href="#">{{ $t('addingContent_ob.description_url')
-            }}</a></span>
+                }}</a></span>
           </div>
           <div class="lectureAddContent_type">
             <input type="radio" id="Video" value="Video" v-model="documentType" class=""
@@ -227,12 +230,14 @@
             <g-rich-text-editor v-model="localItem.article" :label="$t('Article')" :content="item.article"
               :justify-content="true" :show-image="true" api-name="lecture" />
           </div>
-           <div v-if="documentType == 'webPage'" class="mt-4">
+          <div v-if="documentType == 'webPage'" class="mt-4">
             <HtmlEditor @selected="onGetVideoDetails" :course="course" :item="item" />
           </div>
           <div class="actions" v-if="documentType">
             <Button variant="neutral" @click="addingContent = false">{{ $t('cancel_btn') }}</Button>
-            <Button class="save" :disabled="isSaving || (!localItem.contentLink && !localItem.article) || (localItem.contentLink!= item.contentLink) || (localItem.article!= item.article) " @click="updateLectureContent">
+            <Button class="save"
+              :disabled="isSaving || (!localItem.contentLink && !localItem.article) || (localItem.contentLink != item.contentLink) || (localItem.article != item.article)"
+              @click="updateLectureContent">
               <Spinner v-if="isSaving" />
               {{ $t('save') }}
             </Button>
@@ -320,7 +325,7 @@ const emits = defineEmits<{
 }>();
 const props = defineProps<{
   item: Record<string, any>;
-  course:Record<string, any>;
+  course: Record<string, any>;
 }>();
 
 const confirmation = ref<InstanceType<typeof GConfirmation> | null>(null);
@@ -448,7 +453,7 @@ const startEditLecture = () => {
 const onGetVideoDetails = (value: { downloadURL: string; duration: number; filesize: number }) => {
   if (localItem.value) {
     localItem.value.contentLink = value.downloadURL;
-    localItem.value.duration = value.duration??0;
+    localItem.value.duration = value.duration ?? 0;
     localItem.value.size = value.filesize;
   }
 };
